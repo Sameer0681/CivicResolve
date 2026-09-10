@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Complaint Details')}">
+    <link th:href="@{/css/officer.css}" rel="stylesheet"/>
+</head>
+<body>
+<div class="cr-dashboard-layout">
+    <th:block th:replace="~{fragments/officer-sidebar :: officer-sidebar}"/>
+    <div class="cr-dashboard-main">
+        <div class="cr-topbar">
+            <div class="d-flex align-items-center gap-2">
+                <a th:href="@{/officer/complaints}" class="btn btn-sm btn-light"><i class="fa-solid fa-arrow-left"></i></a>
+                <h1 class="cr-topbar-title">Complaint Details</h1>
+            </div>
+            <div class="d-flex gap-2">
+                <span class="cr-status cr-status--inprogress">In Progress</span>
+                <span class="cr-status cr-status--escalated">High Priority</span>
+            </div>
+        </div>
+        <div class="cr-page-content">
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <!-- Header card -->
+                    <div class="cr-card mb-4">
+                        <div class="cr-complaint-detail-header">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <span class="cr-complaint-id-tag" style="background:rgba(255,255,255,.15);color:#fff;">CR-2025-001</span>
+                                <span class="badge bg-light text-dark">Roads</span>
+                            </div>
+                            <h4 class="fw-800 mb-1">Pothole on MG Road near bus stop</h4>
+                            <p style="color:rgba(255,255,255,.7);font-size:.9rem;margin:0;">Filed by John Doe · Jan 15, 2025</p>
+                        </div>
+                        <div class="cr-card-body">
+                            <p class="text-muted mb-3">Large pothole causing traffic disruption and vehicle damage. Located near the main bus stop on MG Road, approximately 50 meters from the traffic signal.</p>
+                            <div class="row g-3">
+                                <div class="col-sm-6">
+                                    <div class="text-muted small fw-600 mb-1">Location</div>
+                                    <div class="small"><i class="fa-solid fa-location-dot text-primary me-1"></i>MG Road, Bangalore - 560001</div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="text-muted small fw-600 mb-1">SLA Deadline</div>
+                                    <div class="small text-warning fw-600"><i class="fa-solid fa-clock me-1"></i>Jan 17, 2025 · 6 hours left</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Update Status -->
+                    <div class="cr-card mb-4">
+                        <div class="cr-card-header">
+                            <h6 class="fw-700 mb-0">Update Status</h6>
+                        </div>
+                        <div class="cr-card-body">
+                            <form th:action="@{/officer/update-status}" method="post">
+                                <input type="hidden" name="complaintId" value="CR-2025-001"/>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="cr-form-label">New Status</label>
+                                        <select name="status" class="form-select">
+                                            <option value="OPEN">Open</option>
+                                            <option value="IN_PROGRESS" selected>In Progress</option>
+                                            <option value="RESOLVED">Resolved</option>
+                                            <option value="CLOSED">Closed</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="cr-form-label">Officer Note</label>
+                                        <textarea name="note" class="form-control" rows="3" placeholder="Add a note about the action taken..."></textarea>
+                                    </div>
+                                    <div class="col-12 d-flex gap-2 justify-content-end">
+                                        <button type="submit" class="btn btn-primary fw-600">
+                                            <i class="fa-solid fa-floppy-disk me-2"></i>Update Status
+                                        </button>
+                                        <button type="button" class="cr-action-btn cr-action-btn--danger" data-bs-toggle="modal" data-bs-target="#confirmModal">
+                                            <i class="fa-solid fa-arrow-up-right-dots"></i>Escalate
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar info -->
+                <div class="col-lg-4">
+                    <div class="cr-card mb-4">
+                        <div class="cr-card-header"><h6 class="fw-700 mb-0">Citizen Info</h6></div>
+                        <div class="cr-card-body">
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <div class="cr-avatar cr-avatar--md"><i class="fa-solid fa-user"></i></div>
+                                <div>
+                                    <div class="fw-600">John Doe</div>
+                                    <div class="text-muted small">john.doe@example.com</div>
+                                </div>
+                            </div>
+                            <div class="text-muted small"><i class="fa-solid fa-phone me-2"></i>+91 98765 43210</div>
+                        </div>
+                    </div>
+                    <div class="cr-card">
+                        <div class="cr-card-header"><h6 class="fw-700 mb-0">Activity Log</h6></div>
+                        <div class="cr-card-body">
+                            <div class="cr-timeline">
+                                <div class="cr-timeline-item">
+                                    <div class="cr-timeline-dot cr-timeline-dot--green"></div>
+                                    <div class="fw-600 small">Status Updated</div>
+                                    <div class="cr-timeline-time">Jan 16 · 10:30 AM</div>
+                                    <div class="cr-timeline-text">Changed to In Progress by you.</div>
+                                </div>
+                                <div class="cr-timeline-item">
+                                    <div class="cr-timeline-dot"></div>
+                                    <div class="fw-600 small">Assigned</div>
+                                    <div class="cr-timeline-time">Jan 15 · 3:00 PM</div>
+                                    <div class="cr-timeline-text">Complaint assigned to you.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:replace="~{fragments/modal :: modal}"/>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

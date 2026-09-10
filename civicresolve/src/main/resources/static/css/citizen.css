@@ -1,0 +1,64 @@
+/* =========================================================
+   CIVICRESOLVE — CITIZEN CSS
+   ========================================================= */
+
+.cr-complaint-card {
+    background: var(--cr-white);
+    border: 1.5px solid var(--cr-border);
+    border-radius: var(--cr-radius);
+    padding: 1.25rem;
+    transition: var(--cr-transition);
+    cursor: pointer;
+}
+.cr-complaint-card:hover {
+    border-color: var(--cr-primary);
+    box-shadow: var(--cr-shadow-md);
+}
+.cr-complaint-id-tag {
+    font-size: .75rem; font-weight: 700;
+    color: var(--cr-primary);
+    background: var(--cr-primary-light);
+    padding: 2px 8px; border-radius: 4px;
+    font-family: monospace;
+}
+.cr-timeline { position: relative; padding-left: 1.5rem; }
+.cr-timeline::before {
+    content: ''; position: absolute;
+    left: 7px; top: 0; bottom: 0;
+    width: 2px; background: var(--cr-border);
+}
+.cr-timeline-item { position: relative; padding-bottom: 1.25rem; }
+.cr-timeline-item:last-child { padding-bottom: 0; }
+.cr-timeline-dot {
+    position: absolute; left: -1.5rem;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--cr-primary);
+    border: 2px solid var(--cr-white);
+    box-shadow: 0 0 0 2px var(--cr-primary);
+    top: 2px;
+}
+.cr-timeline-dot--gray { background: var(--cr-gray-light); box-shadow: 0 0 0 2px var(--cr-gray-light); }
+.cr-timeline-dot--green { background: var(--cr-success); box-shadow: 0 0 0 2px var(--cr-success); }
+.cr-timeline-time { font-size: .75rem; color: var(--cr-gray-light); }
+.cr-timeline-text { font-size: .875rem; color: var(--cr-dark-3); margin-top: 2px; }
+
+.cr-notification-item {
+    display: flex; gap: 1rem; align-items: flex-start;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--cr-border);
+    transition: var(--cr-transition);
+}
+.cr-notification-item:last-child { border-bottom: none; }
+.cr-notification-item:hover { background: var(--cr-bg); }
+.cr-notification-item.unread { background: var(--cr-primary-light); }
+.cr-notification-icon {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .9rem; flex-shrink: 0;
+}
+.cr-notification-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--cr-primary);
+    flex-shrink: 0; margin-top: 6px;
+}

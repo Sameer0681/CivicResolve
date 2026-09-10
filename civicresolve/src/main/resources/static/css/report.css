@@ -1,0 +1,145 @@
+/* =========================================================
+   CIVICRESOLVE — REPORT CSS
+   ========================================================= */
+
+.cr-report-page { background: var(--cr-bg); min-height: 100vh; }
+
+.cr-report-header {
+    background: linear-gradient(135deg, var(--cr-dark) 0%, var(--cr-dark-2) 100%);
+    padding: 3rem 0 2rem;
+    color: #fff;
+}
+.cr-report-header h1 { font-size: 1.75rem; font-weight: 800; margin-bottom: .25rem; }
+.cr-report-header p { color: rgba(255,255,255,.65); font-size: .95rem; margin: 0; }
+
+.cr-report-body { padding: 2.5rem 0 4rem; }
+
+/* Steps indicator */
+.cr-steps {
+    display: flex; align-items: center;
+    margin-bottom: 2.5rem;
+    background: var(--cr-white);
+    border-radius: var(--cr-radius);
+    border: 1px solid var(--cr-border);
+    padding: 1.25rem 1.5rem;
+    box-shadow: var(--cr-shadow);
+}
+.cr-step {
+    display: flex; align-items: center; gap: .6rem;
+    flex: 1;
+    position: relative;
+}
+.cr-step:not(:last-child)::after {
+    content: '';
+    position: absolute; right: 0; top: 50%;
+    transform: translateY(-50%);
+    width: calc(100% - 120px);
+    height: 2px;
+    background: var(--cr-border);
+    left: 120px;
+}
+.cr-step.active .cr-step-dot { background: var(--cr-primary); color: #fff; }
+.cr-step.done .cr-step-dot { background: var(--cr-success); color: #fff; }
+.cr-step-dot {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--cr-border);
+    color: var(--cr-gray);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .8rem; font-weight: 700;
+    flex-shrink: 0;
+    transition: var(--cr-transition);
+}
+.cr-step-info { min-width: 0; }
+.cr-step-label { font-size: .7rem; color: var(--cr-gray); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+.cr-step-name { font-size: .85rem; font-weight: 700; color: var(--cr-dark); white-space: nowrap; }
+
+/* Category grid */
+.cr-category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: .75rem; }
+.cr-category-option { display: none; }
+.cr-category-label {
+    border: 1.5px solid var(--cr-border);
+    border-radius: var(--cr-radius-sm);
+    padding: 1rem .75rem;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--cr-transition);
+    font-size: .8rem; font-weight: 600;
+    color: var(--cr-gray);
+    display: block;
+}
+.cr-category-label i { display: block; font-size: 1.5rem; margin-bottom: .5rem; }
+.cr-category-option:checked + .cr-category-label {
+    border-color: var(--cr-primary);
+    background: var(--cr-primary-light);
+    color: var(--cr-primary);
+}
+.cr-category-label:hover { border-color: var(--cr-primary); color: var(--cr-primary); }
+
+/* Priority selector */
+.cr-priority-selector { display: flex; gap: .75rem; }
+.cr-priority-option { display: none; }
+.cr-priority-label {
+    flex: 1;
+    border: 1.5px solid var(--cr-border);
+    border-radius: var(--cr-radius-sm);
+    padding: .75rem;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--cr-transition);
+    font-size: .85rem; font-weight: 600;
+    color: var(--cr-gray);
+}
+.cr-priority-option:checked + .cr-priority-label.low    { border-color: var(--cr-success); background: #f0fdf4; color: var(--cr-success); }
+.cr-priority-option:checked + .cr-priority-label.medium { border-color: var(--cr-warning); background: #fff7ed; color: var(--cr-warning); }
+.cr-priority-option:checked + .cr-priority-label.high   { border-color: var(--cr-danger);  background: #fef2f2; color: var(--cr-danger); }
+
+/* File upload */
+.cr-file-upload {
+    border: 2px dashed var(--cr-border);
+    border-radius: var(--cr-radius);
+    padding: 2.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--cr-transition);
+}
+.cr-file-upload:hover, .cr-file-upload.dragover {
+    border-color: var(--cr-primary);
+    background: var(--cr-primary-light);
+}
+.cr-file-upload-icon { font-size: 2.5rem; color: var(--cr-gray-light); margin-bottom: .75rem; }
+
+/* Success page */
+.cr-success-page {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--cr-bg);
+    padding: 2rem;
+}
+.cr-success-card {
+    background: var(--cr-white);
+    border-radius: var(--cr-radius-lg);
+    padding: 3rem;
+    text-align: center;
+    max-width: 520px;
+    width: 100%;
+    box-shadow: var(--cr-shadow-lg);
+}
+.cr-success-icon {
+    width: 80px; height: 80px;
+    background: #f0fdf4;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; color: var(--cr-success);
+    margin: 0 auto 1.5rem;
+}
+.cr-complaint-id {
+    background: var(--cr-primary-light);
+    border: 1.5px solid rgba(37,99,235,.2);
+    border-radius: var(--cr-radius-sm);
+    padding: .875rem 1.25rem;
+    font-size: 1.25rem; font-weight: 800;
+    color: var(--cr-primary);
+    letter-spacing: 1px;
+    margin: 1.25rem 0;
+}

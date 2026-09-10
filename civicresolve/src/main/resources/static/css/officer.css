@@ -1,0 +1,34 @@
+/* =========================================================
+   CIVICRESOLVE — OFFICER CSS
+   ========================================================= */
+
+.cr-officer-topbar { background: #0c1a2e; }
+
+.cr-complaint-detail-header {
+    background: linear-gradient(135deg, #0c1a2e, #1e3a5f);
+    color: #fff;
+    padding: 1.5rem;
+    border-radius: var(--cr-radius) var(--cr-radius) 0 0;
+}
+
+.cr-action-btn {
+    display: flex; align-items: center; gap: .5rem;
+    padding: .6rem 1rem;
+    border-radius: var(--cr-radius-sm);
+    font-size: .875rem; font-weight: 600;
+    border: 1.5px solid var(--cr-border);
+    background: var(--cr-white);
+    color: var(--cr-dark-3);
+    cursor: pointer;
+    transition: var(--cr-transition);
+}
+.cr-action-btn:hover { border-color: var(--cr-primary); color: var(--cr-primary); }
+.cr-action-btn--primary { background: var(--cr-primary); border-color: var(--cr-primary); color: #fff; }
+.cr-action-btn--primary:hover { background: var(--cr-primary-dark); }
+.cr-action-btn--danger { border-color: var(--cr-danger); color: var(--cr-danger); }
+.cr-action-btn--danger:hover { background: var(--cr-danger); color: #fff; }
+
+.cr-escalation-card {
+    border-left: 4px solid var(--cr-danger);
+    background: #fff5f5;
+}

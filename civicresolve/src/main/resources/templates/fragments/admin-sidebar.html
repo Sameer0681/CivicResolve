@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<aside th:fragment="admin-sidebar" class="cr-sidebar cr-sidebar--admin">
+    <div class="cr-sidebar-brand">
+        <a th:href="@{/}" class="d-flex align-items-center gap-2 text-decoration-none">
+            <div class="cr-logo-icon cr-logo-icon--sm"><i class="fa-solid fa-landmark"></i></div>
+            <span class="cr-brand-text">Civic<span class="cr-brand-accent">Resolve</span></span>
+        </a>
+    </div>
+
+    <div class="cr-sidebar-user">
+        <div class="cr-avatar cr-avatar--md cr-avatar--admin">
+            <i class="fa-solid fa-user-tie"></i>
+        </div>
+        <div>
+            <div class="fw-600 text-white small" th:text="${#authentication?.name} ?: 'Admin'">Admin</div>
+            <span class="cr-badge cr-badge--admin">Administrator</span>
+        </div>
+    </div>
+
+    <nav class="cr-sidebar-nav">
+        <div class="cr-nav-label">Management</div>
+        <a th:href="@{/admin/dashboard}" class="cr-nav-link" th:classappend="${activePage == 'dashboard'} ? 'active'">
+            <i class="fa-solid fa-gauge-high"></i> Dashboard
+        </a>
+        <a th:href="@{/admin/complaints}" class="cr-nav-link" th:classappend="${activePage == 'complaints'} ? 'active'">
+            <i class="fa-solid fa-clipboard-list"></i> All Complaints
+        </a>
+        <a th:href="@{/admin/users}" class="cr-nav-link" th:classappend="${activePage == 'users'} ? 'active'">
+            <i class="fa-solid fa-users"></i> Users
+        </a>
+        <a th:href="@{/admin/departments}" class="cr-nav-link" th:classappend="${activePage == 'departments'} ? 'active'">
+            <i class="fa-solid fa-building"></i> Departments
+        </a>
+        <a th:href="@{/admin/escalations}" class="cr-nav-link" th:classappend="${activePage == 'escalations'} ? 'active'">
+            <i class="fa-solid fa-arrow-up-right-dots"></i> Escalations
+        </a>
+
+        <div class="cr-nav-label mt-3">Account</div>
+        <a th:href="@{/admin/profile}" class="cr-nav-link" th:classappend="${activePage == 'profile'} ? 'active'">
+            <i class="fa-solid fa-circle-user"></i> Profile
+        </a>
+    </nav>
+
+    <div class="cr-sidebar-footer">
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="cr-nav-link w-100 text-start border-0 bg-transparent">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </button>
+        </form>
+    </div>
+</aside>
+</body>
+</html>

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Home | CivicResolve</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+    <link th:href="@{/css/common.css}" rel="stylesheet"/>
+    <link th:href="@{/css/landing.css}" rel="stylesheet"/>
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav class="navbar navbar-expand-lg cr-navbar sticky-top">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2" th:href="@{/}">
+            <div class="cr-logo-icon">
+                <i class="fa-solid fa-landmark"></i>
+            </div>
+            <span class="cr-brand-text">Civic<span class="cr-brand-accent">Resolve</span></span>
+        </a>
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navMain">
+            <ul class="navbar-nav mx-auto gap-1">
+                <li class="nav-item"><a class="nav-link active" th:href="@{/}">Home</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/landing/features}">Features</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/landing/sectors}">Sectors</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/landing/about}">About</a></li>
+            </ul>
+            <div class="d-flex align-items-center gap-2">
+                <a th:href="@{/login}" class="btn btn-outline-primary btn-sm px-3">Login</a>
+                <a th:href="@{/register}" class="btn btn-primary btn-sm px-3">Get Started</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="lp-hero">
+    <div class="lp-hero-bg-glow lp-hero-bg-glow--1"></div>
+    <div class="lp-hero-bg-glow lp-hero-bg-glow--2"></div>
+    <div class="container position-relative">
+        <div class="row align-items-center gy-5 min-vh-hero">
+            <!-- Left -->
+            <div class="col-lg-6">
+                <div class="lp-hero-pill mb-4">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    Trusted by 50,000+ Citizens
+                </div>
+                <h1 class="lp-hero-title">
+                    Report. Track.<br><span class="lp-hero-title-accent">Resolve.</span>
+                </h1>
+                <p class="lp-hero-desc">
+                    CivicResolve bridges the gap between citizens and local authorities — making civic issue reporting transparent, fast, and accountable.
+                </p>
+                <div class="lp-hero-actions">
+                    <a th:href="@{/report}" class="btn btn-primary btn-lg lp-btn-primary">
+                        <i class="fa-solid fa-plus me-2"></i>File a Report
+                    </a>
+                    <a th:href="@{/register}" class="btn btn-outline-light btn-lg lp-btn-ghost">
+                        Create Free Account
+                    </a>
+                </div>
+                <div class="lp-hero-stats">
+                    <div class="lp-hero-stat">
+                        <div class="lp-hero-stat-val">12,400+</div>
+                        <div class="lp-hero-stat-lbl">Issues Resolved</div>
+                    </div>
+                    <div class="lp-hero-stat-divider"></div>
+                    <div class="lp-hero-stat">
+                        <div class="lp-hero-stat-val">98%</div>
+                        <div class="lp-hero-stat-lbl">Satisfaction Rate</div>
+                    </div>
+                    <div class="lp-hero-stat-divider"></div>
+                    <div class="lp-hero-stat">
+                        <div class="lp-hero-stat-val">48h</div>
+                        <div class="lp-hero-stat-lbl">Avg. Response</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Right — live card -->
+            <div class="col-lg-6 d-flex justify-content-center">
+                <div class="lp-live-card">
+                    <div class="lp-live-card-header">
+                        <div class="lp-live-card-icon">
+                            <i class="fa-solid fa-clipboard-list"></i>
+                        </div>
+                        <div>
+                            <div class="fw-700 text-white" style="font-size:.9rem">Live Reports</div>
+                            <div style="font-size:.75rem;color:rgba(255,255,255,.5)">Real-time updates</div>
+                        </div>
+                        <div class="lp-live-dot ms-auto"></div>
+                    </div>
+                    <div class="lp-live-item">
+                        <div class="lp-live-item-icon lp-live-item-icon--blue"><i class="fa-solid fa-road"></i></div>
+                        <span class="lp-live-item-text">Pothole on MG Road</span>
+                        <span class="cr-status cr-status--inprogress ms-auto">In Progress</span>
+                    </div>
+                    <div class="lp-live-item">
+                        <div class="lp-live-item-icon lp-live-item-icon--yellow"><i class="fa-solid fa-lightbulb"></i></div>
+                        <span class="lp-live-item-text">Street light outage</span>
+                        <span class="cr-status cr-status--resolved ms-auto">Resolved</span>
+                    </div>
+                    <div class="lp-live-item">
+                        <div class="lp-live-item-icon lp-live-item-icon--green"><i class="fa-solid fa-trash"></i></div>
+                        <span class="lp-live-item-text">Garbage not collected</span>
+                        <span class="cr-status cr-status--open ms-auto">Open</span>
+                    </div>
+                    <div class="lp-live-item" style="margin-bottom:0">
+                        <div class="lp-live-item-icon lp-live-item-icon--cyan"><i class="fa-solid fa-droplet"></i></div>
+                        <span class="lp-live-item-text">Water supply issue</span>
+                        <span class="cr-status cr-status--pending ms-auto">Pending</span>
+                    </div>
+                    <div class="lp-live-footer">
+                        <span>4 active reports in your area</span>
+                        <a th:href="@{/report}" class="lp-live-footer-link">View all <i class="fa-solid fa-arrow-right ms-1"></i></a>
+                    </div>
+                </div>
+                <!-- Floating badges -->
+                <div class="lp-badge lp-badge--top">
+                    <i class="fa-solid fa-circle-check" style="color:#22c55e"></i>
+                    Resolved in 24h
+                </div>
+                <div class="lp-badge lp-badge--bottom">
+                    <i class="fa-solid fa-bell" style="color:#60a5fa"></i>
+                    3 New Updates
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── TRUST BAR ── -->
+<section class="lp-trust">
+    <div class="container">
+        <p class="lp-trust-label">Trusted by municipalities &amp; citizens across India</p>
+        <div class="lp-trust-logos">
+            <span><i class="fa-solid fa-city me-2"></i>Municipal Corp.</span>
+            <span><i class="fa-solid fa-building-columns me-2"></i>Panchayat Raj</span>
+            <span><i class="fa-solid fa-water me-2"></i>Water Board</span>
+            <span><i class="fa-solid fa-bolt me-2"></i>Power Dept.</span>
+            <span><i class="fa-solid fa-road me-2"></i>PWD</span>
+        </div>
+    </div>
+</section>
+
+<!-- ── HOW IT WORKS ── -->
+<section class="lp-section lp-section--white">
+    <div class="container">
+        <div class="text-center mb-5">
+            <div class="lp-eyebrow">How It Works</div>
+            <h2 class="lp-section-title">Three steps to civic action</h2>
+            <p class="lp-section-sub">From reporting to resolution — transparent and efficient every step of the way.</p>
+        </div>
+        <div class="row g-4 position-relative">
+            <div class="lp-steps-connector d-none d-md-block"></div>
+            <div class="col-md-4">
+                <div class="lp-step-card">
+                    <div class="lp-step-num">01</div>
+                    <div class="lp-step-icon lp-step-icon--blue">
+                        <i class="fa-solid fa-file-pen"></i>
+                    </div>
+                    <h5 class="lp-step-title">Submit a Report</h5>
+                    <p class="lp-step-desc">Describe the issue, pick a category, attach photos, and pin the exact location on the map.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="lp-step-card">
+                    <div class="lp-step-num">02</div>
+                    <div class="lp-step-icon lp-step-icon--purple">
+                        <i class="fa-solid fa-magnifying-glass-chart"></i>
+                    </div>
+                    <h5 class="lp-step-title">Track Progress</h5>
+                    <p class="lp-step-desc">Get real-time updates as your complaint is assigned, reviewed, and acted upon by officers.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="lp-step-card">
+                    <div class="lp-step-num">03</div>
+                    <div class="lp-step-icon lp-step-icon--green">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <h5 class="lp-step-title">Issue Resolved</h5>
+                    <p class="lp-step-desc">Receive a notification when resolved. Rate the response and close the complaint.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── FEATURES ── -->
+<section class="lp-section lp-section--gray">
+    <div class="container">
+        <div class="row align-items-center gy-5">
+            <div class="col-lg-5">
+                <div class="lp-eyebrow">Why CivicResolve</div>
+                <h2 class="lp-section-title text-start">Built for transparency &amp; accountability</h2>
+                <p class="lp-section-sub text-start mb-4">Every complaint is tracked end-to-end. Citizens, officers, and admins all have role-specific dashboards for full visibility.</p>
+                <div class="d-flex flex-column gap-3 mb-4">
+                    <div class="lp-feature-row">
+                        <div class="lp-feature-row-icon lp-feature-row-icon--blue">
+                            <i class="fa-solid fa-eye"></i>
+                        </div>
+                        <div>
+                            <div class="lp-feature-row-title">Full Transparency</div>
+                            <div class="lp-feature-row-desc">Track every status change with timestamps and officer notes.</div>
+                        </div>
+                    </div>
+                    <div class="lp-feature-row">
+                        <div class="lp-feature-row-icon lp-feature-row-icon--green">
+                            <i class="fa-solid fa-bolt"></i>
+                        </div>
+                        <div>
+                            <div class="lp-feature-row-title">Fast Resolution</div>
+                            <div class="lp-feature-row-desc">Automated routing ensures complaints reach the right department instantly.</div>
+                        </div>
+                    </div>
+                    <div class="lp-feature-row">
+                        <div class="lp-feature-row-icon lp-feature-row-icon--purple">
+                            <i class="fa-solid fa-bell"></i>
+                        </div>
+                        <div>
+                            <div class="lp-feature-row-title">Real-time Notifications</div>
+                            <div class="lp-feature-row-desc">Stay informed at every step with instant in-app notifications.</div>
+                        </div>
+                    </div>
+                </div>
+                <a th:href="@{/landing/features}" class="btn btn-primary px-4">Explore All Features</a>
+            </div>
+            <div class="col-lg-7">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="lp-feat-card">
+                            <div class="lp-feat-card-icon lp-feat-card-icon--blue"><i class="fa-solid fa-map-location-dot"></i></div>
+                            <h6 class="lp-feat-card-title">Location Pinning</h6>
+                            <p class="lp-feat-card-desc">Pin exact issue location on an interactive map for precise routing.</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="lp-feat-card lp-feat-card--offset">
+                            <div class="lp-feat-card-icon lp-feat-card-icon--green"><i class="fa-solid fa-camera"></i></div>
+                            <h6 class="lp-feat-card-title">Photo Evidence</h6>
+                            <p class="lp-feat-card-desc">Attach up to 5 photos to support your complaint with visual proof.</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="lp-feat-card lp-feat-card--offset">
+                            <div class="lp-feat-card-icon lp-feat-card-icon--orange"><i class="fa-solid fa-arrow-up-right-dots"></i></div>
+                            <h6 class="lp-feat-card-title">Auto Escalation</h6>
+                            <p class="lp-feat-card-desc">Unresolved complaints auto-escalate to senior officers after 48 hours.</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="lp-feat-card">
+                            <div class="lp-feat-card-icon lp-feat-card-icon--purple"><i class="fa-solid fa-chart-bar"></i></div>
+                            <h6 class="lp-feat-card-title">Analytics Dashboard</h6>
+                            <p class="lp-feat-card-desc">Admins get full analytics on complaint trends and officer performance.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── STATS ── -->
+<section class="lp-stats-section">
+    <div class="container">
+        <div class="row g-4 text-center">
+            <div class="col-6 col-md-3">
+                <div class="lp-stat-num">12,400+</div>
+                <div class="lp-stat-lbl">Issues Resolved</div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="lp-stat-num">50,000+</div>
+                <div class="lp-stat-lbl">Registered Citizens</div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="lp-stat-num">200+</div>
+                <div class="lp-stat-lbl">Departments Onboarded</div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="lp-stat-num">98%</div>
+                <div class="lp-stat-lbl">Satisfaction Rate</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── TESTIMONIALS ── -->
+<section class="lp-section lp-section--white">
+    <div class="container">
+        <div class="text-center mb-5">
+            <div class="lp-eyebrow">Testimonials</div>
+            <h2 class="lp-section-title">What citizens are saying</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="lp-testi-card">
+                    <div class="lp-testi-stars">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="lp-testi-text">"I reported a broken streetlight and it was fixed within 36 hours. The real-time tracking gave me full confidence the issue was being handled."</p>
+                    <div class="lp-testi-author">
+                        <div class="lp-testi-avatar lp-testi-avatar--blue">R</div>
+                        <div>
+                            <div class="lp-testi-name">Rahul Sharma</div>
+                            <div class="lp-testi-role">Citizen, Pune</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="lp-testi-card lp-testi-card--featured">
+                    <div class="lp-testi-stars lp-testi-stars--white">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="lp-testi-text">"CivicResolve has transformed how our department handles complaints. The auto-escalation feature ensures nothing slips through the cracks."</p>
+                    <div class="lp-testi-author">
+                        <div class="lp-testi-avatar lp-testi-avatar--white">P</div>
+                        <div>
+                            <div class="lp-testi-name" style="color:#fff">Priya Nair</div>
+                            <div class="lp-testi-role" style="color:rgba(255,255,255,.7)">Municipal Officer, Kochi</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="lp-testi-card">
+                    <div class="lp-testi-stars">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
+                    </div>
+                    <p class="lp-testi-text">"The photo evidence feature is a game changer. I attached pictures of the garbage dump and the area was cleaned the very next day!"</p>
+                    <div class="lp-testi-author">
+                        <div class="lp-testi-avatar lp-testi-avatar--green">A</div>
+                        <div>
+                            <div class="lp-testi-name">Anita Desai</div>
+                            <div class="lp-testi-role">Citizen, Bangalore</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── CTA ── -->
+<section class="lp-cta">
+    <div class="lp-cta-glow lp-cta-glow--1"></div>
+    <div class="lp-cta-glow lp-cta-glow--2"></div>
+    <div class="container position-relative text-center">
+        <div class="lp-cta-badge mb-4">
+            <i class="fa-solid fa-rocket me-2"></i>Join 50,000+ Citizens
+        </div>
+        <h2 class="lp-cta-title">Ready to make your city better?</h2>
+        <p class="lp-cta-sub">Start reporting civic issues today. It's free, fast, and makes a real difference.</p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+            <a th:href="@{/register}" class="btn btn-light btn-lg lp-cta-btn-primary">
+                <i class="fa-solid fa-user-plus me-2"></i>Create Free Account
+            </a>
+            <a th:href="@{/report}" class="btn btn-outline-light btn-lg lp-cta-btn-ghost">
+                <i class="fa-solid fa-file-circle-plus me-2"></i>File a Report
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer class="cr-footer">
+    <div class="container">
+        <div class="row gy-4">
+            <div class="col-lg-4">
+                <a class="d-flex align-items-center gap-2 text-decoration-none mb-3" th:href="@{/}">
+                    <div class="cr-logo-icon cr-logo-icon--sm"><i class="fa-solid fa-landmark"></i></div>
+                    <span class="cr-brand-text text-white">Civic<span class="cr-brand-accent">Resolve</span></span>
+                </a>
+                <p class="text-white-50 small">Empowering citizens to report civic issues and hold local authorities accountable — transparently and efficiently.</p>
+                <div class="d-flex gap-3 mt-3">
+                    <a href="#" class="cr-social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="cr-social-link"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="cr-social-link"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="cr-social-link"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <div class="col-6 col-lg-2">
+                <h6 class="text-white fw-600 mb-3">Platform</h6>
+                <ul class="list-unstyled cr-footer-links">
+                    <li><a th:href="@{/landing/features}">Features</a></li>
+                    <li><a th:href="@{/landing/sectors}">Sectors</a></li>
+                    <li><a th:href="@{/landing/about}">About Us</a></li>
+                    <li><a th:href="@{/report}">File a Report</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-lg-2">
+                <h6 class="text-white fw-600 mb-3">Account</h6>
+                <ul class="list-unstyled cr-footer-links">
+                    <li><a th:href="@{/login}">Login</a></li>
+                    <li><a th:href="@{/register}">Register</a></li>
+                    <li><a th:href="@{/forgot-password}">Forgot Password</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-4">
+                <h6 class="text-white fw-600 mb-3">Stay Updated</h6>
+                <p class="text-white-50 small mb-3">Get notified about civic updates in your area.</p>
+                <div class="input-group cr-footer-input">
+                    <input type="email" class="form-control" placeholder="Enter your email"/>
+                    <button class="btn btn-primary">Subscribe</button>
+                </div>
+            </div>
+        </div>
+        <hr class="cr-footer-divider"/>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+            <p class="text-white-50 small mb-0">&copy; 2025 CivicResolve. All rights reserved.</p>
+            <div class="d-flex gap-3">
+                <a href="#" class="text-white-50 small text-decoration-none">Privacy Policy</a>
+                <a href="#" class="text-white-50 small text-decoration-none">Terms of Service</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

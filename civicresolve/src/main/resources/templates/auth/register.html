@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Register')}">
+    <link th:href="@{/css/auth.css}" rel="stylesheet"/>
+</head>
+<body>
+<div class="cr-auth-page">
+
+    <div class="cr-auth-panel" style="width:520px;padding:2.5rem 3rem;">
+        <a th:href="@{/}" class="d-flex align-items-center gap-2 text-decoration-none mb-4">
+            <div class="cr-logo-icon"><i class="fa-solid fa-landmark"></i></div>
+            <span class="cr-brand-text">Civic<span class="cr-brand-accent">Resolve</span></span>
+        </a>
+
+        <h1 class="cr-auth-title">Create your account</h1>
+        <p class="cr-auth-subtitle">Join thousands of citizens making a difference</p>
+
+        <th:block th:replace="~{fragments/alerts :: alerts}"/>
+
+        <form th:action="@{/register}" method="post">
+
+            <!-- Role selector -->
+            <div class="mb-3">
+                <label class="cr-form-label">I am registering as</label>
+                <div class="cr-role-selector">
+                    <input type="radio" name="role" id="roleCitizen" value="CITIZEN" class="cr-role-option" checked/>
+                    <label for="roleCitizen" class="cr-role-label">
+                        <i class="fa-solid fa-user"></i>Citizen
+                    </label>
+                    <input type="radio" name="role" id="roleOfficer" value="OFFICER" class="cr-role-option"/>
+                    <label for="roleOfficer" class="cr-role-label">
+                        <i class="fa-solid fa-user-shield"></i>Officer
+                    </label>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-6">
+                    <label class="cr-form-label">First Name</label>
+                    <input type="text" name="firstName" class="form-control" placeholder="John" required/>
+                </div>
+                <div class="col-6">
+                    <label class="cr-form-label">Last Name</label>
+                    <input type="text" name="lastName" class="form-control" placeholder="Doe" required/>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="cr-form-label">Email Address</label>
+                <div class="cr-input-icon-wrap">
+                    <i class="cr-input-icon fa-solid fa-envelope"></i>
+                    <input type="email" name="email" class="form-control" placeholder="you@example.com" required/>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="cr-form-label">Phone Number</label>
+                <div class="cr-input-icon-wrap">
+                    <i class="cr-input-icon fa-solid fa-phone"></i>
+                    <input type="tel" name="phone" class="form-control" placeholder="+91 98765 43210"/>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="cr-form-label">Password</label>
+                <div class="cr-input-icon-wrap position-relative">
+                    <i class="cr-input-icon fa-solid fa-lock"></i>
+                    <input type="password" name="password" id="regPassword" class="form-control" placeholder="Min. 8 characters" required/>
+                    <button type="button" class="cr-password-toggle" onclick="togglePassword('regPassword', this)">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="cr-form-label">Confirm Password</label>
+                <div class="cr-input-icon-wrap position-relative">
+                    <i class="cr-input-icon fa-solid fa-lock"></i>
+                    <input type="password" name="confirmPassword" id="regConfirm" class="form-control" placeholder="Repeat password" required/>
+                    <button type="button" class="cr-password-toggle" onclick="togglePassword('regConfirm', this)">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="mb-4 d-flex gap-2">
+                <input type="checkbox" id="terms" class="form-check-input mt-0" required/>
+                <label for="terms" class="form-check-label small text-muted">
+                    I agree to the <a href="#" class="fw-600">Terms of Service</a> and <a href="#" class="fw-600">Privacy Policy</a>
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-2 fw-600">
+                <i class="fa-solid fa-user-plus me-2"></i>Create Account
+            </button>
+        </form>
+
+        <p class="text-center text-muted small mt-4 mb-0">
+            Already have an account?
+            <a th:href="@{/login}" class="fw-600 text-decoration-none">Sign in</a>
+        </p>
+    </div>
+
+    <div class="cr-auth-visual">
+        <div class="cr-auth-visual-content">
+            <div class="cr-auth-visual-icon"><i class="fa-solid fa-city"></i></div>
+            <h2>Be the change your city needs</h2>
+            <p>Register once and start reporting civic issues that matter to you and your community.</p>
+            <div class="cr-auth-visual-features">
+                <div class="cr-auth-visual-feature">
+                    <i class="fa-solid fa-file-circle-plus"></i>
+                    <span>File unlimited complaints</span>
+                </div>
+                <div class="cr-auth-visual-feature">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Track resolution progress</span>
+                </div>
+                <div class="cr-auth-visual-feature">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Join 50,000+ active citizens</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function togglePassword(id, btn) {
+    const input = document.getElementById(id);
+    const icon = btn.querySelector('i');
+    input.type = input.type === 'password' ? 'text' : 'password';
+    icon.className = input.type === 'password' ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash';
+}
+</script>
+</body>
+</html>

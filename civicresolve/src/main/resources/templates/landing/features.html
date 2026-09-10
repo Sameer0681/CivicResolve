@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Features')}">
+    <link th:href="@{/css/landing.css}" rel="stylesheet"/>
+</head>
+<body>
+<th:block th:replace="~{fragments/navbar :: navbar}"/>
+
+<!-- Page Header -->
+<section style="background:linear-gradient(135deg,#0f172a,#1e3a5f);padding:4rem 0;color:#fff;">
+    <div class="container text-center">
+        <span class="cr-hero-eyebrow"><i class="fa-solid fa-star"></i> Platform Features</span>
+        <h1 style="font-size:2.5rem;font-weight:800;margin-top:.75rem;">Everything you need for civic action</h1>
+        <p style="color:rgba(255,255,255,.65);font-size:1.05rem;max-width:540px;margin:.75rem auto 0;">
+            A complete platform for citizens, officers, and administrators to manage civic complaints end-to-end.
+        </p>
+    </div>
+</section>
+
+<!-- Features Grid -->
+<section class="cr-section">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4">
+                <div class="cr-feature-card h-100">
+                    <div class="cr-feature-icon cr-stat-icon--blue"><i class="fa-solid fa-file-circle-plus"></i></div>
+                    <h5 class="fw-700 mb-2">Easy Complaint Filing</h5>
+                    <p class="text-muted small mb-0">Multi-step form with category selection, location pinning, photo upload, and priority setting. File a complaint in under 2 minutes.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="cr-feature-card h-100">
+                    <div class="cr-feature-icon cr-stat-icon--green"><i class="fa-solid fa-timeline"></i></div>
+                    <h5 class="fw-700 mb-2">Real-time Status Tracking</h5>
+                    <p class="text-muted small mb-0">Follow your complaint through every stage — Pending → Open → In Progress → Resolved — with full audit trail.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="cr-feature-card h-100">
+                    <div class="cr-feature-icon cr-stat-icon--orange"><i class="fa-solid fa-arrow-up-right-dots"></i></div>
+                    <h5 class="fw-700 mb-2">Auto Escalation</h5>
+                    <p class="text-muted small mb-0">Complaints unresolved beyond the SLA are automatically escalated to senior officers, ensuring nothing falls through the cracks.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="cr-feature-card h-100">
+                    <div class="cr-feature-icon cr-stat-icon--purple"><i class="fa-solid fa-bell"></i></div>
+                    <h5 class="fw-700 mb-2">Smart Notifications</h5>
+                    <p class="text-muted small mb-0">In-app notifications keep all parties informed at every status change, comment, or escalation event.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="cr-feature-card h-100">
+                    <div class="cr-feature-icon cr-stat-icon--cyan"><i class="fa-solid fa-users-gear"></i></div>
+                    <h5 class="fw-700 mb-2">Role-based Dashboards</h5>
+                    <p class="text-muted small mb-0">Separate, purpose-built dashboards for Citizens, Officers, and Administrators — each with the right tools and data.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="cr-feature-card h-100">
+                    <div class="cr-feature-icon cr-stat-icon--red"><i class="fa-solid fa-chart-pie"></i></div>
+                    <h5 class="fw-700 mb-2">Analytics &amp; Reports</h5>
+                    <p class="text-muted small mb-0">Admins get powerful analytics on complaint volumes, resolution rates, department performance, and citizen satisfaction.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="cr-feature-card h-100">
+                    <div class="cr-feature-icon cr-stat-icon--blue"><i class="fa-solid fa-map-location-dot"></i></div>
+                    <h5 class="fw-700 mb-2">Location Intelligence</h5>
+                    <p class="text-muted small mb-0">Pin exact issue locations on an interactive map. Officers can view geographic clusters of complaints for efficient routing.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="cr-feature-card h-100">
+                    <div class="cr-feature-icon cr-stat-icon--green"><i class="fa-solid fa-building"></i></div>
+                    <h5 class="fw-700 mb-2">Department Management</h5>
+                    <p class="text-muted small mb-0">Admins can create and manage departments, assign officers, and configure SLA timelines per department.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="cr-feature-card h-100">
+                    <div class="cr-feature-icon cr-stat-icon--orange"><i class="fa-solid fa-lock"></i></div>
+                    <h5 class="fw-700 mb-2">Secure &amp; Private</h5>
+                    <p class="text-muted small mb-0">Spring Security-backed authentication with role-based access control. Your data is always protected.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="cr-cta-section">
+    <div class="container">
+        <h2>Start resolving civic issues today</h2>
+        <p>Free for citizens. Powerful for administrators.</p>
+        <a th:href="@{/register}" class="btn btn-light btn-lg px-5">Get Started Free</a>
+    </div>
+</section>
+
+<th:block th:replace="~{fragments/footer :: footer}"/>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

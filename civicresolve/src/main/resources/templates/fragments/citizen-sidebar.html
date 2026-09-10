@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<aside th:fragment="citizen-sidebar" class="cr-sidebar">
+    <div class="cr-sidebar-brand">
+        <a th:href="@{/}" class="d-flex align-items-center gap-2 text-decoration-none">
+            <div class="cr-logo-icon cr-logo-icon--sm"><i class="fa-solid fa-landmark"></i></div>
+            <span class="cr-brand-text">Civic<span class="cr-brand-accent">Resolve</span></span>
+        </a>
+    </div>
+
+    <div class="cr-sidebar-user">
+        <div class="cr-avatar cr-avatar--md">
+            <i class="fa-solid fa-user"></i>
+        </div>
+        <div>
+            <div class="fw-600 text-white small" th:text="${#authentication?.name} ?: 'Citizen'">Citizen</div>
+            <span class="cr-badge cr-badge--citizen">Citizen</span>
+        </div>
+    </div>
+
+    <nav class="cr-sidebar-nav">
+        <div class="cr-nav-label">Main</div>
+        <a th:href="@{/citizen/dashboard}" class="cr-nav-link" th:classappend="${activePage == 'dashboard'} ? 'active'">
+            <i class="fa-solid fa-gauge-high"></i> Dashboard
+        </a>
+        <a th:href="@{/citizen/complaints}" class="cr-nav-link" th:classappend="${activePage == 'complaints'} ? 'active'">
+            <i class="fa-solid fa-file-lines"></i> My Complaints
+        </a>
+        <a th:href="@{/report}" class="cr-nav-link" th:classappend="${activePage == 'report'} ? 'active'">
+            <i class="fa-solid fa-plus-circle"></i> File a Report
+        </a>
+
+        <div class="cr-nav-label mt-3">Account</div>
+        <a th:href="@{/citizen/notifications}" class="cr-nav-link" th:classappend="${activePage == 'notifications'} ? 'active'">
+            <i class="fa-solid fa-bell"></i> Notifications
+            <span class="cr-nav-badge ms-auto">3</span>
+        </a>
+        <a th:href="@{/citizen/profile}" class="cr-nav-link" th:classappend="${activePage == 'profile'} ? 'active'">
+            <i class="fa-solid fa-circle-user"></i> Profile
+        </a>
+    </nav>
+
+    <div class="cr-sidebar-footer">
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="cr-nav-link w-100 text-start border-0 bg-transparent">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </button>
+        </form>
+    </div>
+</aside>
+</body>
+</html>

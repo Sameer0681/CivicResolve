@@ -1,0 +1,37 @@
+/* =========================================================
+   CIVICRESOLVE — ADMIN CSS
+   ========================================================= */
+
+.cr-admin-topbar { background: #1a0a2e; }
+
+.cr-chart-placeholder {
+    background: var(--cr-bg);
+    border-radius: var(--cr-radius-sm);
+    height: 220px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--cr-gray-light);
+    font-size: .875rem;
+    border: 1.5px dashed var(--cr-border);
+}
+
+.cr-user-row td:first-child { font-weight: 600; }
+
+.cr-dept-card {
+    background: var(--cr-white);
+    border: 1.5px solid var(--cr-border);
+    border-radius: var(--cr-radius);
+    padding: 1.25rem;
+    transition: var(--cr-transition);
+}
+.cr-dept-card:hover { border-color: var(--cr-secondary); box-shadow: var(--cr-shadow-md); }
+.cr-dept-icon {
+    width: 48px; height: 48px;
+    border-radius: var(--cr-radius-sm);
+    background: #f5f3ff;
+    color: var(--cr-secondary);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+    margin-bottom: .875rem;
+}
+
+.cr-admin-badge { background: rgba(124,58,237,.1); color: var(--cr-secondary); }

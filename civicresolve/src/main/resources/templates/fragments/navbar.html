@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-light cr-navbar sticky-top">
+    <div class="container">
+        <!-- Brand -->
+        <a class="navbar-brand d-flex align-items-center gap-2" th:href="@{/}">
+            <div class="cr-logo-icon">
+                <i class="fa-solid fa-landmark"></i>
+            </div>
+            <span class="cr-brand-text">Civic<span class="cr-brand-accent">Resolve</span></span>
+        </a>
+
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarMain">
+            <ul class="navbar-nav mx-auto gap-1">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/features}">Features</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/sectors}">Sectors</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/about}">About</a>
+                </li>
+            </ul>
+            <div class="d-flex align-items-center gap-2">
+                <a th:href="@{/login}" class="btn btn-outline-primary btn-sm px-3">Login</a>
+                <a th:href="@{/register}" class="btn btn-primary btn-sm px-3">Register</a>
+            </div>
+        </div>
+    </div>
+</nav>
+</body>
+</html>

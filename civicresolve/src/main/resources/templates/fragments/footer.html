@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<footer th:fragment="footer" class="cr-footer">
+    <div class="container">
+        <div class="row gy-4">
+            <div class="col-lg-4">
+                <a class="d-flex align-items-center gap-2 text-decoration-none mb-3" th:href="@{/}">
+                    <div class="cr-logo-icon cr-logo-icon--sm">
+                        <i class="fa-solid fa-landmark"></i>
+                    </div>
+                    <span class="cr-brand-text text-white">Civic<span class="cr-brand-accent">Resolve</span></span>
+                </a>
+                <p class="text-white-50 small">Empowering citizens to report civic issues and hold local authorities accountable — transparently and efficiently.</p>
+                <div class="d-flex gap-3 mt-3">
+                    <a href="#" class="cr-social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="cr-social-link"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="cr-social-link"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="cr-social-link"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <div class="col-6 col-lg-2">
+                <h6 class="text-white fw-600 mb-3">Platform</h6>
+                <ul class="list-unstyled cr-footer-links">
+                    <li><a th:href="@{/features}">Features</a></li>
+                    <li><a th:href="@{/sectors}">Sectors</a></li>
+                    <li><a th:href="@{/about}">About Us</a></li>
+                    <li><a th:href="@{/report}">File a Report</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-lg-2">
+                <h6 class="text-white fw-600 mb-3">Account</h6>
+                <ul class="list-unstyled cr-footer-links">
+                    <li><a th:href="@{/login}">Login</a></li>
+                    <li><a th:href="@{/register}">Register</a></li>
+                    <li><a th:href="@{/forgot-password}">Forgot Password</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-4">
+                <h6 class="text-white fw-600 mb-3">Stay Updated</h6>
+                <p class="text-white-50 small mb-3">Get notified about civic updates in your area.</p>
+                <div class="input-group cr-footer-input">
+                    <input type="email" class="form-control" placeholder="Enter your email"/>
+                    <button class="btn btn-primary">Subscribe</button>
+                </div>
+            </div>
+        </div>
+        <hr class="cr-footer-divider"/>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+            <p class="text-white-50 small mb-0">&copy; 2025 CivicResolve. All rights reserved.</p>
+            <div class="d-flex gap-3">
+                <a href="#" class="text-white-50 small text-decoration-none">Privacy Policy</a>
+                <a href="#" class="text-white-50 small text-decoration-none">Terms of Service</a>
+            </div>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

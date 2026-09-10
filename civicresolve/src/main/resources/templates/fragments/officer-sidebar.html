@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<aside th:fragment="officer-sidebar" class="cr-sidebar cr-sidebar--officer">
+    <div class="cr-sidebar-brand">
+        <a th:href="@{/}" class="d-flex align-items-center gap-2 text-decoration-none">
+            <div class="cr-logo-icon cr-logo-icon--sm"><i class="fa-solid fa-landmark"></i></div>
+            <span class="cr-brand-text">Civic<span class="cr-brand-accent">Resolve</span></span>
+        </a>
+    </div>
+
+    <div class="cr-sidebar-user">
+        <div class="cr-avatar cr-avatar--md cr-avatar--officer">
+            <i class="fa-solid fa-user-shield"></i>
+        </div>
+        <div>
+            <div class="fw-600 text-white small" th:text="${#authentication?.name} ?: 'Officer'">Officer</div>
+            <span class="cr-badge cr-badge--officer">Officer</span>
+        </div>
+    </div>
+
+    <nav class="cr-sidebar-nav">
+        <div class="cr-nav-label">Workspace</div>
+        <a th:href="@{/officer/dashboard}" class="cr-nav-link" th:classappend="${activePage == 'dashboard'} ? 'active'">
+            <i class="fa-solid fa-gauge-high"></i> Dashboard
+        </a>
+        <a th:href="@{/officer/complaints}" class="cr-nav-link" th:classappend="${activePage == 'complaints'} ? 'active'">
+            <i class="fa-solid fa-clipboard-list"></i> Assigned Complaints
+        </a>
+        <a th:href="@{/officer/escalations}" class="cr-nav-link" th:classappend="${activePage == 'escalations'} ? 'active'">
+            <i class="fa-solid fa-arrow-up-right-dots"></i> Escalations
+            <span class="cr-nav-badge ms-auto cr-nav-badge--warn">2</span>
+        </a>
+
+        <div class="cr-nav-label mt-3">Account</div>
+        <a th:href="@{/officer/notifications}" class="cr-nav-link" th:classappend="${activePage == 'notifications'} ? 'active'">
+            <i class="fa-solid fa-bell"></i> Notifications
+        </a>
+        <a th:href="@{/officer/profile}" class="cr-nav-link" th:classappend="${activePage == 'profile'} ? 'active'">
+            <i class="fa-solid fa-circle-user"></i> Profile
+        </a>
+    </nav>
+
+    <div class="cr-sidebar-footer">
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="cr-nav-link w-100 text-start border-0 bg-transparent">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </button>
+        </form>
+    </div>
+</aside>
+</body>
+</html>

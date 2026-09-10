@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('File a Report')}">
+    <link th:href="@{/css/report.css}" rel="stylesheet"/>
+</head>
+<body class="cr-report-page">
+
+<th:block th:replace="~{fragments/navbar :: navbar}"/>
+
+<!-- Header -->
+<div class="cr-report-header">
+    <div class="container">
+        <div class="d-flex align-items-center gap-3">
+            <div class="cr-stat-icon cr-stat-icon--blue" style="background:rgba(255,255,255,.1);color:#fff;">
+                <i class="fa-solid fa-file-circle-plus"></i>
+            </div>
+            <div>
+                <h1>File a Civic Report</h1>
+                <p>Report an issue in your area and track its resolution in real time.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="cr-report-body">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+
+                <!-- Steps -->
+                <div class="cr-steps">
+                    <div class="cr-step active" id="step-indicator-1">
+                        <div class="cr-step-dot">1</div>
+                        <div class="cr-step-info">
+                            <div class="cr-step-label">Step 1</div>
+                            <div class="cr-step-name">Category</div>
+                        </div>
+                    </div>
+                    <div class="cr-step" id="step-indicator-2">
+                        <div class="cr-step-dot">2</div>
+                        <div class="cr-step-info">
+                            <div class="cr-step-label">Step 2</div>
+                            <div class="cr-step-name">Details</div>
+                        </div>
+                    </div>
+                    <div class="cr-step" id="step-indicator-3">
+                        <div class="cr-step-dot">3</div>
+                        <div class="cr-step-info">
+                            <div class="cr-step-label">Step 3</div>
+                            <div class="cr-step-name">Location</div>
+                        </div>
+                    </div>
+                    <div class="cr-step" id="step-indicator-4">
+                        <div class="cr-step-dot">4</div>
+                        <div class="cr-step-info">
+                            <div class="cr-step-label">Step 4</div>
+                            <div class="cr-step-name">Review</div>
+                        </div>
+                    </div>
+                </div>
+
+                <form th:action="@{/report}" method="post" enctype="multipart/form-data" id="reportForm">
+
+                    <!-- Step 1: Category -->
+                    <div class="cr-card mb-4" id="step-1">
+                        <div class="cr-card-header">
+                            <h5 class="fw-700 mb-0"><i class="fa-solid fa-tags me-2 text-primary"></i>Select Category</h5>
+                        </div>
+                        <div class="cr-card-body">
+                            <div class="cr-category-grid">
+                                <div>
+                                    <input type="radio" name="category" id="cat-road" value="ROADS" class="cr-category-option"/>
+                                    <label for="cat-road" class="cr-category-label"><i class="fa-solid fa-road"></i>Roads</label>
+                                </div>
+                                <div>
+                                    <input type="radio" name="category" id="cat-water" value="WATER" class="cr-category-option"/>
+                                    <label for="cat-water" class="cr-category-label"><i class="fa-solid fa-droplet"></i>Water</label>
+                                </div>
+                                <div>
+                                    <input type="radio" name="category" id="cat-light" value="LIGHTING" class="cr-category-option"/>
+                                    <label for="cat-light" class="cr-category-label"><i class="fa-solid fa-lightbulb"></i>Lighting</label>
+                                </div>
+                                <div>
+                                    <input type="radio" name="category" id="cat-waste" value="SANITATION" class="cr-category-option"/>
+                                    <label for="cat-waste" class="cr-category-label"><i class="fa-solid fa-trash"></i>Sanitation</label>
+                                </div>
+                                <div>
+                                    <input type="radio" name="category" id="cat-park" value="PARKS" class="cr-category-option"/>
+                                    <label for="cat-park" class="cr-category-label"><i class="fa-solid fa-tree"></i>Parks</label>
+                                </div>
+                                <div>
+                                    <input type="radio" name="category" id="cat-fire" value="FIRE_SAFETY" class="cr-category-option"/>
+                                    <label for="cat-fire" class="cr-category-label"><i class="fa-solid fa-fire-extinguisher"></i>Fire Safety</label>
+                                </div>
+                                <div>
+                                    <input type="radio" name="category" id="cat-building" value="BUILDINGS" class="cr-category-option"/>
+                                    <label for="cat-building" class="cr-category-label"><i class="fa-solid fa-building"></i>Buildings</label>
+                                </div>
+                                <div>
+                                    <input type="radio" name="category" id="cat-other" value="OTHER" class="cr-category-option"/>
+                                    <label for="cat-other" class="cr-category-label"><i class="fa-solid fa-ellipsis"></i>Other</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Details -->
+                    <div class="cr-card mb-4" id="step-2">
+                        <div class="cr-card-header">
+                            <h5 class="fw-700 mb-0"><i class="fa-solid fa-pen-to-square me-2 text-primary"></i>Complaint Details</h5>
+                        </div>
+                        <div class="cr-card-body">
+                            <div class="mb-3">
+                                <label class="cr-form-label">Title <span class="text-danger">*</span></label>
+                                <input type="text" name="title" class="form-control" placeholder="Brief title of the issue (e.g. Large pothole on MG Road)" required maxlength="100"/>
+                            </div>
+                            <div class="mb-3">
+                                <label class="cr-form-label">Description <span class="text-danger">*</span></label>
+                                <textarea name="description" class="form-control" rows="4" placeholder="Describe the issue in detail — what, where, since when, and any safety concerns..." required maxlength="1000"></textarea>
+                                <div class="text-muted small mt-1">Max 1000 characters</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="cr-form-label">Priority</label>
+                                <div class="cr-priority-selector">
+                                    <input type="radio" name="priority" id="pri-low" value="LOW" class="cr-priority-option" checked/>
+                                    <label for="pri-low" class="cr-priority-label low"><i class="fa-solid fa-circle-dot me-1"></i>Low</label>
+                                    <input type="radio" name="priority" id="pri-med" value="MEDIUM" class="cr-priority-option"/>
+                                    <label for="pri-med" class="cr-priority-label medium"><i class="fa-solid fa-circle-dot me-1"></i>Medium</label>
+                                    <input type="radio" name="priority" id="pri-high" value="HIGH" class="cr-priority-option"/>
+                                    <label for="pri-high" class="cr-priority-label high"><i class="fa-solid fa-circle-dot me-1"></i>High</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="cr-form-label">Attach Photos (optional)</label>
+                                <div class="cr-file-upload" id="fileDropZone" onclick="document.getElementById('fileInput').click()">
+                                    <div class="cr-file-upload-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                                    <div class="fw-600 mb-1">Click to upload or drag &amp; drop</div>
+                                    <div class="text-muted small">PNG, JPG up to 10MB each (max 5 files)</div>
+                                    <input type="file" id="fileInput" name="images" multiple accept="image/*" class="d-none"/>
+                                </div>
+                                <div id="filePreview" class="d-flex flex-wrap gap-2 mt-2"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Location -->
+                    <div class="cr-card mb-4" id="step-3">
+                        <div class="cr-card-header">
+                            <h5 class="fw-700 mb-0"><i class="fa-solid fa-map-location-dot me-2 text-primary"></i>Location</h5>
+                        </div>
+                        <div class="cr-card-body">
+                            <div class="mb-3">
+                                <label class="cr-form-label">Address / Landmark <span class="text-danger">*</span></label>
+                                <div class="cr-input-icon-wrap">
+                                    <i class="cr-input-icon fa-solid fa-location-dot"></i>
+                                    <input type="text" name="address" class="form-control" placeholder="Enter address or nearby landmark" required/>
+                                </div>
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="cr-form-label">City</label>
+                                    <input type="text" name="city" class="form-control" placeholder="City"/>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="cr-form-label">PIN Code</label>
+                                    <input type="text" name="pinCode" class="form-control" placeholder="PIN Code" maxlength="6"/>
+                                </div>
+                            </div>
+                            <!-- Map placeholder -->
+                            <div style="background:var(--cr-bg);border:1.5px dashed var(--cr-border);border-radius:var(--cr-radius-sm);height:200px;display:flex;align-items:center;justify-content:center;color:var(--cr-gray-light);flex-direction:column;gap:.5rem;">
+                                <i class="fa-solid fa-map fa-2x"></i>
+                                <span class="small">Interactive map will appear here</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Review & Submit -->
+                    <div class="cr-card mb-4" id="step-4">
+                        <div class="cr-card-header">
+                            <h5 class="fw-700 mb-0"><i class="fa-solid fa-clipboard-check me-2 text-primary"></i>Review &amp; Submit</h5>
+                        </div>
+                        <div class="cr-card-body">
+                            <div class="alert alert-info cr-alert mb-3">
+                                <i class="fa-solid fa-circle-info me-2"></i>
+                                Please review your complaint before submitting. Once submitted, you'll receive a unique complaint ID to track progress.
+                            </div>
+                            <div class="mb-3 d-flex gap-2">
+                                <input type="checkbox" id="anonymous" name="anonymous" class="form-check-input mt-0"/>
+                                <label for="anonymous" class="form-check-label small text-muted">
+                                    Submit anonymously (your name won't be shown publicly, but officers can still contact you)
+                                </label>
+                            </div>
+                            <div class="d-flex gap-3 justify-content-end">
+                                <button type="reset" class="btn btn-light px-4">Clear Form</button>
+                                <button type="submit" class="btn btn-primary px-5 fw-600">
+                                    <i class="fa-solid fa-paper-plane me-2"></i>Submit Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// File preview
+document.getElementById('fileInput').addEventListener('change', function() {
+    const preview = document.getElementById('filePreview');
+    preview.innerHTML = '';
+    Array.from(this.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = e => {
+            const div = document.createElement('div');
+            div.style.cssText = 'position:relative;width:80px;height:80px;';
+            div.innerHTML = `<img src="${e.target.result}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:1.5px solid var(--cr-border);">`;
+            preview.appendChild(div);
+        };
+        reader.readAsDataURL(file);
+    });
+});
+
+// Drag & drop
+const dropZone = document.getElementById('fileDropZone');
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    document.getElementById('fileInput').files = e.dataTransfer.files;
+    document.getElementById('fileInput').dispatchEvent(new Event('change'));
+});
+</script>
+</body>
+</html>

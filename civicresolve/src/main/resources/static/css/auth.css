@@ -1,0 +1,132 @@
+/* =========================================================
+   CIVICRESOLVE — AUTH CSS
+   ========================================================= */
+
+.cr-auth-page {
+    min-height: 100vh;
+    display: flex;
+    background: var(--cr-bg);
+}
+
+/* Left panel */
+.cr-auth-panel {
+    width: 480px;
+    min-height: 100vh;
+    background: var(--cr-white);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 3rem 3.5rem;
+    position: relative;
+    z-index: 1;
+    box-shadow: var(--cr-shadow-lg);
+}
+
+/* Right visual */
+.cr-auth-visual {
+    flex: 1;
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+.cr-auth-visual::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 60% 40%, rgba(37,99,235,.3) 0%, transparent 60%),
+                radial-gradient(ellipse at 30% 70%, rgba(124,58,237,.2) 0%, transparent 50%);
+}
+.cr-auth-visual-content {
+    position: relative; z-index: 1;
+    text-align: center;
+    color: #fff;
+    padding: 2rem;
+    max-width: 420px;
+}
+.cr-auth-visual-icon {
+    width: 80px; height: 80px;
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem;
+    margin: 0 auto 1.5rem;
+}
+.cr-auth-visual h2 { font-size: 1.75rem; font-weight: 800; margin-bottom: .75rem; }
+.cr-auth-visual p { color: rgba(255,255,255,.65); font-size: .95rem; }
+.cr-auth-visual-features {
+    display: flex; flex-direction: column; gap: .75rem;
+    margin-top: 2rem; text-align: left;
+}
+.cr-auth-visual-feature {
+    display: flex; align-items: center; gap: .75rem;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: var(--cr-radius-sm);
+    padding: .75rem 1rem;
+    font-size: .875rem;
+}
+.cr-auth-visual-feature i { color: #60a5fa; width: 16px; }
+
+/* Form styles */
+.cr-auth-title { font-size: 1.75rem; font-weight: 800; color: var(--cr-dark); margin-bottom: .25rem; }
+.cr-auth-subtitle { color: var(--cr-gray); font-size: .9rem; margin-bottom: 2rem; }
+
+.cr-auth-divider {
+    display: flex; align-items: center; gap: 1rem;
+    margin: 1.25rem 0;
+    color: var(--cr-gray-light);
+    font-size: .8rem;
+}
+.cr-auth-divider::before,
+.cr-auth-divider::after {
+    content: ''; flex: 1;
+    height: 1px; background: var(--cr-border);
+}
+
+.cr-password-toggle {
+    position: absolute; right: .875rem; top: 50%;
+    transform: translateY(-50%);
+    background: none; border: none;
+    color: var(--cr-gray); cursor: pointer;
+    padding: 0; font-size: .9rem;
+    transition: var(--cr-transition);
+}
+.cr-password-toggle:hover { color: var(--cr-primary); }
+
+.cr-input-icon-wrap { position: relative; }
+.cr-input-icon-wrap .form-control { padding-left: 2.5rem; }
+.cr-input-icon {
+    position: absolute; left: .875rem; top: 50%;
+    transform: translateY(-50%);
+    color: var(--cr-gray-light); font-size: .9rem;
+    pointer-events: none;
+}
+
+/* Role selector */
+.cr-role-selector { display: flex; gap: .75rem; margin-bottom: 1.25rem; }
+.cr-role-option { display: none; }
+.cr-role-label {
+    flex: 1;
+    border: 1.5px solid var(--cr-border);
+    border-radius: var(--cr-radius-sm);
+    padding: .75rem;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--cr-transition);
+    font-size: .85rem; font-weight: 600;
+    color: var(--cr-gray);
+}
+.cr-role-label i { display: block; font-size: 1.25rem; margin-bottom: .35rem; }
+.cr-role-option:checked + .cr-role-label {
+    border-color: var(--cr-primary);
+    background: var(--cr-primary-light);
+    color: var(--cr-primary);
+}
+
+@media (max-width: 991.98px) {
+    .cr-auth-visual { display: none; }
+    .cr-auth-panel { width: 100%; padding: 2rem 1.5rem; }
+}

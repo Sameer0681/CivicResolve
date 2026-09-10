@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Notifications')}">
+    <link th:href="@{/css/officer.css}" rel="stylesheet"/>
+</head>
+<body>
+<div class="cr-dashboard-layout">
+    <th:block th:replace="~{fragments/officer-sidebar :: officer-sidebar}"/>
+    <div class="cr-dashboard-main">
+        <div class="cr-topbar">
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn btn-sm btn-light d-lg-none" onclick="document.querySelector('.cr-sidebar').classList.toggle('show')"><i class="fa-solid fa-bars"></i></button>
+                <h1 class="cr-topbar-title">Notifications</h1>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary">Mark all as read</button>
+        </div>
+        <div class="cr-page-content">
+            <div class="cr-card">
+                <div class="cr-card-header">
+                    <h6 class="fw-700 mb-0">All Notifications <span class="badge bg-primary ms-2">2 new</span></h6>
+                </div>
+                <div class="cr-notification-item unread">
+                    <div class="cr-notification-icon" style="background:#fef2f2;color:var(--cr-danger);"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                    <div class="flex-grow-1">
+                        <div class="fw-600 small">Complaint Escalated — CR-2025-005</div>
+                        <div class="text-muted small">Water pipe burst complaint is overdue by 12 hours. Immediate action required.</div>
+                        <div class="text-muted" style="font-size:.7rem;">1 hour ago</div>
+                    </div>
+                    <div class="cr-notification-dot flex-shrink-0"></div>
+                </div>
+                <div class="cr-notification-item unread">
+                    <div class="cr-notification-icon" style="background:#eff6ff;color:var(--cr-primary);"><i class="fa-solid fa-clipboard-list"></i></div>
+                    <div class="flex-grow-1">
+                        <div class="fw-600 small">New Complaint Assigned — CR-2025-008</div>
+                        <div class="text-muted small">A new complaint about broken footpath has been assigned to you.</div>
+                        <div class="text-muted" style="font-size:.7rem;">3 hours ago</div>
+                    </div>
+                    <div class="cr-notification-dot flex-shrink-0"></div>
+                </div>
+                <div class="cr-notification-item">
+                    <div class="cr-notification-icon" style="background:#f0fdf4;color:var(--cr-success);"><i class="fa-solid fa-circle-check"></i></div>
+                    <div class="flex-grow-1">
+                        <div class="fw-600 small">Complaint Closed — CR-2025-003</div>
+                        <div class="text-muted small">Citizen confirmed resolution. Complaint CR-2025-003 has been closed.</div>
+                        <div class="text-muted" style="font-size:.7rem;">Yesterday at 5:00 PM</div>
+                    </div>
+                </div>
+                <div class="cr-notification-item">
+                    <div class="cr-notification-icon" style="background:#f1f5f9;color:var(--cr-gray);"><i class="fa-solid fa-info-circle"></i></div>
+                    <div class="flex-grow-1">
+                        <div class="fw-600 small">SLA Reminder — CR-2025-001</div>
+                        <div class="text-muted small">Complaint CR-2025-001 SLA deadline is in 6 hours.</div>
+                        <div class="text-muted" style="font-size:.7rem;">Jan 16, 2025</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -16,10 +16,16 @@
     <!-- Font Awesome 6 -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
 
-    <!-- Common CSS -->
-    <link th:href="@{/css/common.css}" rel="stylesheet"/>
+    <!-- Leaflet.js Map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
-    <!-- Page-specific CSS slot -->
-    <th:block th:replace="${extraCss} ?: ~{}"/>
+    <!-- App Stylesheets -->
+    <link th:href="@{/css/common.css}" rel="stylesheet"/>
+    <link th:href="@{/css/landing.css}" rel="stylesheet"/>
+    <link th:href="@{/css/auth.css}" rel="stylesheet"/>
+    <link th:href="@{/css/citizen.css}" rel="stylesheet"/>
+    <link th:href="@{/css/officer.css}" rel="stylesheet"/>
+    <link th:href="@{/css/admin.css}" rel="stylesheet"/>
+    <link th:href="@{/css/report.css}" rel="stylesheet"/>
 </head>
 </html>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<body>
-<aside th:fragment="officer-sidebar" class="cr-sidebar cr-sidebar--officer">
+<th:block th:fragment="officer-sidebar">
+<aside class="cr-sidebar cr-sidebar--officer">
     <div class="cr-sidebar-brand">
         <a th:href="@{/}" class="d-flex align-items-center gap-2 text-decoration-none">
             <div class="cr-logo-icon cr-logo-icon--sm"><i class="fa-solid fa-landmark"></i></div>
@@ -49,5 +49,6 @@
         </form>
     </div>
 </aside>
-</body>
+<div class="cr-sidebar-backdrop" onclick="document.querySelector('.cr-sidebar').classList.remove('show');this.classList.remove('show')"></div>
+</th:block>
 </html>

@@ -18,12 +18,18 @@
 
         <th:block th:replace="~{fragments/alerts :: alerts}"/>
 
-        <!-- Login error from Spring Security -->
+        <!-- Alerts from Spring Security & AuthController -->
         <div th:if="${param.error}" class="alert alert-danger cr-alert">
-            <i class="fa-solid fa-circle-exclamation me-2"></i>Invalid email or password.
+            <i class="fa-solid fa-circle-exclamation me-2"></i>Invalid email or password. Please try again.
         </div>
         <div th:if="${param.logout}" class="alert alert-success cr-alert">
             <i class="fa-solid fa-circle-check me-2"></i>You have been logged out successfully.
+        </div>
+        <div th:if="${param.registered}" class="alert alert-success cr-alert">
+            <i class="fa-solid fa-circle-check me-2"></i>Registration successful! Please sign in with your credentials.
+        </div>
+        <div th:if="${param.resetSuccess}" class="alert alert-success cr-alert">
+            <i class="fa-solid fa-circle-check me-2"></i>Your password has been reset successfully! Please sign in.
         </div>
 
         <form th:action="@{/login}" method="post">
@@ -31,7 +37,7 @@
                 <label class="cr-form-label">Email Address</label>
                 <div class="cr-input-icon-wrap">
                     <i class="cr-input-icon fa-solid fa-envelope"></i>
-                    <input type="email" name="username" class="form-control" placeholder="you@example.com" required autofocus/>
+                    <input type="email" name="username" id="loginUsername" class="form-control" placeholder="you@example.com" required autofocus/>
                 </div>
             </div>
             <div class="mb-3">
@@ -47,14 +53,30 @@
                     </button>
                 </div>
             </div>
-            <div class="mb-4 d-flex align-items-center gap-2">
-                <input type="checkbox" name="remember-me" id="rememberMe" class="form-check-input mt-0"/>
+            <div class="form-check mb-4">
+                <input type="checkbox" name="remember-me" id="rememberMe" class="form-check-input"/>
                 <label for="rememberMe" class="form-check-label small text-muted">Remember me for 30 days</label>
             </div>
             <button type="submit" class="btn btn-primary w-100 py-2 fw-600">
                 <i class="fa-solid fa-right-to-bracket me-2"></i>Sign In
             </button>
         </form>
+
+        <!-- Quick-Fill Seeded Test Accounts for Testing -->
+        <div class="p-3 bg-light rounded-3 border mt-4 text-center">
+            <div class="text-muted small fw-700 mb-2">QUICK TEST ACCOUNTS (CLICK TO AUTO-FILL):</div>
+            <div class="d-flex flex-wrap gap-2 justify-content-center">
+                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="quickFill('citizen@civicresolve.in', 'Citizen@123')">
+                    <i class="fa-solid fa-user me-1 text-primary"></i> Citizen
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="quickFill('officer.verma@civicresolve.gov', 'Officer@123')">
+                    <i class="fa-solid fa-user-shield me-1 text-warning"></i> Officer
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="quickFill('admin@civicresolve.gov', 'Admin@123')">
+                    <i class="fa-solid fa-shield-halved me-1 text-danger"></i> Admin
+                </button>
+            </div>
+        </div>
 
         <p class="text-center text-muted small mt-4 mb-0">
             Don't have an account?
@@ -98,6 +120,11 @@ function togglePassword(id, btn) {
         input.type = 'password';
         icon.className = 'fa-solid fa-eye';
     }
+}
+
+function quickFill(email, password) {
+    document.getElementById('loginUsername').value = email;
+    document.getElementById('loginPassword').value = password;
 }
 </script>
 </body>

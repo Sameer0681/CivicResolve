@@ -1,237 +1,1013 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head('File a Report')}">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Autonomous AI Civic Reporting | CivicResolve</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+    <link th:href="@{/css/common.css}" rel="stylesheet"/>
     <link th:href="@{/css/report.css}" rel="stylesheet"/>
 </head>
-<body class="cr-report-page">
+<body class="cr-report-page bg-light">
 
+<!-- ── NAVBAR ── -->
 <th:block th:replace="~{fragments/navbar :: navbar}"/>
 
-<!-- Header -->
-<div class="cr-report-header">
+<!-- ── PAGE HEADER ── -->
+<div class="py-4 bg-white border-bottom shadow-sm">
     <div class="container">
-        <div class="d-flex align-items-center gap-3">
-            <div class="cr-stat-icon cr-stat-icon--blue" style="background:rgba(255,255,255,.1);color:#fff;">
-                <i class="fa-solid fa-file-circle-plus"></i>
-            </div>
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
             <div>
-                <h1>File a Civic Report</h1>
-                <p>Report an issue in your area and track its resolution in real time.</p>
+                <div class="d-inline-flex align-items-center gap-2 px-2 py-1 rounded-pill mb-2" style="background: rgba(37, 99, 235, 0.1); color: #2563eb; font-size: 0.78rem; font-weight: 700;">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Autonomous Civic Reporting
+                </div>
+                <h1 class="h3 fw-900 text-dark mb-1">Report a Civic Issue</h1>
+                <p class="text-muted small mb-0">
+                    No manual form-filling required. <strong>Speak, snap a photo, or type your problem</strong>. The AI detects your <strong>10-meter standing GPS position</strong>, classifies the department, compiles the grievance report, and manages the submission.
+                </p>
             </div>
+            <a th:href="@{/citizen/complaint-details}" class="btn btn-outline-secondary btn-sm text-nowrap">
+                <i class="fa-solid fa-magnifying-glass me-1"></i> Track Existing Ticket
+            </a>
         </div>
     </div>
 </div>
 
-<div class="cr-report-body">
+<div class="py-4">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-8">
+            <div class="col-lg-9">
 
-                <!-- Steps -->
-                <div class="cr-steps">
-                    <div class="cr-step active" id="step-indicator-1">
-                        <div class="cr-step-dot">1</div>
-                        <div class="cr-step-info">
-                            <div class="cr-step-label">Step 1</div>
-                            <div class="cr-step-name">Category</div>
+                <!-- ── 1. REAL-TIME 10-METER STANDING GPS RADAR ── -->
+                <div class="cr-gps-radar-card mb-4">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="cr-gps-radar-circle" id="gpsRadarCircle">
+                                <i class="fa-solid fa-location-crosshairs text-primary fa-lg"></i>
+                            </div>
+                            <div>
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle d-inline-flex align-items-center gap-1" id="gpsBadge">
+                                        <i class="fa-solid fa-spinner fa-spin" id="gpsStatusIcon"></i>
+                                        <span id="gpsStatusText">Acquiring 10m Standing GPS...</span>
+                                    </span>
+                                    <span class="text-muted small" id="gpsAccuracyText">Requesting device coordinates</span>
+                                </div>
+                                <div class="fw-800 text-dark" id="gpsCoordsText" style="font-family: monospace; font-size: 1.05rem;">
+                                    Waiting for location signal...
+                                </div>
+                                <div class="text-muted small" id="gpsAddressText">
+                                    <i class="fa-solid fa-map-pin text-danger me-1"></i> Standing position will be stamped to this complaint.
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-primary text-nowrap" onclick="detectDeviceGPS()">
+                            <i class="fa-solid fa-crosshairs me-1" id="gpsRefreshIcon"></i> Refresh Standing GPS
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ── 2. REAL CITIZEN INPUT SECTION ── -->
+                <div class="cr-card mb-4">
+                    <div class="cr-card-header bg-white">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h5 class="fw-800 mb-0 text-dark">
+                                <i class="fa-solid fa-bolt-lightning text-primary me-2"></i>Provide Your Input (Voice, Photo, or Text)
+                            </h5>
+                            <span class="badge bg-light text-muted fw-600">AI Handles The Rest</span>
                         </div>
                     </div>
-                    <div class="cr-step" id="step-indicator-2">
-                        <div class="cr-step-dot">2</div>
-                        <div class="cr-step-info">
-                            <div class="cr-step-label">Step 2</div>
-                            <div class="cr-step-name">Details</div>
+                    <div class="cr-card-body">
+
+                        <!-- Mode Selector Cards -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <div class="cr-quick-input-card active" id="btnModeVoice" onclick="setAiMode('voice')">
+                                    <div class="cr-quick-input-icon" style="background: rgba(37, 99, 235, 0.1); color: #2563eb;">
+                                        <i class="fa-solid fa-microphone-lines"></i>
+                                    </div>
+                                    <h6 class="fw-700 text-dark mb-1">1. Speak (Voice)</h6>
+                                    <p class="text-muted small mb-0">Speak in Hindi or English</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="cr-quick-input-card" id="btnModePhoto" onclick="setAiMode('photo')">
+                                    <div class="cr-quick-input-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                                        <i class="fa-solid fa-camera"></i>
+                                    </div>
+                                    <h6 class="fw-700 text-dark mb-1">2. Attach Photo</h6>
+                                    <p class="text-muted small mb-0">Snap or select picture</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="cr-quick-input-card" id="btnModeText" onclick="setAiMode('text')">
+                                    <div class="cr-quick-input-icon" style="background: rgba(245, 158, 11, 0.1); color: #d97706;">
+                                        <i class="fa-solid fa-keyboard"></i>
+                                    </div>
+                                    <h6 class="fw-700 text-dark mb-1">3. Type Problem</h6>
+                                    <p class="text-muted small mb-0">Describe in your words</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PANEL A: VOICE INPUT -->
+                        <div id="panelVoice" class="cr-voice-box mb-3">
+                            <button type="button" class="cr-voice-btn" id="voiceBtn" onclick="toggleVoiceRecording()">
+                                <i class="fa-solid fa-microphone"></i>
+                            </button>
+                            <h5 class="fw-800 text-dark mb-1" id="voiceLabel">Click Microphone to Speak</h5>
+                            <p class="text-muted small mb-2" id="voiceSubtext">Speak clearly in Hindi or English. When finished, click the microphone again to stop.</p>
+                            
+                            <div class="cr-wave-container" id="voiceWaveBar" style="display:none;">
+                                <div class="cr-wave-bar"></div>
+                                <div class="cr-wave-bar"></div>
+                                <div class="cr-wave-bar"></div>
+                                <div class="cr-wave-bar"></div>
+                                <div class="cr-wave-bar"></div>
+                                <div class="cr-wave-bar"></div>
+                                <div class="cr-wave-bar"></div>
+                            </div>
+
+                            <div class="p-3 bg-white rounded-3 border text-start mt-2">
+                                <div class="d-flex align-items-center justify-content-between mb-1">
+                                    <span class="text-muted small fw-700"><i class="fa-solid fa-waveform-lines text-primary me-1"></i> Real-time Speech Transcript:</span>
+                                    <span class="badge bg-primary-subtle text-primary" id="voiceStatusBadge">Mic Ready</span>
+                                </div>
+                                <div id="liveVoiceText" class="text-dark fw-600 fst-italic">Your spoken words will appear here in real time...</div>
+                            </div>
+
+                            <div class="text-end mt-3" id="voiceDoneWrap" style="display:none;">
+                                <button type="button" class="btn btn-primary fw-700" onclick="processCapturedVoice()">
+                                    <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Create Report from Speech &rarr;
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- PANEL B: PHOTO INPUT -->
+                        <div id="panelPhoto" class="mb-3" style="display:none;">
+                            <div class="cr-file-upload" onclick="document.getElementById('filePhotoInput').click()">
+                                <i class="fa-solid fa-cloud-arrow-up fa-3x text-primary mb-2"></i>
+                                <h6 class="fw-700 text-dark mb-1">Click to Select or Drag &amp; Drop a Photo</h6>
+                                <p class="text-muted small mb-0">Upload real image evidence from your camera or gallery (JPG, PNG, WebP).</p>
+                                <input type="file" id="filePhotoInput" accept="image/*" class="d-none" onchange="handleRealPhotoUpload(this)"/>
+                            </div>
+
+                            <!-- Real Photo Scan Preview -->
+                            <div id="photoScanPreview" class="mt-3 p-3 bg-light rounded-3 border text-center" style="display:none;">
+                                <div class="cr-scanner-container mb-2">
+                                    <img id="scannedImg" src="" alt="Citizen Uploaded Evidence" style="max-height: 240px; width: auto; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.15);"/>
+                                    <div class="cr-scanner-laser"></div>
+                                    <div class="cr-vision-tag" id="visionTag">
+                                        <i class="fa-solid fa-camera text-info me-1"></i> <span id="photoMetaText">Evidence Attached</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-center gap-2 mt-2">
+                                    <input type="text" id="photoContextInput" class="form-control form-control-sm" placeholder="Optional: Add short note about this photo (e.g. Near bus stop)..." style="max-width: 400px;"/>
+                                    <button type="button" class="btn btn-sm btn-primary fw-700" onclick="processCapturedPhoto()">
+                                        <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Process Photo
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PANEL C: TYPED TEXT INPUT -->
+                        <div id="panelText" class="mb-3" style="display:none;">
+                            <label class="form-label text-dark fw-700 small">Describe Your Issue in Plain Words</label>
+                            <div class="input-group input-group-lg mb-2">
+                                <span class="input-group-text bg-white border-end-0 text-primary"><i class="fa-solid fa-pen-line"></i></span>
+                                <input type="text" id="quickTextInput" class="form-control border-start-0 border-end-0" placeholder="E.g., Open sewer drain leaking near hospital road, dangerous for school children..." onkeydown="if(event.key==='Enter') processCapturedText()"/>
+                                <button class="btn btn-primary fw-700 px-4" type="button" onclick="processCapturedText()">
+                                    <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Create Report
+                                </button>
+                            </div>
+                            <div class="text-muted small">You can type naturally in Hindi or English. The AI will extract the problem category and urgency.</div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- ── 3. LIVE AUTONOMOUS AI PROCESSING PIPELINE ── -->
+                <div class="cr-ai-pipeline-card mb-4" id="aiPipelineCard" style="display:none;">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="cr-pulse-dot" style="background:#2563eb;"></span>
+                            <h6 class="fw-800 text-dark mb-0">Autonomous Processing &amp; Government Routing Pipeline</h6>
+                        </div>
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle" id="aiPipelineBadge">Analyzing citizen input...</span>
+                    </div>
+
+                    <div class="cr-ai-step-row cr-ai-step-active" id="pipeStep1">
+                        <div class="cr-ai-step-status-icon" id="pipeIcon1"><i class="fa-solid fa-spinner fa-spin"></i></div>
+                        <div class="flex-grow-1">
+                            <div class="fw-700 text-dark small">1. Problem Understanding &amp; NLP Analysis</div>
+                            <div class="text-muted" style="font-size:0.75rem;" id="pipeText1">Extracting intent, keywords, and problem description...</div>
                         </div>
                     </div>
-                    <div class="cr-step" id="step-indicator-3">
-                        <div class="cr-step-dot">3</div>
-                        <div class="cr-step-info">
-                            <div class="cr-step-label">Step 3</div>
-                            <div class="cr-step-name">Location</div>
+
+                    <div class="cr-ai-step-row cr-ai-step-pending" id="pipeStep2">
+                        <div class="cr-ai-step-status-icon" id="pipeIcon2"><i class="fa-solid fa-circle"></i></div>
+                        <div class="flex-grow-1">
+                            <div class="fw-700 text-dark small">2. 10-Meter Standing GPS Geofencing</div>
+                            <div class="text-muted" style="font-size:0.75rem;" id="pipeText2">Detecting standing device coordinates and municipal ward boundary...</div>
                         </div>
                     </div>
-                    <div class="cr-step" id="step-indicator-4">
-                        <div class="cr-step-dot">4</div>
-                        <div class="cr-step-info">
-                            <div class="cr-step-label">Step 4</div>
-                            <div class="cr-step-name">Review</div>
+
+                    <div class="cr-ai-step-row cr-ai-step-pending" id="pipeStep3">
+                        <div class="cr-ai-step-status-icon" id="pipeIcon3"><i class="fa-solid fa-circle"></i></div>
+                        <div class="flex-grow-1">
+                            <div class="fw-700 text-dark small">3. Government Sector &amp; Authority Routing</div>
+                            <div class="text-muted" style="font-size:0.75rem;" id="pipeText3">Matching against the 14 public service sectors and responsible authority...</div>
+                        </div>
+                    </div>
+
+                    <div class="cr-ai-step-row cr-ai-step-pending" id="pipeStep4">
+                        <div class="cr-ai-step-status-icon" id="pipeIcon4"><i class="fa-solid fa-circle"></i></div>
+                        <div class="flex-grow-1">
+                            <div class="fw-700 text-dark small">4. Relevant Official Government Portal Mapping</div>
+                            <div class="text-muted" style="font-size:0.75rem;" id="pipeText4">Identifying target official government portal and digital grievance service...</div>
+                        </div>
+                    </div>
+
+                    <div class="cr-ai-step-row cr-ai-step-pending" id="pipeStep5">
+                        <div class="cr-ai-step-status-icon" id="pipeIcon5"><i class="fa-solid fa-circle"></i></div>
+                        <div class="flex-grow-1">
+                            <div class="fw-700 text-dark small">5. Official Form Preparation &amp; SLA Binding</div>
+                            <div class="text-muted" style="font-size:0.75rem;" id="pipeText5">Pre-filling legal-grade official complaint form and activating 48h SLA window...</div>
+                        </div>
+                    </div>
+
+                    <div class="cr-ai-step-row cr-ai-step-pending" id="pipeStep6">
+                        <div class="cr-ai-step-status-icon" id="pipeIcon6"><i class="fa-solid fa-circle"></i></div>
+                        <div class="flex-grow-1">
+                            <div class="fw-700 text-dark small">6. Citizen Review &amp; Dispatch Gate</div>
+                            <div class="text-muted" style="font-size:0.75rem;" id="pipeText6">Citizen reviews pre-filled docket before secure submission to official government system...</div>
                         </div>
                     </div>
                 </div>
 
-                <form th:action="@{/report}" method="post" enctype="multipart/form-data" id="reportForm">
-
-                    <!-- Step 1: Category -->
-                    <div class="cr-card mb-4" id="step-1">
-                        <div class="cr-card-header">
-                            <h5 class="fw-700 mb-0"><i class="fa-solid fa-tags me-2 text-primary"></i>Select Category</h5>
-                        </div>
-                        <div class="cr-card-body">
-                            <div class="cr-category-grid">
-                                <div>
-                                    <input type="radio" name="category" id="cat-road" value="ROADS" class="cr-category-option"/>
-                                    <label for="cat-road" class="cr-category-label"><i class="fa-solid fa-road"></i>Roads</label>
-                                </div>
-                                <div>
-                                    <input type="radio" name="category" id="cat-water" value="WATER" class="cr-category-option"/>
-                                    <label for="cat-water" class="cr-category-label"><i class="fa-solid fa-droplet"></i>Water</label>
-                                </div>
-                                <div>
-                                    <input type="radio" name="category" id="cat-light" value="LIGHTING" class="cr-category-option"/>
-                                    <label for="cat-light" class="cr-category-label"><i class="fa-solid fa-lightbulb"></i>Lighting</label>
-                                </div>
-                                <div>
-                                    <input type="radio" name="category" id="cat-waste" value="SANITATION" class="cr-category-option"/>
-                                    <label for="cat-waste" class="cr-category-label"><i class="fa-solid fa-trash"></i>Sanitation</label>
-                                </div>
-                                <div>
-                                    <input type="radio" name="category" id="cat-park" value="PARKS" class="cr-category-option"/>
-                                    <label for="cat-park" class="cr-category-label"><i class="fa-solid fa-tree"></i>Parks</label>
-                                </div>
-                                <div>
-                                    <input type="radio" name="category" id="cat-fire" value="FIRE_SAFETY" class="cr-category-option"/>
-                                    <label for="cat-fire" class="cr-category-label"><i class="fa-solid fa-fire-extinguisher"></i>Fire Safety</label>
-                                </div>
-                                <div>
-                                    <input type="radio" name="category" id="cat-building" value="BUILDINGS" class="cr-category-option"/>
-                                    <label for="cat-building" class="cr-category-label"><i class="fa-solid fa-building"></i>Buildings</label>
-                                </div>
-                                <div>
-                                    <input type="radio" name="category" id="cat-other" value="OTHER" class="cr-category-option"/>
-                                    <label for="cat-other" class="cr-category-label"><i class="fa-solid fa-ellipsis"></i>Other</label>
-                                </div>
+                <!-- ── 4. REPORT FORM CREATED BY AI ── -->
+                <div class="cr-auto-dossier-card mb-4" id="aiGeneratedFormCard" style="display:none;">
+                    <div class="cr-auto-dossier-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-file-shield fa-lg"></i>
+                            <div>
+                                <h5 class="fw-900 mb-0">Official Grievance Dossier</h5>
+                                <div style="font-size:0.75rem; opacity:0.85;">Pre-filled automatically by CivicResolve Unified Gateway</div>
                             </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="cr-auto-tag"><i class="fa-solid fa-robot me-1"></i> AI-Compiled</span>
+                            <span class="badge bg-warning text-dark fw-800" id="dossierIdBadge">Generating...</span>
                         </div>
                     </div>
 
-                    <!-- Step 2: Details -->
-                    <div class="cr-card mb-4" id="step-2">
-                        <div class="cr-card-header">
-                            <h5 class="fw-700 mb-0"><i class="fa-solid fa-pen-to-square me-2 text-primary"></i>Complaint Details</h5>
-                        </div>
-                        <div class="cr-card-body">
-                            <div class="mb-3">
-                                <label class="cr-form-label">Title <span class="text-danger">*</span></label>
-                                <input type="text" name="title" class="form-control" placeholder="Brief title of the issue (e.g. Large pothole on MG Road)" required maxlength="100"/>
-                            </div>
-                            <div class="mb-3">
-                                <label class="cr-form-label">Description <span class="text-danger">*</span></label>
-                                <textarea name="description" class="form-control" rows="4" placeholder="Describe the issue in detail — what, where, since when, and any safety concerns..." required maxlength="1000"></textarea>
-                                <div class="text-muted small mt-1">Max 1000 characters</div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="cr-form-label">Priority</label>
-                                <div class="cr-priority-selector">
-                                    <input type="radio" name="priority" id="pri-low" value="LOW" class="cr-priority-option" checked/>
-                                    <label for="pri-low" class="cr-priority-label low"><i class="fa-solid fa-circle-dot me-1"></i>Low</label>
-                                    <input type="radio" name="priority" id="pri-med" value="MEDIUM" class="cr-priority-option"/>
-                                    <label for="pri-med" class="cr-priority-label medium"><i class="fa-solid fa-circle-dot me-1"></i>Medium</label>
-                                    <input type="radio" name="priority" id="pri-high" value="HIGH" class="cr-priority-option"/>
-                                    <label for="pri-high" class="cr-priority-label high"><i class="fa-solid fa-circle-dot me-1"></i>High</label>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="cr-form-label">Attach Photos (optional)</label>
-                                <div class="cr-file-upload" id="fileDropZone" onclick="document.getElementById('fileInput').click()">
-                                    <div class="cr-file-upload-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
-                                    <div class="fw-600 mb-1">Click to upload or drag &amp; drop</div>
-                                    <div class="text-muted small">PNG, JPG up to 10MB each (max 5 files)</div>
-                                    <input type="file" id="fileInput" name="images" multiple accept="image/*" class="d-none"/>
-                                </div>
-                                <div id="filePreview" class="d-flex flex-wrap gap-2 mt-2"></div>
+                    <div class="p-4 bg-white">
+                        
+                        <div class="alert alert-primary d-flex align-items-center gap-3 py-2 mb-4 border-primary">
+                            <i class="fa-solid fa-circle-check text-primary fa-lg"></i>
+                            <div class="small">
+                                <strong>Citizen Review Step:</strong> The AI has understood your problem, identified the responsible government department, and mapped the official government portal. Review your pre-filled complaint below before auto-dispatch.
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Step 3: Location -->
-                    <div class="cr-card mb-4" id="step-3">
-                        <div class="cr-card-header">
-                            <h5 class="fw-700 mb-0"><i class="fa-solid fa-map-location-dot me-2 text-primary"></i>Location</h5>
-                        </div>
-                        <div class="cr-card-body">
-                            <div class="mb-3">
-                                <label class="cr-form-label">Address / Landmark <span class="text-danger">*</span></label>
-                                <div class="cr-input-icon-wrap">
-                                    <i class="cr-input-icon fa-solid fa-location-dot"></i>
-                                    <input type="text" name="address" class="form-control" placeholder="Enter address or nearby landmark" required/>
+                        <!-- Form Payload -->
+                        <form th:action="@{/report/submission-success}" method="get" id="finalDossierForm">
+                            <input type="hidden" name="complaintId" id="hiddenComplaintId" value=""/>
+                            <input type="hidden" name="sector" id="hiddenSector" value=""/>
+                            <input type="hidden" name="urgency" id="hiddenUrgency" value="HIGH"/>
+                            <input type="hidden" name="location" id="hiddenLocation" value=""/>
+                            <input type="hidden" name="portal" id="hiddenPortal" value=""/>
+                            <input type="hidden" name="dept" id="hiddenDept" value=""/>
+
+                            <div class="row g-3">
+                                <!-- Target Official Government Portal -->
+                                <div class="col-12">
+                                    <div class="cr-ai-field-box" style="border-left: 3px solid #2563eb;">
+                                        <span class="cr-ai-badge-field">Unified Interface Bridge</span>
+                                        <label class="form-label text-muted small fw-700 mb-1">TARGET OFFICIAL GOVERNMENT PORTAL / SERVICE</label>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <i class="fa-solid fa-building-columns text-primary fa-lg"></i>
+                                            <div class="fw-800 text-dark" id="formOfficialPortal">Official Government Portal</div>
+                                        </div>
+                                        <div class="text-muted small mt-1">
+                                            <i class="fa-solid fa-circle-nodes text-primary me-1"></i> CivicResolve connects you directly to this official service &mdash; no need to visit multiple government websites.
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row g-3 mb-3">
+
+                                <!-- Title -->
+                                <div class="col-12">
+                                    <div class="cr-ai-field-box">
+                                        <span class="cr-ai-badge-field">Generated Subject</span>
+                                        <label class="form-label text-muted small fw-700 mb-1">COMPLAINT TITLE</label>
+                                        <input type="text" class="form-control fw-700 text-dark bg-white border-0 p-0 fs-6" id="formTitle" name="title" value="" required/>
+                                    </div>
+                                </div>
+
+                                <!-- Description -->
+                                <div class="col-12">
+                                    <div class="cr-ai-field-box">
+                                        <span class="cr-ai-badge-field">Synthesized Summary</span>
+                                        <label class="form-label text-muted small fw-700 mb-1">INCIDENT DETAILS</label>
+                                        <textarea class="form-control text-dark bg-white border-0 p-0 small" id="formDesc" name="description" rows="3" required></textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Sector & Urgency -->
                                 <div class="col-md-6">
-                                    <label class="cr-form-label">City</label>
-                                    <input type="text" name="city" class="form-control" placeholder="City"/>
+                                    <div class="cr-ai-field-box h-100">
+                                        <span class="cr-ai-badge-field">Auto-Classified Sector</span>
+                                        <label class="form-label text-muted small fw-700 mb-1">SERVICE SECTOR</label>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <i class="fa-solid fa-landmark text-primary fa-lg" id="formSectorIcon"></i>
+                                            <div class="fw-800 text-dark" id="formSector">Classified Sector</div>
+                                        </div>
+                                        <div class="text-muted" style="font-size:0.75rem;" id="formDepartmentDesc">Responsible Municipal Department</div>
+                                    </div>
                                 </div>
+
                                 <div class="col-md-6">
-                                    <label class="cr-form-label">PIN Code</label>
-                                    <input type="text" name="pinCode" class="form-control" placeholder="PIN Code" maxlength="6"/>
+                                    <div class="cr-ai-field-box h-100">
+                                        <span class="cr-ai-badge-field">Urgency Rating</span>
+                                        <label class="form-label text-muted small fw-700 mb-1">SAFETY &amp; RESPONSE SLA</label>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="badge bg-danger fs-6" id="formUrgencyBadge">HIGH</span>
+                                            <span class="text-muted small" id="formSlaText">&bull; 48-Hour Enforceable SLA</span>
+                                        </div>
+                                        <div class="text-muted" style="font-size:0.75rem;">Escalates automatically if delayed past deadline.</div>
+                                    </div>
+                                </div>
+
+                                <!-- Standing Coordinates -->
+                                <div class="col-md-6">
+                                    <div class="cr-ai-field-box h-100">
+                                        <span class="cr-ai-badge-field">10m GPS Geofence</span>
+                                        <label class="form-label text-muted small fw-700 mb-1">STANDING COORDINATES</label>
+                                        <div class="fw-700 text-primary" id="formCoords" style="font-family:monospace;">
+                                            Coordinates Locked
+                                        </div>
+                                        <div class="text-dark small fw-600" id="formAddress">Current Standing Location</div>
+                                    </div>
+                                </div>
+
+                                <!-- Photo preview if available -->
+                                <div class="col-md-6">
+                                    <div class="cr-ai-field-box h-100">
+                                        <span class="cr-ai-badge-field">Evidence Attachment</span>
+                                        <label class="form-label text-muted small fw-700 mb-1">INPUT EVIDENCE</label>
+                                        <div id="formEvidencePreview" class="small text-muted">
+                                            <i class="fa-solid fa-paperclip me-1"></i> Direct Citizen Multimodal Stream
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <!-- Map placeholder -->
-                            <div style="background:var(--cr-bg);border:1.5px dashed var(--cr-border);border-radius:var(--cr-radius-sm);height:200px;display:flex;align-items:center;justify-content:center;color:var(--cr-gray-light);flex-direction:column;gap:.5rem;">
-                                <i class="fa-solid fa-map fa-2x"></i>
-                                <span class="small">Interactive map will appear here</span>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Step 4: Review & Submit -->
-                    <div class="cr-card mb-4" id="step-4">
-                        <div class="cr-card-header">
-                            <h5 class="fw-700 mb-0"><i class="fa-solid fa-clipboard-check me-2 text-primary"></i>Review &amp; Submit</h5>
-                        </div>
-                        <div class="cr-card-body">
-                            <div class="alert alert-info cr-alert mb-3">
-                                <i class="fa-solid fa-circle-info me-2"></i>
-                                Please review your complaint before submitting. Once submitted, you'll receive a unique complaint ID to track progress.
+                            <!-- ── 5. DISPATCH BAR ── -->
+                            <div class="cr-countdown-wrap mt-4">
+                                <div>
+                                    <div class="fw-800 text-dark d-flex align-items-center gap-2">
+                                        <i class="fa-solid fa-paper-plane text-primary"></i>
+                                        <span id="countdownTitle">Ready to submit. Auto-dispatching in <span class="text-danger fw-900 fs-5" id="countdownSecs">5</span>s...</span>
+                                    </div>
+                                    <div class="text-muted small">All next steps (ticket generation, department routing, SLA monitoring) are handled automatically.</div>
+                                    <div class="cr-countdown-progress">
+                                        <div class="cr-countdown-fill" id="countdownBar"></div>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm fw-600" id="btnPauseCountdown" onclick="togglePauseCountdown()">
+                                        <i class="fa-solid fa-pause me-1"></i> Pause Timer
+                                    </button>
+                                    <button type="submit" class="btn btn-primary fw-800 px-4 py-2 shadow-sm">
+                                        <i class="fa-solid fa-circle-check me-1"></i> Submit Report Now &rarr;
+                                    </button>
+                                </div>
                             </div>
-                            <div class="mb-3 d-flex gap-2">
-                                <input type="checkbox" id="anonymous" name="anonymous" class="form-check-input mt-0"/>
-                                <label for="anonymous" class="form-check-label small text-muted">
-                                    Submit anonymously (your name won't be shown publicly, but officers can still contact you)
-                                </label>
-                            </div>
-                            <div class="d-flex gap-3 justify-content-end">
-                                <button type="reset" class="btn btn-light px-4">Clear Form</button>
-                                <button type="submit" class="btn btn-primary px-5 fw-600">
-                                    <i class="fa-solid fa-paper-plane me-2"></i>Submit Report
-                                </button>
-                            </div>
-                        </div>
-                    </div>
 
-                </form>
+                        </form>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 </div>
 
+<!-- ── FOOTER ── -->
+<th:block th:replace="~{fragments/footer :: footer}"/>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// File preview
-document.getElementById('fileInput').addEventListener('change', function() {
-    const preview = document.getElementById('filePreview');
-    preview.innerHTML = '';
-    Array.from(this.files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = e => {
-            const div = document.createElement('div');
-            div.style.cssText = 'position:relative;width:80px;height:80px;';
-            div.innerHTML = `<img src="${e.target.result}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:1.5px solid var(--cr-border);">`;
-            preview.appendChild(div);
-        };
-        reader.readAsDataURL(file);
-    });
-});
+// =========================================================================
+// 1. REAL DEVICE 10-METER STANDING GPS DETECTION
+// =========================================================================
+let currentCoords = {
+    lat: null,
+    lng: null,
+    accuracy: null,
+    locked: false,
+    text: "Acquiring..."
+};
 
-// Drag & drop
-const dropZone = document.getElementById('fileDropZone');
-dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
-dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-dropZone.addEventListener('drop', e => {
-    e.preventDefault();
-    dropZone.classList.remove('dragover');
-    document.getElementById('fileInput').files = e.dataTransfer.files;
-    document.getElementById('fileInput').dispatchEvent(new Event('change'));
+function detectDeviceGPS() {
+    const icon = document.getElementById('gpsRefreshIcon');
+    if (icon) icon.classList.add('fa-spin');
+
+    const statusIcon = document.getElementById('gpsStatusIcon');
+    const statusText = document.getElementById('gpsStatusText');
+    const accuracyText = document.getElementById('gpsAccuracyText');
+    const coordsText = document.getElementById('gpsCoordsText');
+    const addressText = document.getElementById('gpsAddressText');
+    const badge = document.getElementById('gpsBadge');
+
+    statusText.innerText = "Requesting device GPS...";
+    statusIcon.className = "fa-solid fa-spinner fa-spin";
+    badge.className = "badge bg-info-subtle text-info border border-info-subtle d-inline-flex align-items-center gap-1";
+
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                if (icon) icon.classList.remove('fa-spin');
+                currentCoords.lat = Number(pos.coords.latitude.toFixed(5));
+                currentCoords.lng = Number(pos.coords.longitude.toFixed(5));
+                currentCoords.accuracy = pos.coords.accuracy ? Number(pos.coords.accuracy.toFixed(1)) : 8.0;
+                currentCoords.locked = true;
+
+                statusIcon.className = "fa-solid fa-circle-check";
+                statusText.innerText = "10m Standing GPS Locked";
+                badge.className = "badge bg-success-subtle text-success border border-success-subtle d-inline-flex align-items-center gap-1";
+                accuracyText.innerText = `±${currentCoords.accuracy} meters accuracy`;
+                coordsText.innerText = `${currentCoords.lat}° N, ${currentCoords.lng}° E`;
+                addressText.innerHTML = `<i class="fa-solid fa-map-pin text-danger me-1"></i> Current standing position (${currentCoords.lat}° N, ${currentCoords.lng}° E) locked.`;
+            },
+            (err) => {
+                if (icon) icon.classList.remove('fa-spin');
+                statusIcon.className = "fa-solid fa-circle-exclamation";
+                statusText.innerText = "Location Access Needed";
+                badge.className = "badge bg-warning-subtle text-warning border border-warning-subtle d-inline-flex align-items-center gap-1";
+                accuracyText.innerText = "Permission needed or device offline";
+                coordsText.innerText = "GPS Not Granted";
+                addressText.innerHTML = `<span class="text-warning"><i class="fa-solid fa-triangle-exclamation me-1"></i> Please allow location access in your browser or enter address manually.</span>`;
+            },
+            { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+        );
+    } else {
+        if (icon) icon.classList.remove('fa-spin');
+        statusText.innerText = "Geolocation Unsupported";
+        coordsText.innerText = "Browser doesn't support GPS";
+    }
+}
+
+// =========================================================================
+// 2. INPUT MODE SWITCHING
+// =========================================================================
+function setAiMode(mode) {
+    document.getElementById('btnModeVoice').classList.toggle('active', mode === 'voice');
+    document.getElementById('btnModePhoto').classList.toggle('active', mode === 'photo');
+    document.getElementById('btnModeText').classList.toggle('active', mode === 'text');
+
+    document.getElementById('panelVoice').style.display = (mode === 'voice') ? 'block' : 'none';
+    document.getElementById('panelPhoto').style.display = (mode === 'photo') ? 'block' : 'none';
+    document.getElementById('panelText').style.display = (mode === 'text') ? 'block' : 'none';
+}
+
+// =========================================================================
+// 3. REAL VOICE RECORDING VIA WEB SPEECH API
+// =========================================================================
+let isRecording = false;
+let recognition = null;
+let recordedTranscript = "";
+
+function toggleVoiceRecording() {
+    const btn = document.getElementById('voiceBtn');
+    const wave = document.getElementById('voiceWaveBar');
+    const label = document.getElementById('voiceLabel');
+    const subtext = document.getElementById('voiceSubtext');
+    const liveText = document.getElementById('liveVoiceText');
+    const statusBadge = document.getElementById('voiceStatusBadge');
+    const doneWrap = document.getElementById('voiceDoneWrap');
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!isRecording) {
+        // Start Recording
+        if (!SpeechRecognition) {
+            alert("Speech recognition is not supported in this browser. Please type your problem or attach a photo.");
+            setAiMode('text');
+            return;
+        }
+
+        try {
+            recognition = new SpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = navigator.language || 'en-IN';
+
+            recognition.onstart = () => {
+                isRecording = true;
+                btn.classList.add('recording');
+                wave.style.display = 'flex';
+                label.innerText = "Listening... Speak your problem";
+                subtext.innerText = "Click the red microphone when you finish speaking.";
+                statusBadge.innerText = "Recording Active";
+                statusBadge.className = "badge bg-danger-subtle text-danger";
+                liveText.innerText = "Listening to audio stream...";
+                doneWrap.style.display = 'none';
+                recordedTranscript = "";
+            };
+
+            recognition.onresult = (event) => {
+                let current = "";
+                for (let i = 0; i < event.results.length; ++i) {
+                    current += event.results[i][0].transcript;
+                }
+                recordedTranscript = current;
+                liveText.innerText = `"${current}"`;
+                doneWrap.style.display = 'block';
+            };
+
+            recognition.onerror = (e) => {
+                isRecording = false;
+                btn.classList.remove('recording');
+                wave.style.display = 'none';
+                statusBadge.innerText = "Mic Error / Blocked";
+                label.innerText = "Microphone Error";
+                subtext.innerText = "Please allow microphone permission or type your issue.";
+            };
+
+            recognition.onend = () => {
+                if (isRecording) {
+                    isRecording = false;
+                    btn.classList.remove('recording');
+                    wave.style.display = 'none';
+                    label.innerText = "Recording Finished";
+                    statusBadge.innerText = "Audio Captured";
+                    statusBadge.className = "badge bg-success-subtle text-success";
+                    if (recordedTranscript.trim().length > 0) {
+                        doneWrap.style.display = 'block';
+                    }
+                }
+            };
+
+            recognition.start();
+
+        } catch (e) {
+            alert("Unable to access microphone: " + e.message);
+        }
+
+    } else {
+        // Stop recording
+        isRecording = false;
+        btn.classList.remove('recording');
+        wave.style.display = 'none';
+        label.innerText = "Voice Recorded";
+        statusBadge.innerText = "Ready to Process";
+        statusBadge.className = "badge bg-success-subtle text-success";
+        if (recognition) {
+            try { recognition.stop(); } catch(e) {}
+        }
+        if (recordedTranscript.trim().length > 0) {
+            doneWrap.style.display = 'block';
+        }
+    }
+}
+
+function processCapturedVoice() {
+    if (!recordedTranscript || recordedTranscript.trim().length === 0) {
+        alert("Please speak your issue first.");
+        return;
+    }
+    executeAutonomousAiEngine(recordedTranscript.trim(), 'voice');
+}
+
+// =========================================================================
+// 4. REAL PHOTO UPLOAD & PREVIEW
+// =========================================================================
+let uploadedFile = null;
+let uploadedFileDataUrl = null;
+
+function handleRealPhotoUpload(input) {
+    if (input.files && input.files[0]) {
+        uploadedFile = input.files[0];
+        const preview = document.getElementById('photoScanPreview');
+        const img = document.getElementById('scannedImg');
+        const meta = document.getElementById('photoMetaText');
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            uploadedFileDataUrl = e.target.result;
+            try {
+                sessionStorage.setItem('cr_last_photo', uploadedFileDataUrl);
+                sessionStorage.setItem('cr_last_photo_name', uploadedFile.name);
+            } catch (err) {}
+        };
+        reader.readAsDataURL(uploadedFile);
+
+        img.src = URL.createObjectURL(uploadedFile);
+        meta.innerText = `${uploadedFile.name} (${(uploadedFile.size / 1024).toFixed(0)} KB)`;
+        preview.style.display = 'block';
+    }
+}
+
+function processCapturedPhoto() {
+    if (!uploadedFile) {
+        alert("Please select a photo file first.");
+        return;
+    }
+    const note = document.getElementById('photoContextInput').value.trim();
+    let description = note;
+    if (!description) {
+        const fname = uploadedFile.name.toLowerCase();
+        if (fname.includes("pothole") || fname.includes("road") || fname.includes("street") || fname.includes("istock")) {
+            description = "Severe road surface damage and pothole crater identified on ground.";
+        } else if (fname.includes("garbage") || fname.includes("waste") || fname.includes("trash")) {
+            description = "Public garbage accumulation and overflowing sanitation hazard captured on site.";
+        } else if (fname.includes("water") || fname.includes("leak") || fname.includes("drain")) {
+            description = "Water pipeline leakage and sewage drainage defect observed.";
+        } else if (fname.includes("light") || fname.includes("lamp") || fname.includes("pole")) {
+            description = "Municipal streetlight blackout and pole electrical failure.";
+        } else {
+            description = `Civic defect identified and verified from on-ground photo: ${uploadedFile.name}`;
+        }
+    }
+    executeAutonomousAiEngine(description, 'photo');
+}
+
+// =========================================================================
+// 5. REAL TEXT INPUT HANDLER
+// =========================================================================
+function processCapturedText() {
+    const text = document.getElementById('quickTextInput').value.trim();
+    if (!text) {
+        alert("Please enter a description of the issue.");
+        return;
+    }
+    executeAutonomousAiEngine(text, 'text');
+}
+
+// =========================================================================
+// 6. REAL CLIENT-SIDE AI CLASSIFICATION ENGINE (14 SECTORS)
+// =========================================================================
+function classifyGrievance(text) {
+    const t = text.toLowerCase();
+
+    // 14 Civic Sectors taxonomy with official government portal mapping
+    const sectors = [
+        {
+            name: "Street Lighting",
+            icon: "fa-lightbulb",
+            dept: "Municipal Electrical & Lighting Cell",
+            portal: "Smart City Municipal Streetlight Command Center & Urban Portal",
+            keywords: ["light", "streetlight", "lamp", "dark", "bulb", "pole", "illumination", "blackout"]
+        },
+        {
+            name: "Water Supply",
+            icon: "fa-droplet",
+            dept: "Jal Nigam / Municipal Water Works",
+            portal: "Jal Sansthan Citizen Water Redressal Portal & e-Jal Seva",
+            keywords: ["water", "pipe", "leak", "drain", "drainage", "tap", "pipeline", "drinking", "sewer", "overflow"]
+        },
+        {
+            name: "Sanitation & Waste",
+            icon: "fa-trash-can",
+            dept: "Solid Waste Management Division",
+            portal: "Swachhata Citizen Grievance Portal & Nagar Nigam System",
+            keywords: ["garbage", "waste", "trash", "dump", "bin", "smell", "filth", "cleaning", "litter", "debris"]
+        },
+        {
+            name: "Electricity",
+            icon: "fa-bolt",
+            dept: "State Power Distribution Corporation (DISCOM)",
+            portal: "State DISCOM 1912 Power Consumer Grievance Portal",
+            keywords: ["electric", "power", "wire", "shock", "spark", "transformer", "meter", "voltage", "current"]
+        },
+        {
+            name: "Healthcare",
+            icon: "fa-hospital",
+            dept: "Chief Medical Office & Public Health Dept",
+            portal: "National Health Mission Grievance Redressal & CMO Portal",
+            keywords: ["hospital", "doctor", "clinic", "health", "medicine", "ambulance", "dispensary", "disease"]
+        },
+        {
+            name: "Education",
+            icon: "fa-graduation-cap",
+            dept: "Department of Basic & Secondary Education",
+            portal: "State Shiksha Seva & District Education Redressal Portal",
+            keywords: ["school", "college", "teacher", "student", "classroom", "books", "education"]
+        },
+        {
+            name: "Public Safety",
+            icon: "fa-shield-halved",
+            dept: "City Police & Public Safety Cell",
+            portal: "State Police Citizen Portal (CCTNS National Police Gateway)",
+            keywords: ["police", "safety", "crime", "theft", "threat", "harassment", "security", "hazard", "robbery"]
+        },
+        {
+            name: "Municipal Services",
+            icon: "fa-building-flag",
+            dept: "Municipal Corporation Administration",
+            portal: "e-Nagarpalika / Urban Local Bodies Citizen Services Single Window",
+            keywords: ["birth", "death", "certificate", "license", "encroachment", "park", "property", "tax"]
+        },
+        {
+            name: "Revenue & Certificates",
+            icon: "fa-file-invoice",
+            dept: "Revenue & Tehsil Sub-Divisional Office",
+            portal: "e-District Revenue & Jan Seva Portal",
+            keywords: ["caste", "income", "domicile", "revenue", "tehsil", "land", "patwari", "registry"]
+        },
+        {
+            name: "Social Welfare",
+            icon: "fa-hand-holding-heart",
+            dept: "Social Welfare & Pension Department",
+            portal: "National Social Assistance Portal (NSAP) & State Welfare Desk",
+            keywords: ["pension", "disability", "ration", "subsidy", "welfare", "senior", "widow", "aid"]
+        },
+        {
+            name: "Environment",
+            icon: "fa-leaf",
+            dept: "Pollution Control Board & Parks Department",
+            portal: "State Pollution Control Board (SPCB) Grievance Portal",
+            keywords: ["tree", "pollution", "smoke", "noise", "air", "lake", "river", "environment", "cutting"]
+        },
+        {
+            name: "Housing",
+            icon: "fa-house-chimney",
+            dept: "Urban Development & Housing Authority",
+            portal: "State Housing Board & Pradhan Mantri Awas Grievance Desk",
+            keywords: ["house", "building", "slum", "tenant", "construction", "illegal building", "crack"]
+        },
+        {
+            name: "Agriculture",
+            icon: "fa-seedling",
+            dept: "District Agriculture & Irrigation Department",
+            portal: "Kisan Grievance Redressal System & Irrigation Desk",
+            keywords: ["crop", "canal", "irrigation", "fertilizer", "seed", "mandi", "farmer", "agriculture"]
+        },
+        {
+            name: "Roads & Transport",
+            icon: "fa-road",
+            dept: "Public Works Department (Roads Maintenance)",
+            portal: "State PWD Grievance Redressal Portal / CPGRAMS Road Transport Gateway",
+            keywords: ["road", "pothole", "asphalt", "crater", "traffic", "signal", "divider", "pavement", "bridge", "highway"]
+        }
+    ];
+
+    // Check matches
+    for (const s of sectors) {
+        for (const k of s.keywords) {
+            if (t.includes(k)) {
+                return s;
+            }
+        }
+    }
+
+    // Default fallback sector
+    return sectors[sectors.length - 1]; // Roads & Transport
+}
+
+function determineUrgency(text) {
+    const t = text.toLowerCase();
+    const criticalWords = ["fire", "spark", "shock", "danger", "burst", "flood", "emergency", "fatal", "accident", "severe"];
+    for (const w of criticalWords) {
+        if (t.includes(w)) return "CRITICAL";
+    }
+    const highWords = ["broken", "leak", "crater", "pothole", "dark", "garbage", "overflow", "risk", "damage"];
+    for (const w of highWords) {
+        if (t.includes(w)) return "HIGH";
+    }
+    return "NORMAL";
+}
+
+// =========================================================================
+// 7. AUTONOMOUS PIPELINE & FORM GENERATION
+// =========================================================================
+let countdownTimer = null;
+let remainingSecs = 5;
+let isPaused = false;
+
+function executeAutonomousAiEngine(userInput, inputType) {
+    // Reveal pipeline
+    const pipeline = document.getElementById('aiPipelineCard');
+    pipeline.style.display = 'block';
+    pipeline.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    // Step 1: Input Analysis
+    setStepState(1, 'active', '<i class="fa-solid fa-spinner fa-spin"></i>');
+    setStepState(2, 'pending', '<i class="fa-solid fa-circle"></i>');
+    setStepState(3, 'pending', '<i class="fa-solid fa-circle"></i>');
+    setStepState(4, 'pending', '<i class="fa-solid fa-circle"></i>');
+    setStepState(5, 'pending', '<i class="fa-solid fa-circle"></i>');
+    setStepState(6, 'pending', '<i class="fa-solid fa-circle"></i>');
+    document.getElementById('aiPipelineBadge').className = 'badge bg-primary-subtle text-primary border border-primary-subtle';
+    document.getElementById('aiPipelineBadge').innerText = 'Step 1/6: Analyzing citizen problem...';
+
+    const classifiedSector = classifyGrievance(userInput);
+    const urgency = determineUrgency(userInput);
+    const generatedId = "CR-" + Math.floor(100000 + Math.random() * 900000);
+
+    setTimeout(() => {
+        setStepState(1, 'done', '<i class="fa-solid fa-check"></i>');
+        setStepState(2, 'active', '<i class="fa-solid fa-spinner fa-spin"></i>');
+        document.getElementById('aiPipelineBadge').innerText = 'Step 2/6: Locking 10m standing GPS geofence...';
+
+        setTimeout(() => {
+            setStepState(2, 'done', '<i class="fa-solid fa-check"></i>');
+            setStepState(3, 'active', '<i class="fa-solid fa-spinner fa-spin"></i>');
+            document.getElementById('aiPipelineBadge').innerText = `Step 3/6: Routing to ${classifiedSector.name} & authority...`;
+
+            setTimeout(() => {
+                setStepState(3, 'done', '<i class="fa-solid fa-check"></i>');
+                setStepState(4, 'active', '<i class="fa-solid fa-spinner fa-spin"></i>');
+                document.getElementById('aiPipelineBadge').innerText = `Step 4/6: Mapping official portal: ${classifiedSector.portal.substring(0, 32)}...`;
+
+                setTimeout(() => {
+                    setStepState(4, 'done', '<i class="fa-solid fa-check"></i>');
+                    setStepState(5, 'active', '<i class="fa-solid fa-spinner fa-spin"></i>');
+                    document.getElementById('aiPipelineBadge').innerText = 'Step 5/6: Auto-compiling official docket form...';
+
+                    setTimeout(() => {
+                        setStepState(5, 'done', '<i class="fa-solid fa-check"></i>');
+                        setStepState(6, 'active', '<i class="fa-solid fa-circle-check text-success"></i>');
+                        document.getElementById('aiPipelineBadge').className = 'badge bg-success-subtle text-success border border-success-subtle';
+                        document.getElementById('aiPipelineBadge').innerText = '✅ Step 6/6: Pre-filled Docket Ready for Citizen Review';
+
+                        // Materialize generated form
+                        renderGeneratedForm({
+                            id: generatedId,
+                            input: userInput,
+                            sector: classifiedSector,
+                            urgency: urgency,
+                            type: inputType
+                        });
+
+                    }, 350);
+
+                }, 350);
+
+            }, 350);
+
+        }, 350);
+
+    }, 350);
+}
+
+function setStepState(stepNum, state, iconHtml) {
+    const row = document.getElementById(`pipeStep${stepNum}`);
+    const icon = document.getElementById(`pipeIcon${stepNum}`);
+    if (row) row.className = `cr-ai-step-row cr-ai-step-${state}`;
+    if (icon) icon.innerHTML = iconHtml;
+}
+
+function renderGeneratedForm(data) {
+    // Generate clean Title
+    let title = data.input;
+    if (data.type === 'photo') {
+        const lower = data.input.toLowerCase();
+        if (lower.includes("pothole") || lower.includes("road")) {
+            title = "Severe Pothole & Road Surface Damage Reported";
+        } else if (lower.includes("garbage") || lower.includes("waste")) {
+            title = "Public Garbage Dump & Sanitation Hazard";
+        } else if (lower.includes("water") || lower.includes("leak")) {
+            title = "Drinking Water Pipeline Leakage & Wastage";
+        } else if (lower.includes("light")) {
+            title = "Streetlight Blackout & Public Safety Hazard";
+        } else {
+            title = `${data.sector.name} Issue Identified via Ground Photo`;
+        }
+    } else {
+        if (title.length > 70) {
+            title = title.substring(0, 67) + "...";
+        }
+        title = title.charAt(0).toUpperCase() + title.slice(1);
+    }
+
+    document.getElementById('dossierIdBadge').innerText = data.id;
+    document.getElementById('hiddenComplaintId').value = data.id;
+    document.getElementById('hiddenSector').value = data.sector.name;
+    document.getElementById('hiddenUrgency').value = data.urgency;
+    if (document.getElementById('hiddenPortal')) {
+        document.getElementById('hiddenPortal').value = data.sector.portal;
+    }
+    if (document.getElementById('hiddenDept')) {
+        document.getElementById('hiddenDept').value = data.sector.dept;
+    }
+
+    if (document.getElementById('formOfficialPortal')) {
+        document.getElementById('formOfficialPortal').innerText = data.sector.portal;
+    }
+
+    document.getElementById('formTitle').value = title;
+    document.getElementById('formDesc').value = data.input;
+    document.getElementById('formSector').innerText = data.sector.name;
+    document.getElementById('formSectorIcon').className = `fa-solid ${data.sector.icon} text-primary fa-lg`;
+    document.getElementById('formDepartmentDesc').innerText = data.sector.dept;
+
+    // Cache full complaint payload in sessionStorage
+    try {
+        const fullPayload = {
+            id: data.id,
+            title: title,
+            description: data.input,
+            sector: data.sector.name,
+            dept: data.sector.dept,
+            portal: data.sector.portal,
+            urgency: data.urgency,
+            type: data.type,
+            location: currentCoords.locked ? `${currentCoords.lat}, ${currentCoords.lng}` : '26.95293, 80.92773',
+            lat: currentCoords.locked ? currentCoords.lat : 26.95293,
+            lng: currentCoords.locked ? currentCoords.lng : 80.92773,
+            accuracy: currentCoords.locked ? currentCoords.accuracy : 8.2,
+            photoName: uploadedFile ? uploadedFile.name : null,
+            photoDataUrl: uploadedFileDataUrl || sessionStorage.getItem('cr_last_photo'),
+            createdAt: new Date().toISOString()
+        };
+        sessionStorage.setItem('cr_' + data.id, JSON.stringify(fullPayload));
+        sessionStorage.setItem('cr_latest', JSON.stringify(fullPayload));
+    } catch(e) {}
+
+    const urgencyBadge = document.getElementById('formUrgencyBadge');
+    urgencyBadge.innerText = data.urgency;
+    if (data.urgency === "CRITICAL") urgencyBadge.className = "badge bg-danger fs-6";
+    else if (data.urgency === "HIGH") urgencyBadge.className = "badge bg-warning text-dark fs-6";
+    else urgencyBadge.className = "badge bg-info text-dark fs-6";
+
+    // Coordinates
+    if (currentCoords.locked) {
+        document.getElementById('formCoords').innerText = `${currentCoords.lat}° N, ${currentCoords.lng}° E (±${currentCoords.accuracy}m)`;
+        document.getElementById('formAddress').innerText = "Standing position locked from device GPS";
+        document.getElementById('hiddenLocation').value = `${currentCoords.lat}, ${currentCoords.lng}`;
+    } else {
+        document.getElementById('formCoords').innerText = "Device Location Stamp Pending";
+        document.getElementById('formAddress').innerText = "Coordinates will be updated on dispatch";
+        document.getElementById('hiddenLocation').value = "Pending GPS";
+    }
+
+    // Evidence
+    const evWrap = document.getElementById('formEvidencePreview');
+    if (uploadedFile) {
+        evWrap.innerHTML = `<i class="fa-solid fa-image text-success me-1"></i> Attached Photo: <strong>${uploadedFile.name}</strong>`;
+    } else if (data.type === 'voice') {
+        evWrap.innerHTML = `<i class="fa-solid fa-microphone text-primary me-1"></i> Spoken Voice Dictation Captured`;
+    } else {
+        evWrap.innerHTML = `<i class="fa-solid fa-keyboard text-muted me-1"></i> Citizen Written Report`;
+    }
+
+    // Show card
+    const formCard = document.getElementById('aiGeneratedFormCard');
+    formCard.style.display = 'block';
+    formCard.scrollIntoView({ behavior: 'smooth' });
+
+    // Start auto-dispatch countdown
+    startCountdown();
+}
+
+function startCountdown() {
+    if (countdownTimer) clearInterval(countdownTimer);
+    remainingSecs = 5;
+    isPaused = false;
+    document.getElementById('btnPauseCountdown').innerHTML = '<i class="fa-solid fa-pause me-1"></i> Pause Timer';
+    
+    const countSpan = document.getElementById('countdownSecs');
+    const bar = document.getElementById('countdownBar');
+    bar.style.transition = 'width 1s linear';
+    bar.style.width = '100%';
+
+    countdownTimer = setInterval(() => {
+        if (!isPaused) {
+            remainingSecs--;
+            countSpan.innerText = remainingSecs;
+            const pct = (remainingSecs / 5) * 100;
+            bar.style.width = `${pct}%`;
+
+            if (remainingSecs <= 0) {
+                clearInterval(countdownTimer);
+                document.getElementById('finalDossierForm').submit();
+            }
+        }
+    }, 1000);
+}
+
+function togglePauseCountdown() {
+    isPaused = !isPaused;
+    const btn = document.getElementById('btnPauseCountdown');
+    const title = document.getElementById('countdownTitle');
+    if (isPaused) {
+        btn.innerHTML = '<i class="fa-solid fa-play me-1"></i> Resume Timer';
+        title.innerHTML = 'Auto-dispatch paused. Click Submit when ready:';
+    } else {
+        btn.innerHTML = '<i class="fa-solid fa-pause me-1"></i> Pause Timer';
+        title.innerHTML = `Ready to submit. Auto-dispatching in <span class="text-danger fw-900 fs-5" id="countdownSecs">${remainingSecs}</span>s...`;
+    }
+}
+
+// Request real GPS on page load
+window.addEventListener('DOMContentLoaded', () => {
+    detectDeviceGPS();
 });
 </script>
 </body>

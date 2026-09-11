@@ -1,101 +1,327 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head('Sectors')}">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>14 Civic Service Sectors | CivicResolve</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+    <link th:href="@{/css/common.css}" rel="stylesheet"/>
     <link th:href="@{/css/landing.css}" rel="stylesheet"/>
 </head>
-<body>
+<body class="bg-light">
+
+<!-- ── NAVBAR ── -->
 <th:block th:replace="~{fragments/navbar :: navbar}"/>
 
-<section style="background:linear-gradient(135deg,#0f172a,#1e3a5f);padding:4rem 0;color:#fff;">
+<!-- Header -->
+<div class="py-5 bg-white border-bottom shadow-sm">
     <div class="container text-center">
-        <span class="cr-hero-eyebrow"><i class="fa-solid fa-building-columns"></i> Civic Sectors</span>
-        <h1 style="font-size:2.5rem;font-weight:800;margin-top:.75rem;">We cover every civic department</h1>
-        <p style="color:rgba(255,255,255,.65);font-size:1.05rem;max-width:540px;margin:.75rem auto 0;">
-            Report issues across all major civic sectors. Each complaint is routed to the right department automatically.
+        <h1 class="h2 fw-800 text-dark mb-2">14 Government Service Sectors</h1>
+        <p class="text-muted mx-auto" style="max-width: 600px;">
+            CivicResolve connects you directly with the responsible authorities across all everyday municipal needs. Select any sector to file a report.
         </p>
-    </div>
-</section>
 
-<section class="cr-section">
-    <div class="container">
-        <div class="row g-4">
-            <div class="col-6 col-md-4 col-lg-3">
-                <a th:href="@{/report}" class="cr-sector-card">
-                    <div class="cr-sector-icon" style="background:#eff6ff;color:#2563eb;"><i class="fa-solid fa-road"></i></div>
-                    <h6 class="fw-700 mb-1">Roads &amp; Transport</h6>
-                    <p class="text-muted small mb-2">Potholes, road damage, traffic signals</p>
-                    <span class="cr-status cr-status--open">Active</span>
-                </a>
-            </div>
-            <div class="col-6 col-md-4 col-lg-3">
-                <a th:href="@{/report}" class="cr-sector-card">
-                    <div class="cr-sector-icon" style="background:#ecfeff;color:#0891b2;"><i class="fa-solid fa-droplet"></i></div>
-                    <h6 class="fw-700 mb-1">Water Supply</h6>
-                    <p class="text-muted small mb-2">Leaks, supply disruptions, quality issues</p>
-                    <span class="cr-status cr-status--open">Active</span>
-                </a>
-            </div>
-            <div class="col-6 col-md-4 col-lg-3">
-                <a th:href="@{/report}" class="cr-sector-card">
-                    <div class="cr-sector-icon" style="background:#fef9c3;color:#ca8a04;"><i class="fa-solid fa-lightbulb"></i></div>
-                    <h6 class="fw-700 mb-1">Street Lighting</h6>
-                    <p class="text-muted small mb-2">Outages, damaged poles, new installations</p>
-                    <span class="cr-status cr-status--open">Active</span>
-                </a>
-            </div>
-            <div class="col-6 col-md-4 col-lg-3">
-                <a th:href="@{/report}" class="cr-sector-card">
-                    <div class="cr-sector-icon" style="background:#f0fdf4;color:#16a34a;"><i class="fa-solid fa-trash"></i></div>
-                    <h6 class="fw-700 mb-1">Sanitation &amp; Waste</h6>
-                    <p class="text-muted small mb-2">Garbage collection, illegal dumping</p>
-                    <span class="cr-status cr-status--open">Active</span>
-                </a>
-            </div>
-            <div class="col-6 col-md-4 col-lg-3">
-                <a th:href="@{/report}" class="cr-sector-card">
-                    <div class="cr-sector-icon" style="background:#fef2f2;color:#dc2626;"><i class="fa-solid fa-fire-extinguisher"></i></div>
-                    <h6 class="fw-700 mb-1">Fire &amp; Safety</h6>
-                    <p class="text-muted small mb-2">Fire hazards, safety violations</p>
-                    <span class="cr-status cr-status--open">Active</span>
-                </a>
-            </div>
-            <div class="col-6 col-md-4 col-lg-3">
-                <a th:href="@{/report}" class="cr-sector-card">
-                    <div class="cr-sector-icon" style="background:#f5f3ff;color:#7c3aed;"><i class="fa-solid fa-tree"></i></div>
-                    <h6 class="fw-700 mb-1">Parks &amp; Environment</h6>
-                    <p class="text-muted small mb-2">Park maintenance, tree hazards</p>
-                    <span class="cr-status cr-status--open">Active</span>
-                </a>
-            </div>
-            <div class="col-6 col-md-4 col-lg-3">
-                <a th:href="@{/report}" class="cr-sector-card">
-                    <div class="cr-sector-icon" style="background:#fff7ed;color:#ea580c;"><i class="fa-solid fa-building"></i></div>
-                    <h6 class="fw-700 mb-1">Public Buildings</h6>
-                    <p class="text-muted small mb-2">Maintenance, accessibility issues</p>
-                    <span class="cr-status cr-status--open">Active</span>
-                </a>
-            </div>
-            <div class="col-6 col-md-4 col-lg-3">
-                <a th:href="@{/report}" class="cr-sector-card">
-                    <div class="cr-sector-icon" style="background:#f0f9ff;color:#0284c7;"><i class="fa-solid fa-wifi"></i></div>
-                    <h6 class="fw-700 mb-1">Public Wi-Fi</h6>
-                    <p class="text-muted small mb-2">Connectivity issues in public zones</p>
-                    <span class="cr-status cr-status--open">Active</span>
-                </a>
+        <!-- Search input -->
+        <div class="mt-4 mx-auto" style="max-width: 480px;">
+            <div class="input-group shadow-sm">
+                <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-search"></i></span>
+                <input type="text" id="sectorSearch" class="form-control border-start-0" placeholder="Search sectors (e.g. road, water, electricity)..." onkeyup="filterSectors()"/>
             </div>
         </div>
     </div>
-</section>
+</div>
 
-<section class="cr-cta-section">
+<!-- Sectors Grid -->
+<div class="py-5">
     <div class="container">
-        <h2>Don't see your issue category?</h2>
-        <p>Use the "Other" category when filing your report and our team will route it correctly.</p>
-        <a th:href="@{/report}" class="btn btn-light btn-lg px-5">File a Report Now</a>
-    </div>
-</section>
+        <div class="row g-4" id="sectorRow">
+            <!-- 1. Roads & Transport -->
+            <div class="col-md-6 col-lg-4 sector-card-item" data-keywords="roads transport pothole signal street traffic">
+                <div class="card h-100 p-4 border-0 shadow-sm d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="cr-sec-icon-wrap" style="background:#eff6ff; color:#2563eb; width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
+                                <i class="fa-solid fa-road"></i>
+                            </div>
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">SLA: 48 Hours</span>
+                        </div>
+                        <h5 class="fw-700 text-dark mb-1">Roads &amp; Transport</h5>
+                        <p class="text-muted small mb-2">Better roads, smoother travel</p>
+                        <p class="text-muted small mb-3">Potholes, broken tarmac, damaged footpaths, traffic signal failures, and missing road markers.</p>
+                        <div class="text-muted small mb-3"><i class="fa-solid fa-building me-1"></i> Public Works Department (PWD)</div>
+                    </div>
+                    <a th:href="@{/report(sector='ROADS')}" class="btn btn-outline-primary btn-sm fw-600 w-100">Report in Roads &rarr;</a>
+                </div>
+            </div>
 
+            <!-- 2. Street Lighting -->
+            <div class="col-md-6 col-lg-4 sector-card-item" data-keywords="light bulb street pole dark lighting">
+                <div class="card h-100 p-4 border-0 shadow-sm d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="cr-sec-icon-wrap" style="background:#fef3c7; color:#d97706; width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
+                                <i class="fa-solid fa-lightbulb"></i>
+                            </div>
+                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle">SLA: 24 Hours</span>
+                        </div>
+                        <h5 class="fw-700 text-dark mb-1">Street Lighting</h5>
+                        <p class="text-muted small mb-2">Brighter and safer streets</p>
+                        <p class="text-muted small mb-3">Non-functional streetlights, damaged poles, dark corridors, and dangling wires.</p>
+                        <div class="text-muted small mb-3"><i class="fa-solid fa-building me-1"></i> Municipal Electrical Division</div>
+                    </div>
+                    <a th:href="@{/report(sector='LIGHTING')}" class="btn btn-outline-warning btn-sm fw-600 w-100">Report in Lighting &rarr;</a>
+                </div>
+            </div>
+
+            <!-- 3. Water Supply -->
+            <div class="col-md-6 col-lg-4 sector-card-item" data-keywords="water pipe leak pressure drinking supply jal">
+                <div class="card h-100 p-4 border-0 shadow-sm d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="cr-sec-icon-wrap" style="background:#ecfeff; color:#0891b2; width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
+                                <i class="fa-solid fa-droplet"></i>
+                            </div>
+                            <span class="badge bg-info-subtle text-info border border-info-subtle">SLA: 24 Hours</span>
+                        </div>
+                        <h5 class="fw-700 text-dark mb-1">Water Supply</h5>
+                        <p class="text-muted small mb-2">Clean and reliable water</p>
+                        <p class="text-muted small mb-3">Pipeline bursts, water shortage, low pressure, and contaminated drinking water supply.</p>
+                        <div class="text-muted small mb-3"><i class="fa-solid fa-building me-1"></i> Jal Nigam / Water Works Board</div>
+                    </div>
+                    <a th:href="@{/report(sector='WATER')}" class="btn btn-outline-info btn-sm fw-600 w-100">Report in Water &rarr;</a>
+                </div>
+            </div>
+
+            <!-- 4. Sanitation & Waste -->
+            <div class="col-md-6 col-lg-4 sector-card-item" data-keywords="garbage waste trash sanitation drain clean dumpster">
+                <div class="card h-100 p-4 border-0 shadow-sm d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="cr-sec-icon-wrap" style="background:#f0fdf4; color:#16a34a; width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </div>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle">SLA: 24 Hours</span>
+                        </div>
+                        <h5 class="fw-700 text-dark mb-1">Sanitation &amp; Waste</h5>
+                        <p class="text-muted small mb-2">Cleaner surroundings</p>
+                        <p class="text-muted small mb-3">Uncollected garbage, overflowing community bins, open trash burning, and choked sewers.</p>
+                        <div class="text-muted small mb-3"><i class="fa-solid fa-building me-1"></i> Solid Waste Management Dept</div>
+                    </div>
+                    <a th:href="@{/report(sector='SANITATION')}" class="btn btn-outline-success btn-sm fw-600 w-100">Report in Sanitation &rarr;</a>
+                </div>
+            </div>
+
+            <!-- 5. Electricity -->
+            <div class="col-md-6 col-lg-4 sector-card-item" data-keywords="electricity power transformer discom outage voltage">
+                <div class="card h-100 p-4 border-0 shadow-sm d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="cr-sec-icon-wrap" style="background:#fef9c3; color:#ca8a04; width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
+                                <i class="fa-solid fa-bolt"></i>
+                            </div>
+                            <span class="badge bg-warning text-dark">SLA: 12 Hours</span>
+                        </div>
+                        <h5 class="fw-700 text-dark mb-1">Electricity</h5>
+                        <p class="text-muted small mb-2">Reliable power for all</p>
+                        <p class="text-muted small mb-3">Frequent power cuts, blown transformers, exposed wires, and dangerous electric sparks.</p>
+                        <div class="text-muted small mb-3"><i class="fa-solid fa-building me-1"></i> Power Corporation (DISCOM)</div>
+                    </div>
+                    <a th:href="@{/report(sector='ELECTRICITY')}" class="btn btn-outline-warning btn-sm fw-600 w-100">Report in Electricity &rarr;</a>
+                </div>
+            </div>
+
+            <!-- 6. Healthcare -->
+            <div class="col-md-6 col-lg-4 sector-card-item" data-keywords="health hospital clinic doctor medicine phc">
+                <div class="card h-100 p-4 border-0 shadow-sm d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="cr-sec-icon-wrap" style="background:#fef2f2; color:#dc2626; width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
+                                <i class="fa-solid fa-hospital"></i>
+                            </div>
+                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle">SLA: 24 Hours</span>
+                        </div>
+                        <h5 class="fw-700 text-dark mb-1">Healthcare</h5>
+                        <p class="text-muted small mb-2">Accessible and quality care</p>
+                        <p class="text-muted small mb-3">Hygiene issues at clinics, medicine availability, mosquito fogging, and sanitation around health centers.</p>
+                        <div class="text-muted small mb-3"><i class="fa-solid fa-building me-1"></i> Chief Medical Officer (CMO)</div>
+                    </div>
+                    <a th:href="@{/report(sector='HEALTHCARE')}" class="btn btn-outline-danger btn-sm fw-600 w-100">Report in Healthcare &rarr;</a>
+                </div>
+            </div>
+
+            <!-- 7. Education -->
+            <div class="col-md-6 col-lg-4 sector-card-item" data-keywords="education school classroom teacher meal books">
+                <div class="card h-100 p-4 border-0 shadow-sm d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="cr-sec-icon-wrap" style="background:#f5f3ff; color:#7c3aed; width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                            </div>
+                            <span class="badge bg-secondary-subtle text-secondary border">SLA: 48 Hours</span>
+                        </div>
+                        <h5 class="fw-700 text-dark mb-1">Education</h5>
+                        <p class="text-muted small mb-2">Stronger learning tomorrow</p>
+                        <p class="text-muted small mb-3">School building infrastructure repairs, drinking water in schools, and mid-day meal issues.</p>
+                        <div class="text-muted small mb-3"><i class="fa-solid fa-building me-1"></i> Basic Shiksha Adhikari (BSA)</div>
+                    </div>
+                    <a th:href="@{/report(sector='EDUCATION')}" class="btn btn-outline-secondary btn-sm fw-600 w-100">Report in Education &rarr;</a>
+                </div>
+            </div>
+
+            <!-- 8. Public Safety -->
+            <div class="col-md-6 col-lg-4 sector-card-item" data-keywords="safety police encroachment alley dark nuisance">
+                <div class="card h-100 p-4 border-0 shadow-sm d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="cr-sec-icon-wrap" style="background:#eff6ff; color:#1d4ed8; width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </div>
+                            <span class="badge bg-primary text-white">SLA: 12 Hours</span>
+                        </div>
+                        <h5 class="fw-700 text-dark mb-1">Public Safety</h5>
+                        <p class="text-muted small mb-2">Safer communities</p>
+                        <p class="text-muted small mb-3">Encroachments on sidewalks, unauthorized commercial vehicle parking, and hazardous public nuisance.</p>
+                        <div class="text-muted small mb-3"><i class="fa-solid fa-building me-1"></i> Police Commissionerate</div>
+                    </div>
+                    <a th:href="@{/report(sector='SAFETY')}" class="btn btn-outline-primary btn-sm fw-600 w-100">Report in Safety &rarr;</a>
+                </div>
+            </div>
+
+            <!-- 9. Municipal Services -->
+            <div class="col-md-6 col-lg-4 sector-card-item" data-keywords="municipal property tax park trade license banner">
+                <div class="card h-100 p-4 border-0 shadow-sm d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="cr-sec-icon-wrap" style="background:#eef2ff; color:#4f46e5; width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
+                                <i class="fa-solid fa-building-flag"></i>
+                            </div>
+                            <span class="badge bg-primary-subtle text-primary border">SLA: 72 Hours</span>
+                        </div>
+                        <h5 class="fw-700 text-dark mb-1">Municipal Services</h5>
+                        <p class="text-muted small mb-2">Efficient local governance</p>
+                        <p class="text-muted small mb-3">Park upkeep, unauthorized hoardings, municipal facility repair, and trade license issues.</p>
+                        <div class="text-muted small mb-3"><i class="fa-solid fa-building me-1"></i> Nagar Nigam Zonal Office</div>
+                    </div>
+                    <a th:href="@{/report(sector='MUNICIPAL')}" class="btn btn-outline-info btn-sm fw-600 w-100">Report in Municipal &rarr;</a>
+                </div>
+            </div>
+
+            <!-- 10. Revenue & Certificates -->
+            <div class="col-md-6 col-lg-4 sector-card-item" data-keywords="revenue certificate birth death caste tehsil mutation">
+                <div class="card h-100 p-4 border-0 shadow-sm d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="cr-sec-icon-wrap" style="background:#fff7ed; color:#ea580c; width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
+                                <i class="fa-solid fa-file-invoice"></i>
+                            </div>
+                            <span class="badge bg-warning-subtle text-warning border">SLA: 72 Hours</span>
+                        </div>
+                        <h5 class="fw-700 text-dark mb-1">Revenue &amp; Certificates</h5>
+                        <p class="text-muted small mb-2">Faster, simpler services</p>
+                        <p class="text-muted small mb-3">Delays in birth/death certificates, caste &amp; income verification, and mutation backlogs.</p>
+                        <div class="text-muted small mb-3"><i class="fa-solid fa-building me-1"></i> Tehsil Revenue Office</div>
+                    </div>
+                    <a th:href="@{/report(sector='REVENUE')}" class="btn btn-outline-warning btn-sm fw-600 w-100">Report in Revenue &rarr;</a>
+                </div>
+            </div>
+
+            <!-- 11. Social Welfare -->
+            <div class="col-md-6 col-lg-4 sector-card-item" data-keywords="welfare pension ration widow disability aid">
+                <div class="card h-100 p-4 border-0 shadow-sm d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="cr-sec-icon-wrap" style="background:#fdf2f8; color:#db2777; width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
+                                <i class="fa-solid fa-hand-holding-heart"></i>
+                            </div>
+                            <span class="badge bg-danger-subtle text-danger border">SLA: 48 Hours</span>
+                        </div>
+                        <h5 class="fw-700 text-dark mb-1">Social Welfare</h5>
+                        <p class="text-muted small mb-2">Support for every citizen</p>
+                        <p class="text-muted small mb-3">Old age pension delays, ration distribution grievances, and disability assistance.</p>
+                        <div class="text-muted small mb-3"><i class="fa-solid fa-building me-1"></i> Social Welfare Directorate</div>
+                    </div>
+                    <a th:href="@{/report(sector='WELFARE')}" class="btn btn-outline-danger btn-sm fw-600 w-100">Report in Welfare &rarr;</a>
+                </div>
+            </div>
+
+            <!-- 12. Environment -->
+            <div class="col-md-6 col-lg-4 sector-card-item" data-keywords="environment pollution trees smoke air water forest">
+                <div class="card h-100 p-4 border-0 shadow-sm d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="cr-sec-icon-wrap" style="background:#f0fdf4; color:#15803d; width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
+                                <i class="fa-solid fa-leaf"></i>
+                            </div>
+                            <span class="badge bg-success-subtle text-success border">SLA: 48 Hours</span>
+                        </div>
+                        <h5 class="fw-700 text-dark mb-1">Environment</h5>
+                        <p class="text-muted small mb-2">Greener and healthier cities</p>
+                        <p class="text-muted small mb-3">Illegal tree felling, toxic smoke emissions, industrial dumping into waterways, and noise pollution.</p>
+                        <div class="text-muted small mb-3"><i class="fa-solid fa-building me-1"></i> Pollution Control Board</div>
+                    </div>
+                    <a th:href="@{/report(sector='ENVIRONMENT')}" class="btn btn-outline-success btn-sm fw-600 w-100">Report in Environment &rarr;</a>
+                </div>
+            </div>
+
+            <!-- 13. Housing -->
+            <div class="col-md-6 col-lg-4 sector-card-item" data-keywords="housing pmay construction building dangerous flat">
+                <div class="card h-100 p-4 border-0 shadow-sm d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="cr-sec-icon-wrap" style="background:#fff1f2; color:#e11d48; width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
+                                <i class="fa-solid fa-house-chimney"></i>
+                            </div>
+                            <span class="badge bg-info-subtle text-info border">SLA: 96 Hours</span>
+                        </div>
+                        <h5 class="fw-700 text-dark mb-1">Housing</h5>
+                        <p class="text-muted small mb-2">Better homes, brighter lives</p>
+                        <p class="text-muted small mb-3">PMAY housing scheme issues, dangerous dilapidated buildings, and illegal construction.</p>
+                        <div class="text-muted small mb-3"><i class="fa-solid fa-building me-1"></i> Urban Development Authority</div>
+                    </div>
+                    <a th:href="@{/report(sector='HOUSING')}" class="btn btn-outline-info btn-sm fw-600 w-100">Report in Housing &rarr;</a>
+                </div>
+            </div>
+
+            <!-- 14. Agriculture -->
+            <div class="col-md-6 col-lg-4 sector-card-item" data-keywords="agriculture farmer irrigation canal seed kisan fertilizer">
+                <div class="card h-100 p-4 border-0 shadow-sm d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="cr-sec-icon-wrap" style="background:#f7fee7; color:#65a30d; width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
+                                <i class="fa-solid fa-seedling"></i>
+                            </div>
+                            <span class="badge bg-success-subtle text-success border">SLA: 48 Hours</span>
+                        </div>
+                        <h5 class="fw-700 text-dark mb-1">Agriculture</h5>
+                        <p class="text-muted small mb-2">Support for farmers</p>
+                        <p class="text-muted small mb-3">Canal water supply, spurious fertilizer distribution, and PM-KISAN subsidy assistance.</p>
+                        <div class="text-muted small mb-3"><i class="fa-solid fa-building me-1"></i> Dept of Agriculture &amp; Irrigation</div>
+                    </div>
+                    <a th:href="@{/report(sector='AGRICULTURE')}" class="btn btn-outline-success btn-sm fw-600 w-100">Report in Agriculture &rarr;</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── FOOTER ── -->
 <th:block th:replace="~{fragments/footer :: footer}"/>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function filterSectors() {
+    const q = document.getElementById('sectorSearch').value.toLowerCase();
+    const items = document.querySelectorAll('.sector-card-item');
+    items.forEach(item => {
+        const text = item.innerText.toLowerCase();
+        const kw = item.getAttribute('data-keywords') || '';
+        item.style.display = (text.includes(q) || kw.includes(q)) ? '' : 'none';
+    });
+}
+</script>
 </body>
 </html>

@@ -24,7 +24,7 @@
 .cr-timeline { position: relative; padding-left: 1.5rem; }
 .cr-timeline::before {
     content: ''; position: absolute;
-    left: 7px; top: 0; bottom: 0;
+    left: 7px; top: 10px; bottom: 10px;
     width: 2px; background: var(--cr-border);
 }
 .cr-timeline-item { position: relative; padding-bottom: 1.25rem; }
@@ -44,7 +44,7 @@
 .cr-timeline-text { font-size: .875rem; color: var(--cr-dark-3); margin-top: 2px; }
 
 .cr-notification-item {
-    display: flex; gap: 1rem; align-items: flex-start;
+    display: flex; gap: 1rem; align-items: center;
     padding: 1rem 1.25rem;
     border-bottom: 1px solid var(--cr-border);
     transition: var(--cr-transition);
@@ -60,5 +60,6 @@
 .cr-notification-dot {
     width: 8px; height: 8px; border-radius: 50%;
     background: var(--cr-primary);
-    flex-shrink: 0; margin-top: 6px;
+    flex-shrink: 0;
+    align-self: center;
 }

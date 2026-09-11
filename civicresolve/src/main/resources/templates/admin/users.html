@@ -8,7 +8,10 @@
     <th:block th:replace="~{fragments/admin-sidebar :: admin-sidebar}"/>
     <div class="cr-dashboard-main">
         <div class="cr-topbar">
-            <h1 class="cr-topbar-title">User Management</h1>
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn btn-sm btn-light d-lg-none" onclick="document.querySelector('.cr-sidebar').classList.toggle('show');document.querySelector('.cr-sidebar-backdrop')?.classList.toggle('show')"><i class="fa-solid fa-bars"></i></button>
+                <h1 class="cr-topbar-title">User Management</h1>
+            </div>
             <button class="btn btn-primary btn-sm fw-600" data-bs-toggle="modal" data-bs-target="#addUserModal">
                 <i class="fa-solid fa-user-plus me-1"></i>Add User
             </button>

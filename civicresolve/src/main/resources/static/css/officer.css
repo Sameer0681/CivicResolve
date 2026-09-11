@@ -12,20 +12,21 @@
 }
 
 .cr-action-btn {
-    display: flex; align-items: center; gap: .5rem;
-    padding: .6rem 1rem;
+    display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+    padding: .55rem 1rem;
     border-radius: var(--cr-radius-sm);
-    font-size: .875rem; font-weight: 600;
+    font-size: .9rem; font-weight: 600;
     border: 1.5px solid var(--cr-border);
     background: var(--cr-white);
     color: var(--cr-dark-3);
     cursor: pointer;
     transition: var(--cr-transition);
+    line-height: 1.5;
 }
 .cr-action-btn:hover { border-color: var(--cr-primary); color: var(--cr-primary); }
 .cr-action-btn--primary { background: var(--cr-primary); border-color: var(--cr-primary); color: #fff; }
-.cr-action-btn--primary:hover { background: var(--cr-primary-dark); }
-.cr-action-btn--danger { border-color: var(--cr-danger); color: var(--cr-danger); }
+.cr-action-btn--primary:hover { background: var(--cr-primary-dark); color: #fff; }
+.cr-action-btn--danger { border-color: var(--cr-danger); color: var(--cr-danger); background: transparent; }
 .cr-action-btn--danger:hover { background: var(--cr-danger); color: #fff; }
 
 .cr-escalation-card {

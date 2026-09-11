@@ -6,7 +6,7 @@
 <body>
 <div class="cr-auth-page">
 
-    <div class="cr-auth-panel" style="width:520px;padding:2.5rem 3rem;">
+    <div class="cr-auth-panel cr-auth-panel--wide">
         <a th:href="@{/}" class="d-flex align-items-center gap-2 text-decoration-none mb-4">
             <div class="cr-logo-icon"><i class="fa-solid fa-landmark"></i></div>
             <span class="cr-brand-text">Civic<span class="cr-brand-accent">Resolve</span></span>
@@ -37,11 +37,11 @@
             <div class="row g-3 mb-3">
                 <div class="col-6">
                     <label class="cr-form-label">First Name</label>
-                    <input type="text" name="firstName" class="form-control" placeholder="John" required/>
+                    <input type="text" name="firstName" class="form-control" placeholder="John" th:value="${registerRequest?.firstName}" required/>
                 </div>
                 <div class="col-6">
                     <label class="cr-form-label">Last Name</label>
-                    <input type="text" name="lastName" class="form-control" placeholder="Doe" required/>
+                    <input type="text" name="lastName" class="form-control" placeholder="Doe" th:value="${registerRequest?.lastName}" required/>
                 </div>
             </div>
 
@@ -49,7 +49,7 @@
                 <label class="cr-form-label">Email Address</label>
                 <div class="cr-input-icon-wrap">
                     <i class="cr-input-icon fa-solid fa-envelope"></i>
-                    <input type="email" name="email" class="form-control" placeholder="you@example.com" required/>
+                    <input type="email" name="email" class="form-control" placeholder="you@example.com" th:value="${registerRequest?.email}" required/>
                 </div>
             </div>
 
@@ -57,7 +57,7 @@
                 <label class="cr-form-label">Phone Number</label>
                 <div class="cr-input-icon-wrap">
                     <i class="cr-input-icon fa-solid fa-phone"></i>
-                    <input type="tel" name="phone" class="form-control" placeholder="+91 98765 43210"/>
+                    <input type="tel" name="phone" class="form-control" placeholder="+91 98765 43210" th:value="${registerRequest?.phone}"/>
                 </div>
             </div>
 
@@ -83,8 +83,8 @@
                 </div>
             </div>
 
-            <div class="mb-4 d-flex gap-2">
-                <input type="checkbox" id="terms" class="form-check-input mt-0" required/>
+            <div class="form-check mb-4">
+                <input type="checkbox" id="terms" class="form-check-input" required/>
                 <label for="terms" class="form-check-label small text-muted">
                     I agree to the <a href="#" class="fw-600">Terms of Service</a> and <a href="#" class="fw-600">Privacy Policy</a>
                 </label>

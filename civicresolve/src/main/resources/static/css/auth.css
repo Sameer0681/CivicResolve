@@ -11,6 +11,7 @@
 /* Left panel */
 .cr-auth-panel {
     width: 480px;
+    max-width: 100%;
     min-height: 100vh;
     background: var(--cr-white);
     display: flex;
@@ -20,6 +21,11 @@
     position: relative;
     z-index: 1;
     box-shadow: var(--cr-shadow-lg);
+    overflow-y: auto;
+}
+.cr-auth-panel--wide {
+    width: 520px;
+    padding: 2.5rem 3rem;
 }
 
 /* Right visual */
@@ -120,6 +126,10 @@
     color: var(--cr-gray);
 }
 .cr-role-label i { display: block; font-size: 1.25rem; margin-bottom: .35rem; }
+.cr-role-label:hover {
+    border-color: var(--cr-primary);
+    color: var(--cr-primary);
+}
 .cr-role-option:checked + .cr-role-label {
     border-color: var(--cr-primary);
     background: var(--cr-primary-light);
@@ -128,5 +138,6 @@
 
 @media (max-width: 991.98px) {
     .cr-auth-visual { display: none; }
-    .cr-auth-panel { width: 100%; padding: 2rem 1.5rem; }
+    .cr-auth-panel,
+    .cr-auth-panel--wide { width: 100%; padding: 2.5rem 1.5rem; }
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
 <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-light cr-navbar sticky-top">
     <div class="container">
@@ -8,7 +8,9 @@
             <div class="cr-logo-icon">
                 <i class="fa-solid fa-landmark"></i>
             </div>
-            <span class="cr-brand-text">Civic<span class="cr-brand-accent">Resolve</span></span>
+            <div>
+                <span class="cr-brand-text">Civic<span class="cr-brand-accent">Resolve</span></span>
+            </div>
         </a>
 
         <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
@@ -18,21 +20,58 @@
         <div class="collapse navbar-collapse" id="navbarMain">
             <ul class="navbar-nav mx-auto gap-1">
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/}">Home</a>
+                    <a class="nav-link" th:href="@{/}"><i class="fa-solid fa-house me-1"></i> Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/features}">Features</a>
+                    <a class="nav-link" th:href="@{/report}"><i class="fa-solid fa-plus-circle me-1"></i> Report an Issue</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/sectors}">Sectors</a>
+                    <a class="nav-link" th:href="@{/citizen/complaint-details}"><i class="fa-solid fa-magnifying-glass me-1"></i> Track Status</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/about}">About</a>
+                    <a class="nav-link" th:href="@{/sectors}"><i class="fa-solid fa-building-columns me-1"></i> 14 Sectors</a>
                 </li>
             </ul>
+
             <div class="d-flex align-items-center gap-2">
-                <a th:href="@{/login}" class="btn btn-outline-primary btn-sm px-3">Login</a>
-                <a th:href="@{/register}" class="btn btn-primary btn-sm px-3">Register</a>
+                <a th:href="@{/report}" class="btn btn-primary btn-sm px-3 fw-600">
+                    <i class="fa-solid fa-file-pen me-1"></i> File Grievance
+                </a>
+
+                <!-- Anonymous Visitor -->
+                <th:block sec:authorize="isAnonymous()">
+                    <a th:href="@{/login}" class="btn btn-outline-primary btn-sm px-3">Sign In</a>
+                    <a th:href="@{/register}" class="btn btn-secondary btn-sm px-3 d-none d-sm-inline-block">Register</a>
+                </th:block>
+
+                <!-- Authenticated User -->
+                <th:block sec:authorize="isAuthenticated()">
+                    <!-- Admin Link -->
+                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/dashboard}" class="btn btn-outline-primary btn-sm px-3">
+                        <i class="fa-solid fa-gauge me-1"></i> Admin Panel
+                    </a>
+                    <!-- Officer Link -->
+                    <a sec:authorize="hasRole('OFFICER')" th:href="@{/officer/dashboard}" class="btn btn-outline-primary btn-sm px-3">
+                        <i class="fa-solid fa-user-shield me-1"></i> Officer Desk
+                    </a>
+                    <!-- Citizen Link -->
+                    <a sec:authorize="hasRole('CITIZEN')" th:href="@{/citizen/dashboard}" class="btn btn-outline-primary btn-sm px-3">
+                        <i class="fa-solid fa-user me-1"></i> My Dashboard
+                    </a>
+
+                    <!-- User Name Pill -->
+                    <span class="badge bg-light text-dark border px-2 py-1.5 d-none d-md-inline-block">
+                        <i class="fa-solid fa-circle-user text-primary me-1"></i>
+                        <span sec:authentication="name">User</span>
+                    </span>
+
+                    <!-- Logout Button -->
+                    <form th:action="@{/logout}" method="post" class="d-inline m-0">
+                        <button type="submit" class="btn btn-outline-danger btn-sm px-2.5" title="Sign Out">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </button>
+                    </form>
+                </th:block>
             </div>
         </div>
     </div>

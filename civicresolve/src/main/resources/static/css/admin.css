@@ -22,6 +22,12 @@
     border-radius: var(--cr-radius);
     padding: 1.25rem;
     transition: var(--cr-transition);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.cr-dept-card p {
+    flex: 1;
 }
 .cr-dept-card:hover { border-color: var(--cr-secondary); box-shadow: var(--cr-shadow-md); }
 .cr-dept-icon {

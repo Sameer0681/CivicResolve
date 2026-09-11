@@ -1,56 +1,78 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-<footer th:fragment="footer" class="cr-footer">
+<footer th:fragment="footer" class="cr-footer" style="background: #0f172a; color: #94a3b8; padding: 4rem 0 2rem; border-top: 1px solid #1e293b;">
     <div class="container">
         <div class="row gy-4">
-            <div class="col-lg-4">
+            <!-- Brand & Mission -->
+            <div class="col-lg-4 col-md-6">
                 <a class="d-flex align-items-center gap-2 text-decoration-none mb-3" th:href="@{/}">
-                    <div class="cr-logo-icon cr-logo-icon--sm">
+                    <div class="cr-logo-icon cr-logo-icon--sm" style="background: #2563eb; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff;">
                         <i class="fa-solid fa-landmark"></i>
                     </div>
-                    <span class="cr-brand-text text-white">Civic<span class="cr-brand-accent">Resolve</span></span>
+                    <span class="cr-brand-text text-white fw-800 fs-5">Civic<span style="color: #38bdf8;">Resolve</span></span>
                 </a>
-                <p class="text-white-50 small">Empowering citizens to report civic issues and hold local authorities accountable — transparently and efficiently.</p>
-                <div class="d-flex gap-3 mt-3">
-                    <a href="#" class="cr-social-link"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="cr-social-link"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="cr-social-link"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="cr-social-link"><i class="fab fa-linkedin-in"></i></a>
+                <p class="small text-secondary mb-3" style="line-height: 1.7; max-width: 320px;">
+                    A unified, transparent civic grievance redressal platform connecting citizens directly with responsible municipal authorities.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="#" class="text-secondary"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-secondary"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-secondary"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-secondary"><i class="fab fa-linkedin-in"></i></a>
                 </div>
             </div>
-            <div class="col-6 col-lg-2">
-                <h6 class="text-white fw-600 mb-3">Platform</h6>
-                <ul class="list-unstyled cr-footer-links">
-                    <li><a th:href="@{/features}">Features</a></li>
-                    <li><a th:href="@{/sectors}">Sectors</a></li>
-                    <li><a th:href="@{/about}">About Us</a></li>
-                    <li><a th:href="@{/report}">File a Report</a></li>
+
+            <!-- Quick Links -->
+            <div class="col-6 col-lg-2 col-md-3">
+                <h6 class="text-white fw-700 mb-3" style="font-size: 0.9rem;">Platform</h6>
+                <ul class="list-unstyled d-flex flex-column gap-2 small">
+                    <li><a th:href="@{/}" class="text-decoration-none text-secondary">Home</a></li>
+                    <li><a th:href="@{/report}" class="text-decoration-none text-secondary">Report an Issue</a></li>
+                    <li><a th:href="@{/citizen/complaint-details}" class="text-decoration-none text-secondary">Track Status</a></li>
+                    <li><a th:href="@{/sectors}" class="text-decoration-none text-secondary">14 Sectors</a></li>
                 </ul>
             </div>
-            <div class="col-6 col-lg-2">
-                <h6 class="text-white fw-600 mb-3">Account</h6>
-                <ul class="list-unstyled cr-footer-links">
-                    <li><a th:href="@{/login}">Login</a></li>
-                    <li><a th:href="@{/register}">Register</a></li>
-                    <li><a th:href="@{/forgot-password}">Forgot Password</a></li>
+
+            <!-- Services -->
+            <div class="col-6 col-lg-2 col-md-3">
+                <h6 class="text-white fw-700 mb-3" style="font-size: 0.9rem;">Support</h6>
+                <ul class="list-unstyled d-flex flex-column gap-2 small">
+                    <li><a th:href="@{/about}" class="text-decoration-none text-secondary">About Platform</a></li>
+                    <li><a th:href="@{/features}" class="text-decoration-none text-secondary">Capabilities</a></li>
+                    <li><a th:href="@{/login}" class="text-decoration-none text-secondary">Officer Login</a></li>
+                    <li><a th:href="@{/register}" class="text-decoration-none text-secondary">Citizen Portal</a></li>
                 </ul>
             </div>
-            <div class="col-lg-4">
-                <h6 class="text-white fw-600 mb-3">Stay Updated</h6>
-                <p class="text-white-50 small mb-3">Get notified about civic updates in your area.</p>
-                <div class="input-group cr-footer-input">
-                    <input type="email" class="form-control" placeholder="Enter your email"/>
-                    <button class="btn btn-primary">Subscribe</button>
+
+            <!-- Helpline & Contact -->
+            <div class="col-lg-4 col-md-6">
+                <h6 class="text-white fw-700 mb-3" style="font-size: 0.9rem;">Municipal Helpline</h6>
+                <div class="d-flex align-items-center gap-3 p-3 rounded-3 mb-3" style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08);">
+                    <div style="background: rgba(37, 99, 235, 0.2); color: #60a5fa; width: 42px; height: 42px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                        <i class="fa-solid fa-headset"></i>
+                    </div>
+                    <div>
+                        <div class="text-white fw-700 small">Toll-Free Citizen Helpline</div>
+                        <div class="text-white-50" style="font-size: 0.85rem;">1800-180-5353 &bull; 24x7 Assistance</div>
+                    </div>
+                </div>
+                <div class="small text-secondary">
+                    <i class="fa-solid fa-shield-halved text-success me-1"></i> Transparent municipal governance with enforceable SLAs.
                 </div>
             </div>
         </div>
-        <hr class="cr-footer-divider"/>
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
-            <p class="text-white-50 small mb-0">&copy; 2025 CivicResolve. All rights reserved.</p>
+
+        <hr style="border-color: rgba(255, 255, 255, 0.1); margin: 2.5rem 0 1.5rem;"/>
+
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 small text-secondary">
+            <div>&copy; 2026 CivicResolve. All rights reserved.</div>
             <div class="d-flex gap-3">
-                <a href="#" class="text-white-50 small text-decoration-none">Privacy Policy</a>
-                <a href="#" class="text-white-50 small text-decoration-none">Terms of Service</a>
+                <a href="#" class="text-secondary text-decoration-none">Privacy Policy</a>
+                <span>&bull;</span>
+                <a href="#" class="text-secondary text-decoration-none">Terms of Service</a>
+                <span>&bull;</span>
+                <a href="#" class="text-secondary text-decoration-none">Accessibility</a>
             </div>
         </div>
     </div>

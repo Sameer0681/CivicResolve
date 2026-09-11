@@ -1,102 +1,248 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head('Features')}">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Features &amp; 7-Step Workflow | CivicResolve GrievanceProof AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+    <link th:href="@{/css/common.css}" rel="stylesheet"/>
     <link th:href="@{/css/landing.css}" rel="stylesheet"/>
 </head>
-<body>
+<body class="bg-light">
+
+<!-- ── NAVBAR ── -->
 <th:block th:replace="~{fragments/navbar :: navbar}"/>
 
-<!-- Page Header -->
-<section style="background:linear-gradient(135deg,#0f172a,#1e3a5f);padding:4rem 0;color:#fff;">
-    <div class="container text-center">
-        <span class="cr-hero-eyebrow"><i class="fa-solid fa-star"></i> Platform Features</span>
-        <h1 style="font-size:2.5rem;font-weight:800;margin-top:.75rem;">Everything you need for civic action</h1>
-        <p style="color:rgba(255,255,255,.65);font-size:1.05rem;max-width:540px;margin:.75rem auto 0;">
-            A complete platform for citizens, officers, and administrators to manage civic complaints end-to-end.
+<!-- ── HEADER ── -->
+<section class="py-5 bg-white border-bottom shadow-sm">
+    <div class="container text-center py-3">
+        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3" style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; font-size: 0.85rem; font-weight: 700;">
+            <i class="fa-solid fa-microchip"></i> Platform Capabilities
+        </div>
+        <h1 class="display-5 fw-900 text-dark mb-2">Key Capabilities &amp; Redressal Flow</h1>
+        <p class="text-muted mx-auto" style="max-width: 680px; font-size: 1.05rem;">
+            Nine core capabilities designed as one connected public service. From multimodal citizen reporting to enforceable department resolution.
         </p>
+        <div class="d-flex justify-content-center gap-3 mt-4">
+            <a th:href="@{/report}" class="btn btn-primary fw-700 px-4 py-2"><i class="fa-solid fa-file-circle-plus me-2"></i>Report an Issue</a>
+            <a th:href="@{/sectors}" class="btn btn-outline-secondary fw-700 px-4 py-2"><i class="fa-solid fa-layer-group me-2"></i>View 14 Sectors</a>
+        </div>
     </div>
 </section>
 
-<!-- Features Grid -->
-<section class="cr-section">
+<!-- ── 1. NINE CAPABILITIES ── -->
+<section class="py-5">
     <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-800 text-dark">Nine Core Capabilities</h2>
+            <p class="text-muted">A connected municipal platform engineered for transparency and speed.</p>
+        </div>
+
         <div class="row g-4">
+            <!-- 01 AI Complaint Understanding -->
             <div class="col-md-6 col-lg-4">
-                <div class="cr-feature-card h-100">
-                    <div class="cr-feature-icon cr-stat-icon--blue"><i class="fa-solid fa-file-circle-plus"></i></div>
-                    <h5 class="fw-700 mb-2">Easy Complaint Filing</h5>
-                    <p class="text-muted small mb-0">Multi-step form with category selection, location pinning, photo upload, and priority setting. File a complaint in under 2 minutes.</p>
+                <div class="card p-4 h-100 border shadow-sm bg-white">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="cr-sec-icon-wrap" style="background:#eff6ff; color:#2563eb; width:46px; height:46px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.2rem;"><i class="fa-solid fa-brain"></i></div>
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Feature 01</span>
+                    </div>
+                    <h5 class="text-dark fw-700 mb-2">Automated Problem Analysis</h5>
+                    <p class="text-muted small mb-0">Understands citizen grievances using Natural Language Processing (NLP), semantic keyword extraction, and urgency detection.</p>
                 </div>
             </div>
+
+            <!-- 02 Text / Voice / Photo -->
             <div class="col-md-6 col-lg-4">
-                <div class="cr-feature-card h-100">
-                    <div class="cr-feature-icon cr-stat-icon--green"><i class="fa-solid fa-timeline"></i></div>
-                    <h5 class="fw-700 mb-2">Real-time Status Tracking</h5>
-                    <p class="text-muted small mb-0">Follow your complaint through every stage — Pending → Open → In Progress → Resolved — with full audit trail.</p>
+                <div class="card p-4 h-100 border shadow-sm bg-white">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="cr-sec-icon-wrap" style="background:#eff6ff; color:#2563eb; width:46px; height:46px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.2rem;"><i class="fa-solid fa-microphone-lines"></i></div>
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Feature 02</span>
+                    </div>
+                    <h5 class="text-dark fw-700 mb-2">Multi-Modal Reporting</h5>
+                    <p class="text-muted small mb-0">Report issues via voice dictation in Hindi or English, typed text, or by capturing direct photo evidence without tedious paperwork.</p>
                 </div>
             </div>
+
+            <!-- 03 Location Detection -->
             <div class="col-md-6 col-lg-4">
-                <div class="cr-feature-card h-100">
-                    <div class="cr-feature-icon cr-stat-icon--orange"><i class="fa-solid fa-arrow-up-right-dots"></i></div>
-                    <h5 class="fw-700 mb-2">Auto Escalation</h5>
-                    <p class="text-muted small mb-0">Complaints unresolved beyond the SLA are automatically escalated to senior officers, ensuring nothing falls through the cracks.</p>
+                <div class="card p-4 h-100 border shadow-sm bg-white">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="cr-sec-icon-wrap" style="background:#fef2f2; color:#ef4444; width:46px; height:46px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.2rem;"><i class="fa-solid fa-location-crosshairs"></i></div>
+                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Feature 03</span>
+                    </div>
+                    <h5 class="text-dark fw-700 mb-2">10-Meter Standing GPS</h5>
+                    <p class="text-muted small mb-0">Captures precise device standing coordinates and maps the issue directly to the corresponding municipal administrative ward.</p>
                 </div>
             </div>
+
+            <!-- 04 Sector & Authority -->
             <div class="col-md-6 col-lg-4">
-                <div class="cr-feature-card h-100">
-                    <div class="cr-feature-icon cr-stat-icon--purple"><i class="fa-solid fa-bell"></i></div>
-                    <h5 class="fw-700 mb-2">Smart Notifications</h5>
-                    <p class="text-muted small mb-0">In-app notifications keep all parties informed at every status change, comment, or escalation event.</p>
+                <div class="card p-4 h-100 border shadow-sm bg-white">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="cr-sec-icon-wrap" style="background:#f0fdf4; color:#16a34a; width:46px; height:46px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.2rem;"><i class="fa-solid fa-building-columns"></i></div>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle">Feature 04</span>
+                    </div>
+                    <h5 class="text-dark fw-700 mb-2">Department &amp; Sector Routing</h5>
+                    <p class="text-muted small mb-0">Instantly identifies the responsible municipal department across all 14 sectors, eliminating bureaucratic bouncing.</p>
                 </div>
             </div>
+
+            <!-- 05 Complaint Generation -->
             <div class="col-md-6 col-lg-4">
-                <div class="cr-feature-card h-100">
-                    <div class="cr-feature-icon cr-stat-icon--cyan"><i class="fa-solid fa-users-gear"></i></div>
-                    <h5 class="fw-700 mb-2">Role-based Dashboards</h5>
-                    <p class="text-muted small mb-0">Separate, purpose-built dashboards for Citizens, Officers, and Administrators — each with the right tools and data.</p>
+                <div class="card p-4 h-100 border shadow-sm bg-white">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="cr-sec-icon-wrap" style="background:#fef3c7; color:#d97706; width:46px; height:46px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.2rem;"><i class="fa-solid fa-file-circle-check"></i></div>
+                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle">Feature 05</span>
+                    </div>
+                    <h5 class="text-dark fw-700 mb-2">Autonomous Dossier Generation</h5>
+                    <p class="text-muted small mb-0">Compiles a structured complaint payload with unique tracking ID, timestamp, and enforceable SLA window.</p>
                 </div>
             </div>
+
+            <!-- 06 Real-Time Tracking -->
             <div class="col-md-6 col-lg-4">
-                <div class="cr-feature-card h-100">
-                    <div class="cr-feature-icon cr-stat-icon--red"><i class="fa-solid fa-chart-pie"></i></div>
-                    <h5 class="fw-700 mb-2">Analytics &amp; Reports</h5>
-                    <p class="text-muted small mb-0">Admins get powerful analytics on complaint volumes, resolution rates, department performance, and citizen satisfaction.</p>
+                <div class="card p-4 h-100 border shadow-sm bg-white">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="cr-sec-icon-wrap" style="background:#f5f3ff; color:#7c3aed; width:46px; height:46px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.2rem;"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                        <span class="badge bg-purple-subtle text-purple border border-purple-subtle">Feature 06</span>
+                    </div>
+                    <h5 class="text-dark fw-700 mb-2">Transparent Real-Time Tracking</h5>
+                    <p class="text-muted small mb-0">Track complaint status through every stage: Submitted &rarr; Under Review &rarr; In Progress &rarr; Resolved.</p>
                 </div>
             </div>
+
+            <!-- 07 Automatic Follow-up -->
             <div class="col-md-6 col-lg-4">
-                <div class="cr-feature-card h-100">
-                    <div class="cr-feature-icon cr-stat-icon--blue"><i class="fa-solid fa-map-location-dot"></i></div>
-                    <h5 class="fw-700 mb-2">Location Intelligence</h5>
-                    <p class="text-muted small mb-0">Pin exact issue locations on an interactive map. Officers can view geographic clusters of complaints for efficient routing.</p>
+                <div class="card p-4 h-100 border shadow-sm bg-white">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="cr-sec-icon-wrap" style="background:#ecfeff; color:#0891b2; width:46px; height:46px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.2rem;"><i class="fa-solid fa-bell"></i></div>
+                        <span class="badge bg-info-subtle text-info border border-info-subtle">Feature 07</span>
+                    </div>
+                    <h5 class="text-dark fw-700 mb-2">Automated SLA Monitoring</h5>
+                    <p class="text-muted small mb-0">Pushes reminders to designated ward officers and field engineers as SLA milestones approach, without requiring citizen calls.</p>
                 </div>
             </div>
+
+            <!-- 08 Escalation Mechanism -->
             <div class="col-md-6 col-lg-4">
-                <div class="cr-feature-card h-100">
-                    <div class="cr-feature-icon cr-stat-icon--green"><i class="fa-solid fa-building"></i></div>
-                    <h5 class="fw-700 mb-2">Department Management</h5>
-                    <p class="text-muted small mb-0">Admins can create and manage departments, assign officers, and configure SLA timelines per department.</p>
+                <div class="card p-4 h-100 border shadow-sm bg-white">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="cr-sec-icon-wrap" style="background:#fef2f2; color:#ef4444; width:46px; height:46px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.2rem;"><i class="fa-solid fa-arrow-up-right-dots"></i></div>
+                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Feature 08</span>
+                    </div>
+                    <h5 class="text-dark fw-700 mb-2">Hierarchical Escalation Engine</h5>
+                    <p class="text-muted small mb-0">Auto-escalates breached complaints upward to higher administrative officers when designated resolution windows elapse.</p>
                 </div>
             </div>
+
+            <!-- 09 Official Service Mapping -->
             <div class="col-md-6 col-lg-4">
-                <div class="cr-feature-card h-100">
-                    <div class="cr-feature-icon cr-stat-icon--orange"><i class="fa-solid fa-lock"></i></div>
-                    <h5 class="fw-700 mb-2">Secure &amp; Private</h5>
-                    <p class="text-muted small mb-0">Spring Security-backed authentication with role-based access control. Your data is always protected.</p>
+                <div class="card p-4 h-100 border shadow-sm bg-white">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="cr-sec-icon-wrap" style="background:#eff6ff; color:#2563eb; width:46px; height:46px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.2rem;"><i class="fa-solid fa-id-badge"></i></div>
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Feature 09</span>
+                    </div>
+                    <h5 class="text-dark fw-700 mb-2">Official Service Mapping</h5>
+                    <p class="text-muted small mb-0">Links grievances to official municipal departmental rosters to provide full officer contact information and public auditability.</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<section class="cr-cta-section">
+<!-- ── 2. DETAILED 7-STEP REDRESSAL WORKFLOW ── -->
+<section class="py-5 bg-white border-top">
     <div class="container">
-        <h2>Start resolving civic issues today</h2>
-        <p>Free for citizens. Powerful for administrators.</p>
-        <a th:href="@{/register}" class="btn btn-light btn-lg px-5">Get Started Free</a>
+        <div class="text-center mb-5">
+            <h2 class="fw-800 text-dark">7-Step Redressal Workflow</h2>
+            <p class="text-muted">One complaint. One structured workflow. Accountable government response.</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Step 1 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card p-4 rounded-3 h-100 border shadow-sm bg-light">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="badge bg-primary text-white">STEP 01</span>
+                        <h6 class="text-dark fw-700 mb-0">Understand Problem</h6>
+                    </div>
+                    <p class="text-muted small mb-0">Citizen provides input via voice, photo, or typed text. The system analyzes context, keywords, and problem type.</p>
+                </div>
+            </div>
+            <!-- Step 2 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card p-4 rounded-3 h-100 border shadow-sm bg-light">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="badge bg-primary text-white">STEP 02</span>
+                        <h6 class="text-dark fw-700 mb-0">Detect Location</h6>
+                    </div>
+                    <p class="text-muted small mb-0">Standing GPS coordinates are acquired and bound to municipal ward boundaries to pinpoint jurisdiction.</p>
+                </div>
+            </div>
+            <!-- Step 3 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card p-4 rounded-3 h-100 border shadow-sm bg-light">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="badge bg-primary text-white">STEP 03</span>
+                        <h6 class="text-dark fw-700 mb-0">Department Routing</h6>
+                    </div>
+                    <p class="text-muted small mb-0">Categorizes into one of 14 public service sectors and routes the file to the responsible municipal department.</p>
+                </div>
+            </div>
+            <!-- Step 4 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card p-4 rounded-3 h-100 border shadow-sm bg-light">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="badge bg-primary text-white">STEP 04</span>
+                        <h6 class="text-dark fw-700 mb-0">Dossier Generation</h6>
+                    </div>
+                    <p class="text-muted small mb-0">A structured complaint payload is compiled with a unique tracking ID and assigned SLA clock.</p>
+                </div>
+            </div>
+            <!-- Step 5 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card p-4 rounded-3 h-100 border shadow-sm bg-light">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="badge bg-primary text-white">STEP 05</span>
+                        <h6 class="text-dark fw-700 mb-0">Live Status Tracking</h6>
+                    </div>
+                    <p class="text-muted small mb-0">Both citizen and authority track real-time progression through the 4-phase lifecycle with timestamped logs.</p>
+                </div>
+            </div>
+            <!-- Step 6 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card p-4 rounded-3 h-100 border shadow-sm bg-light">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="badge bg-primary text-white">STEP 06</span>
+                        <h6 class="text-dark fw-700 mb-0">Authority Contact Mapping</h6>
+                    </div>
+                    <p class="text-muted small mb-0">Provides the designated municipal officer designation, department helpline, and office location.</p>
+                </div>
+            </div>
+            <!-- Step 7 -->
+            <div class="col-12">
+                <div class="card p-4 rounded-3 text-center border-danger shadow-sm bg-white">
+                    <span class="badge bg-danger text-white mb-2 align-self-center px-3 py-1">STEP 07 &bull; THE ACCOUNTABILITY NET</span>
+                    <h5 class="text-dark fw-800 mb-2">Automated Hierarchical Escalation</h5>
+                    <p class="text-muted max-w-600 mx-auto small mb-3">
+                        If an assigned officer fails to review or act upon a complaint within the prescribed SLA window (e.g. 48h), the system triggers an automatic escalation event, promoting the file to higher administrative tiers.
+                    </p>
+                    <div>
+                        <a th:href="@{/citizen/complaint-details}" class="btn btn-sm btn-danger fw-700 px-4">View Live Escalation Tracker &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
+<!-- ── FOOTER ── -->
 <th:block th:replace="~{fragments/footer :: footer}"/>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

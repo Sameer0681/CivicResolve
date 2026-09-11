@@ -9,7 +9,7 @@
     <div class="cr-dashboard-main">
         <div class="cr-topbar">
             <div class="d-flex align-items-center gap-2">
-                <button class="btn btn-sm btn-light d-lg-none" onclick="document.querySelector('.cr-sidebar').classList.toggle('show')"><i class="fa-solid fa-bars"></i></button>
+                <button class="btn btn-sm btn-light d-lg-none" onclick="document.querySelector('.cr-sidebar').classList.toggle('show');document.querySelector('.cr-sidebar-backdrop')?.classList.toggle('show')"><i class="fa-solid fa-bars"></i></button>
                 <h1 class="cr-topbar-title">My Complaints</h1>
             </div>
             <a th:href="@{/report}" class="btn btn-primary btn-sm fw-600">
@@ -60,21 +60,23 @@
             </div>
 
             <!-- Complaints List -->
-            <div class="d-flex flex-column gap-3">
+            <div id="citizenComplaintsList" class="d-flex flex-column gap-3">
+                <!-- Dynamically injected real complaints will appear here -->
+
                 <a th:href="@{/citizen/complaint-details}" class="cr-complaint-card text-decoration-none text-dark">
                     <div class="d-flex align-items-start justify-content-between gap-3">
                         <div class="flex-grow-1">
                             <div class="d-flex align-items-center gap-2 mb-1">
                                 <span class="cr-complaint-id-tag">CR-2025-001</span>
-                                <span class="badge bg-light text-dark" style="font-size:.7rem;">Roads</span>
+                                <span class="badge bg-light text-dark" style="font-size:.7rem;">Roads &amp; Transport</span>
                                 <span class="cr-status cr-status--inprogress ms-auto">In Progress</span>
                             </div>
                             <h6 class="fw-700 mb-1">Pothole on MG Road near bus stop</h6>
                             <p class="text-muted small mb-2">Large pothole causing traffic disruption and vehicle damage. Located near the main bus stop on MG Road.</p>
                             <div class="d-flex align-items-center gap-3 text-muted" style="font-size:.75rem;">
-                                <span><i class="fa-solid fa-location-dot me-1"></i>MG Road, Bangalore</span>
-                                <span><i class="fa-solid fa-calendar me-1"></i>Jan 15, 2025</span>
-                                <span><i class="fa-solid fa-user-shield me-1"></i>Officer Sharma</span>
+                                <span><i class="fa-solid fa-location-dot me-1 text-danger"></i>26.95293, 80.92773 (Central Zone)</span>
+                                <span><i class="fa-solid fa-calendar me-1"></i>Active 48h SLA</span>
+                                <span><i class="fa-solid fa-user-shield me-1"></i>Er. Ramesh Verma</span>
                             </div>
                         </div>
                         <i class="fa-solid fa-chevron-right text-muted mt-1"></i>
@@ -86,13 +88,13 @@
                         <div class="flex-grow-1">
                             <div class="d-flex align-items-center gap-2 mb-1">
                                 <span class="cr-complaint-id-tag">CR-2025-002</span>
-                                <span class="badge bg-light text-dark" style="font-size:.7rem;">Lighting</span>
+                                <span class="badge bg-light text-dark" style="font-size:.7rem;">Street Lighting</span>
                                 <span class="cr-status cr-status--resolved ms-auto">Resolved</span>
                             </div>
                             <h6 class="fw-700 mb-1">Street light outage near Cubbon Park</h6>
                             <p class="text-muted small mb-2">Three consecutive street lights not working for over a week, creating safety hazard at night.</p>
                             <div class="d-flex align-items-center gap-3 text-muted" style="font-size:.75rem;">
-                                <span><i class="fa-solid fa-location-dot me-1"></i>Cubbon Park, Bangalore</span>
+                                <span><i class="fa-solid fa-location-dot me-1 text-danger"></i>North Zone Electrical Desk</span>
                                 <span><i class="fa-solid fa-calendar me-1"></i>Jan 12, 2025</span>
                                 <span class="text-success"><i class="fa-solid fa-circle-check me-1"></i>Resolved in 2 days</span>
                             </div>
@@ -106,13 +108,13 @@
                         <div class="flex-grow-1">
                             <div class="d-flex align-items-center gap-2 mb-1">
                                 <span class="cr-complaint-id-tag">CR-2025-003</span>
-                                <span class="badge bg-light text-dark" style="font-size:.7rem;">Sanitation</span>
+                                <span class="badge bg-light text-dark" style="font-size:.7rem;">Sanitation &amp; Waste</span>
                                 <span class="cr-status cr-status--pending ms-auto">Pending</span>
                             </div>
                             <h6 class="fw-700 mb-1">Garbage not collected for 3 days</h6>
                             <p class="text-muted small mb-2">Garbage bins overflowing on Residency Road. No collection for 3 consecutive days.</p>
                             <div class="d-flex align-items-center gap-3 text-muted" style="font-size:.75rem;">
-                                <span><i class="fa-solid fa-location-dot me-1"></i>Residency Road, Bangalore</span>
+                                <span><i class="fa-solid fa-location-dot me-1 text-danger"></i>Solid Waste Processing Zone 2</span>
                                 <span><i class="fa-solid fa-calendar me-1"></i>Jan 10, 2025</span>
                             </div>
                         </div>
@@ -134,5 +136,61 @@
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// Hydrate newly filed real complaints from sessionStorage
+(function() {
+    try {
+        const listEl = document.getElementById('citizenComplaintsList');
+        if (!listEl) return;
+        
+        const storedKeys = [];
+        for (let i = 0; i < sessionStorage.length; i++) {
+            const key = sessionStorage.key(i);
+            if (key && key.startsWith('cr_CR-')) {
+                storedKeys.push(key);
+            }
+        }
+        // If none found by prefix, check cr_latest
+        if (storedKeys.length === 0 && sessionStorage.getItem('cr_latest')) {
+            storedKeys.push('cr_latest');
+        }
+
+        storedKeys.forEach(k => {
+            try {
+                const item = JSON.parse(sessionStorage.getItem(k));
+                if (!item || !item.id) return;
+
+                const detailUrl = `/citizen/complaint-details?id=${encodeURIComponent(item.id)}&title=${encodeURIComponent(item.title)}&sector=${encodeURIComponent(item.sector)}&location=${encodeURIComponent(item.location)}&urgency=${encodeURIComponent(item.urgency)}&portal=${encodeURIComponent(item.portal || '')}&dept=${encodeURIComponent(item.dept || '')}`;
+
+                const card = document.createElement('a');
+                card.href = detailUrl;
+                card.className = 'cr-complaint-card text-decoration-none text-dark border-primary shadow-sm';
+                card.style.borderLeft = '4px solid #2563eb';
+                card.innerHTML = `
+                    <div class="d-flex align-items-start justify-content-between gap-3">
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                                <span class="cr-complaint-id-tag bg-primary text-white">${item.id}</span>
+                                <span class="badge bg-light text-dark" style="font-size:.7rem;">${item.sector}</span>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size:.7rem;"><i class="fa-solid fa-circle-check me-1"></i>Just Filed by You</span>
+                                <span class="cr-status cr-status--inprogress ms-auto">Active &bull; 48h SLA</span>
+                            </div>
+                            <h6 class="fw-700 mb-1 text-dark">${item.title}</h6>
+                            <p class="text-muted small mb-2">${item.description || 'Grievance registered and synchronized with target government department portal.'}</p>
+                            <div class="d-flex align-items-center gap-3 text-muted flex-wrap" style="font-size:.75rem;">
+                                <span><i class="fa-solid fa-location-dot text-danger me-1"></i>${item.location} (10m Geofenced)</span>
+                                <span><i class="fa-solid fa-building-columns text-primary me-1"></i>${item.dept || 'Designated Dept'}</span>
+                                <span class="text-primary fw-600"><i class="fa-solid fa-route me-1"></i>Track Real-Time Status &rarr;</span>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-primary mt-1"></i>
+                    </div>
+                `;
+                listEl.insertBefore(card, listEl.firstChild);
+            } catch(e) {}
+        });
+    } catch(e) {}
+})();
+</script>
 </body>
 </html>

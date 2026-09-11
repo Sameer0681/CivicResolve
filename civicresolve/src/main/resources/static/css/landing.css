@@ -76,12 +76,15 @@
 }
 .lp-btn-primary {
     background: linear-gradient(135deg, #2563eb, #1d4ed8);
-    border: none;
+    border: 1.5px solid transparent;
     font-weight: 700;
     padding: .85rem 2rem;
     border-radius: 10px;
     box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
     transition: all .25s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 .lp-btn-primary:hover {
     transform: translateY(-2px);
@@ -97,6 +100,9 @@
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(8px);
     transition: all .25s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 .lp-btn-ghost:hover {
     background: rgba(255, 255, 255, 0.12);
@@ -132,6 +138,11 @@
 }
 
 /* ── LIVE CARD ── */
+.lp-live-card-container {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+}
 .lp-live-card {
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(24px);
@@ -139,8 +150,6 @@
     border-radius: 20px;
     padding: 1.75rem;
     width: 100%;
-    max-width: 400px;
-    position: relative;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
 }
 .lp-live-card-header {
@@ -233,9 +242,10 @@
     font-weight: 700;
     color: #0f172a;
     white-space: nowrap;
+    z-index: 10;
 }
-.lp-badge--top    { top: 5%;  right: -2%; animation: float 3s ease-in-out infinite; }
-.lp-badge--bottom { bottom: 8%; left: -5%; animation: float 3s ease-in-out infinite 1.5s; }
+.lp-badge--top    { top: -14px; right: -20px; animation: float 3s ease-in-out infinite; }
+.lp-badge--bottom { bottom: -14px; left: -20px; animation: float 3s ease-in-out infinite 1.5s; }
 @keyframes float {
     0%, 100% { transform: translateY(0); }
     50%       { transform: translateY(-8px); }
@@ -307,7 +317,7 @@
 /* ── HOW IT WORKS ── */
 .lp-steps-connector {
     position: absolute;
-    top: 60px;
+    top: 94px;
     left: calc(16.66% + 60px);
     right: calc(16.66% + 60px);
     height: 2px;
@@ -324,6 +334,8 @@
     position: relative;
     transition: all .25s ease;
     height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 .lp-step-card:hover {
     border-color: #2563eb;
@@ -436,6 +448,8 @@
     padding: 2rem;
     height: 100%;
     transition: all .25s ease;
+    display: flex;
+    flex-direction: column;
 }
 .lp-testi-card:hover {
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
@@ -453,9 +467,10 @@
     line-height: 1.75;
     margin-bottom: 1.5rem;
     font-style: italic;
+    flex: 1;
 }
 .lp-testi-card--featured .lp-testi-text { color: rgba(255, 255, 255, 0.85); }
-.lp-testi-author { display: flex; align-items: center; gap: .875rem; }
+.lp-testi-author { display: flex; align-items: center; gap: .875rem; margin-top: auto; }
 .lp-testi-avatar {
     width: 42px; height: 42px;
     border-radius: 50%;
@@ -519,8 +534,11 @@
     font-weight: 700;
     border-radius: 10px;
     padding: .875rem 2rem;
-    border: none;
+    border: 1.5px solid #fff;
     transition: all .25s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 .lp-cta-btn-primary:hover {
     background: #f0f9ff;
@@ -536,6 +554,9 @@
     padding: .875rem 2rem;
     background: rgba(255,255,255,.05);
     transition: all .25s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 .lp-cta-btn-ghost:hover {
     background: rgba(255,255,255,.12);
@@ -611,6 +632,9 @@
     border-radius: 14px;
     padding: 1.5rem;
     transition: all .25s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 .cr-feature-card:hover {
     border-color: #2563eb;
@@ -623,11 +647,14 @@
     display: flex; align-items: center; justify-content: center;
     font-size: 1.3rem;
     margin-bottom: 1rem;
+    flex-shrink: 0;
 }
 
 /* Sector card */
 .cr-sector-card {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     background: #fff;
     border: 1.5px solid #e2e8f0;
     border-radius: 14px;
@@ -644,12 +671,16 @@
     transform: translateY(-4px);
     color: #0f172a;
 }
+.cr-sector-card p {
+    flex: 1;
+}
 .cr-sector-icon {
     width: 56px; height: 56px;
     border-radius: 14px;
     display: flex; align-items: center; justify-content: center;
     font-size: 1.4rem;
     margin: 0 auto 1rem;
+    flex-shrink: 0;
 }
 
 /* CTA section */
@@ -670,3 +701,408 @@
     font-size: 1rem;
     margin-bottom: 2rem;
 }
+
+/* =========================================================
+   GRIEVANCEPROOF AI — PROJECT FLOW DESIGN EXTENSIONS
+   ========================================================= */
+
+/* Dark Tech Section Containers */
+.cr-dark-section {
+    background: #060c18;
+    color: #fff;
+    padding: 5.5rem 0;
+    position: relative;
+    overflow: hidden;
+}
+.cr-dark-section--alt {
+    background: #091224;
+}
+
+/* Glowing background accents */
+.cr-glow-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    pointer-events: none;
+    z-index: 0;
+}
+.cr-glow-orb--cyan {
+    width: 450px; height: 450px;
+    background: rgba(0, 229, 255, 0.12);
+}
+.cr-glow-orb--blue {
+    width: 500px; height: 500px;
+    background: rgba(37, 99, 235, 0.15);
+}
+
+/* 6-Point Problem Statement */
+.cr-problem-card {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.25rem 1.25rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    transition: var(--cr-transition);
+    height: 100%;
+}
+.cr-problem-card:hover {
+    border-color: rgba(239, 68, 68, 0.4);
+    background: rgba(239, 68, 68, 0.05);
+    transform: translateY(-2px);
+}
+.cr-problem-num {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #f87171;
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.cr-problem-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.05);
+    color: #94a3b8;
+}
+
+/* Hindi/English Solution Highlight Card */
+.cr-sol-banner {
+    background: linear-gradient(135deg, rgba(12, 33, 63, 0.9) 0%, rgba(9, 60, 88, 0.85) 100%);
+    border: 1.5px solid rgba(0, 229, 255, 0.4);
+    box-shadow: 0 10px 40px rgba(0, 229, 255, 0.15);
+    border-radius: 16px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+.cr-sol-banner::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(0, 229, 255, 0.15) 0%, transparent 70%);
+    pointer-events: none;
+}
+.cr-sol-banner-heading {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: .5rem;
+}
+.cr-sol-banner-heading span {
+    color: var(--cr-cyan);
+}
+.cr-sol-feature-chip {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 50px;
+    padding: .4rem .9rem;
+    font-size: .8rem;
+    color: #e2e8f0;
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+/* Why Unified Platform: Comparison Cards */
+.cr-compare-card {
+    border-radius: 14px;
+    padding: 1.75rem;
+    height: 100%;
+    transition: var(--cr-transition);
+}
+.cr-compare-card--today {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+}
+.cr-compare-card--civic {
+    background: linear-gradient(135deg, rgba(8, 30, 60, 0.6), rgba(6, 40, 65, 0.7));
+    border: 1.5px solid rgba(0, 229, 255, 0.4);
+    box-shadow: 0 10px 30px rgba(0, 229, 255, 0.12);
+}
+.cr-compare-hub {
+    background: linear-gradient(135deg, #0284c7, #00e5ff);
+    color: #061024;
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    font-weight: 800;
+    box-shadow: 0 0 35px rgba(0, 229, 255, 0.4);
+}
+
+/* 5-Stage Core Journey (Slide 5) */
+.cr-stage-track {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    position: relative;
+}
+.cr-stage-box {
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    transition: var(--cr-transition);
+    position: relative;
+}
+.cr-stage-box:hover {
+    transform: translateY(-4px);
+    border-color: var(--cr-cyan);
+    box-shadow: 0 8px 25px rgba(0, 229, 255, 0.2);
+}
+.cr-stage-num {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    margin: 0 auto .75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: .9rem;
+    background: rgba(0, 229, 255, 0.15);
+    color: var(--cr-cyan);
+    border: 1px solid rgba(0, 229, 255, 0.4);
+}
+.cr-stage-badge {
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    padding: .2rem .6rem;
+    border-radius: 50px;
+    margin-top: .75rem;
+    display: inline-block;
+}
+
+/* 7-Step AI Workflow (Slide 8) */
+.cr-workflow-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+    justify-content: center;
+}
+.cr-wf-step {
+    flex: 1 1 130px;
+    min-width: 120px;
+    max-width: 160px;
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1rem .75rem;
+    text-align: center;
+    position: relative;
+    transition: var(--cr-transition);
+}
+.cr-wf-step:hover {
+    border-color: var(--cr-cyan);
+    background: rgba(12, 25, 48, 0.9);
+    transform: translateY(-3px);
+}
+.cr-wf-step-num {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--cr-primary);
+    color: #fff;
+    font-size: .75rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto .5rem;
+}
+.cr-wf-step-icon {
+    font-size: 1.25rem;
+    color: var(--cr-cyan);
+    margin-bottom: .5rem;
+}
+
+/* 14 Government Service Sectors (Slide 7) */
+.cr-sector-grid-14 {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+}
+.cr-sec-card-dark {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+    color: #fff;
+    transition: var(--cr-transition);
+}
+.cr-sec-card-dark:hover {
+    background: rgba(12, 28, 54, 0.85);
+    border-color: var(--cr-cyan);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 229, 255, 0.15);
+    color: #fff;
+}
+.cr-sec-icon-wrap {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+/* Slide 11 Live Demo Card (Working User Journey) */
+.cr-demo-live-card {
+    background: #0f172a;
+    border: 1.5px solid rgba(0, 229, 255, 0.4);
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 229, 255, 0.2);
+    border-radius: 16px;
+    overflow: hidden;
+    color: #fff;
+}
+.cr-demo-header {
+    background: #1e293b;
+    padding: .85rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.cr-demo-content {
+    padding: 1.5rem;
+}
+.cr-demo-thumb {
+    width: 100%;
+    height: 150px;
+    border-radius: 10px;
+    object-fit: cover;
+    background: #1e293b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+.cr-demo-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    margin: 1.5rem 0 1rem;
+}
+.cr-demo-stepper::before {
+    content: '';
+    position: absolute;
+    top: 14px;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background: #334155;
+    z-index: 1;
+}
+.cr-demo-step-node {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+.cr-demo-step-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #1e293b;
+    border: 2px solid #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto .35rem;
+    font-size: .75rem;
+    font-weight: 700;
+}
+.cr-demo-step-node.completed .cr-demo-step-dot {
+    background: #00c49f;
+    border-color: #00c49f;
+    color: #fff;
+}
+.cr-demo-step-node.active .cr-demo-step-dot {
+    background: #00e5ff;
+    border-color: #00e5ff;
+    color: #0b132b;
+    box-shadow: 0 0 12px #00e5ff;
+}
+
+/* Slide 12 Automatic Escalation Mechanism */
+.cr-esc-timeline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+.cr-esc-step-card {
+    flex: 1 1 150px;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 1rem .75rem;
+    text-align: center;
+}
+.cr-esc-step-card.active-delay {
+    border-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.08);
+}
+.cr-esc-step-card.active-escalated {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+}
+
+/* Team Showcase Cards */
+.cr-team-card {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: var(--cr-transition);
+}
+.cr-team-card:hover {
+    border-color: var(--cr-cyan);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0, 229, 255, 0.2);
+}
+.cr-team-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+    background: linear-gradient(135deg, #1e3a8a, #0284c7);
+    border: 2px solid var(--cr-cyan);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    color: #fff;
+}
+

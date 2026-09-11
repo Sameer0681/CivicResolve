@@ -9,6 +9,7 @@
     <div class="cr-dashboard-main">
         <div class="cr-topbar">
             <div class="d-flex align-items-center gap-2">
+                <button class="btn btn-sm btn-light d-lg-none" onclick="document.querySelector('.cr-sidebar').classList.toggle('show');document.querySelector('.cr-sidebar-backdrop')?.classList.toggle('show')"><i class="fa-solid fa-bars"></i></button>
                 <a th:href="@{/officer/complaints}" class="btn btn-sm btn-light"><i class="fa-solid fa-arrow-left"></i></a>
                 <h1 class="cr-topbar-title">Complaint Details</h1>
             </div>
@@ -23,23 +24,31 @@
                     <!-- Header card -->
                     <div class="cr-card mb-4">
                         <div class="cr-complaint-detail-header">
-                            <div class="d-flex align-items-center gap-2 mb-2">
-                                <span class="cr-complaint-id-tag" style="background:rgba(255,255,255,.15);color:#fff;">CR-2025-001</span>
-                                <span class="badge bg-light text-dark">Roads</span>
+                            <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                                <span class="cr-complaint-id-tag font-monospace" id="officerComplaintIdTag" style="background:rgba(255,255,255,.15);color:#fff;" th:text="${complaintId} ?: 'CR-256491'">CR-256491</span>
+                                <span class="badge bg-light text-dark" id="officerSectorBadge" th:text="${sector} ?: 'Roads &amp; Transport'">Roads &amp; Transport</span>
+                                <span class="badge bg-warning text-dark font-monospace" th:text="${urgency} ?: 'NORMAL'">NORMAL</span>
                             </div>
-                            <h4 class="fw-800 mb-1">Pothole on MG Road near bus stop</h4>
-                            <p style="color:rgba(255,255,255,.7);font-size:.9rem;margin:0;">Filed by John Doe · Jan 15, 2025</p>
+                            <h4 class="fw-800 mb-1" id="officerComplaintTitle" th:text="${title} ?: 'Severe Pothole &amp; Road Surface Defect Reported'">Severe Pothole &amp; Road Surface Defect Reported</h4>
+                            <p style="color:rgba(255,255,255,.85);font-size:.9rem;margin:0;" id="officerFilingMeta">Filed via CivicResolve Autonomous Ingest &bull; Verified Standing GPS</p>
                         </div>
                         <div class="cr-card-body">
-                            <p class="text-muted mb-3">Large pothole causing traffic disruption and vehicle damage. Located near the main bus stop on MG Road, approximately 50 meters from the traffic signal.</p>
+                            <p class="text-muted mb-3" id="officerComplaintDesc" th:text="${description} ?: 'Citizen submitted on-ground report regarding road surface defect at standing GPS location. Automated work order generated and routed under enforceable 48-Hour SLA.'">
+                                Citizen submitted on-ground report regarding road surface defect at standing GPS location. Automated work order generated and routed under enforceable 48-Hour SLA.
+                            </p>
                             <div class="row g-3">
                                 <div class="col-sm-6">
-                                    <div class="text-muted small fw-600 mb-1">Location</div>
-                                    <div class="small"><i class="fa-solid fa-location-dot text-primary me-1"></i>MG Road, Bangalore - 560001</div>
+                                    <div class="text-muted small fw-600 mb-1">Standing Incident Location (10m Geofenced)</div>
+                                    <div class="small fw-700 font-monospace" id="officerLocationText">
+                                        <i class="fa-solid fa-location-crosshairs text-danger me-1"></i>
+                                        <span th:text="${location} ?: '26.95293, 80.92773'">26.95293, 80.92773</span>
+                                    </div>
+                                    <div class="text-muted" style="font-size:0.75rem;">Ward 14 (Central Zone, Lucknow Division)</div>
                                 </div>
                                 <div class="col-sm-6">
-                                    <div class="text-muted small fw-600 mb-1">SLA Deadline</div>
-                                    <div class="small text-warning fw-600"><i class="fa-solid fa-clock me-1"></i>Jan 17, 2025 · 6 hours left</div>
+                                    <div class="text-muted small fw-600 mb-1">Enforceable SLA Window</div>
+                                    <div class="small text-warning fw-700"><i class="fa-solid fa-clock me-1"></i>48-Hour SLA Active &bull; 47h 56m remaining</div>
+                                    <div class="text-muted" style="font-size:0.75rem;">Target Portal: <span th:text="${portal} ?: 'State PWD Grievance Portal'">State PWD Grievance Portal</span></div>
                                 </div>
                             </div>
                         </div>

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head('Escalations')}">
+<head th:replace="~{fragments/head :: head('Officer Escalation Desk')}">
     <link th:href="@{/css/officer.css}" rel="stylesheet"/>
 </head>
 <body>
@@ -9,48 +9,97 @@
     <div class="cr-dashboard-main">
         <div class="cr-topbar">
             <div class="d-flex align-items-center gap-2">
-                <button class="btn btn-sm btn-light d-lg-none" onclick="document.querySelector('.cr-sidebar').classList.toggle('show')"><i class="fa-solid fa-bars"></i></button>
-                <h1 class="cr-topbar-title">Escalations</h1>
+                <button class="btn btn-sm btn-light d-lg-none" onclick="document.querySelector('.cr-sidebar').classList.toggle('show');document.querySelector('.cr-sidebar-backdrop')?.classList.toggle('show')"><i class="fa-solid fa-bars"></i></button>
+                <div>
+                    <h1 class="cr-topbar-title">Automatic Escalation Desk</h1>
+                    <span class="text-muted small">GrievanceProof AI SLA Engine</span>
+                </div>
             </div>
-            <span class="badge bg-danger fs-6">2 Urgent</span>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-danger fs-6"><i class="fa-solid fa-triangle-exclamation me-1"></i> 2 Critical Overdues</span>
+            </div>
         </div>
+
         <div class="cr-page-content">
-            <div class="alert alert-danger cr-alert mb-4">
-                <i class="fa-solid fa-triangle-exclamation me-2"></i>
-                You have <strong>2 escalated complaints</strong> that require immediate attention.
-            </div>
-            <div class="d-flex flex-column gap-3">
-                <div class="cr-card" style="border-left:4px solid var(--cr-danger);">
-                    <div class="cr-card-body">
-                        <div class="d-flex align-items-start justify-content-between gap-3">
-                            <div>
-                                <div class="d-flex align-items-center gap-2 mb-2">
-                                    <span class="cr-complaint-id-tag">CR-2025-005</span>
-                                    <span class="cr-status cr-status--escalated">Escalated</span>
-                                    <span class="text-danger small fw-700">Overdue by 12 hours</span>
-                                </div>
-                                <h6 class="fw-700 mb-1">Water pipe burst on 5th Cross</h6>
-                                <p class="text-muted small mb-2">Major water pipe burst causing flooding. Immediate repair required.</p>
-                                <div class="text-muted small"><i class="fa-solid fa-location-dot me-1"></i>5th Cross, Indiranagar · Filed by Priya S.</div>
-                            </div>
-                            <a th:href="@{/officer/complaint-details}" class="btn btn-danger fw-600 flex-shrink-0">Take Action</a>
+            <!-- Automated Escalation Summary Box -->
+            <div class="p-3 rounded-3 mb-4 text-white" style="background: linear-gradient(135deg, #0f172a, #1e293b); border: 1px solid rgba(239, 68, 68, 0.4);">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                    <span class="badge bg-danger text-white"><i class="fa-solid fa-bolt me-1"></i> AUTOMATIC ESCALATION MECHANISM ACTIVE</span>
+                    <span class="text-white-50 small">Rule: 48h Response SLA Breach &rarr; Auto-promote Tier</span>
+                </div>
+                <div class="row g-3 text-center small pt-2">
+                    <div class="col-sm-4">
+                        <div class="p-2 rounded bg-black-20 border border-white-10">
+                            <span class="badge bg-primary mb-1">TRIGGER RULE</span>
+                            <div class="fw-700">Defined Response Time</div>
+                            <div class="text-white-50" style="font-size:0.7rem;">Detects when expected SLA window is breached.</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="p-2 rounded bg-black-20 border border-white-10">
+                            <span class="badge bg-warning text-dark mb-1">ESCALATION</span>
+                            <div class="fw-700">Higher Authority Level</div>
+                            <div class="text-white-50" style="font-size:0.7rem;">Increases from Level 1 to Level 2/3.</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="p-2 rounded bg-black-20 border border-white-10">
+                            <span class="badge bg-info text-dark mb-1">VISIBILITY</span>
+                            <div class="fw-700">Transparent Citizen Log</div>
+                            <div class="text-white-50" style="font-size:0.7rem;">Citizen notified at each escalation step.</div>
                         </div>
                     </div>
                 </div>
-                <div class="cr-card" style="border-left:4px solid var(--cr-danger);">
+            </div>
+
+            <!-- Escalated Cards -->
+            <div class="d-flex flex-column gap-3">
+                <!-- Case 1 -->
+                <div class="cr-card shadow-sm" style="border-left:5px solid #ef4444;">
                     <div class="cr-card-body">
-                        <div class="d-flex align-items-start justify-content-between gap-3">
+                        <div class="d-flex align-items-start justify-content-between flex-wrap gap-3">
                             <div>
-                                <div class="d-flex align-items-center gap-2 mb-2">
-                                    <span class="cr-complaint-id-tag">CR-2025-007</span>
-                                    <span class="cr-status cr-status--escalated">Escalated</span>
-                                    <span class="text-danger small fw-700">Overdue by 4 hours</span>
+                                <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                                    <span class="cr-complaint-id-tag fw-700">CR-849201</span>
+                                    <span class="cr-esc-badge cr-esc-badge--l2">ESCALATION LEVEL 2 (ZONAL HEAD)</span>
+                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle">SLA Breached by 6 Hours</span>
                                 </div>
-                                <h6 class="fw-700 mb-1">Illegal dumping near school</h6>
-                                <p class="text-muted small mb-2">Large pile of construction waste dumped illegally near the school entrance.</p>
-                                <div class="text-muted small"><i class="fa-solid fa-location-dot me-1"></i>Koramangala · Filed by Ravi K.</div>
+                                <h5 class="fw-800 text-dark mb-1">Hazardous Pothole near Central Road, Hazratganj</h5>
+                                <p class="text-muted small mb-2">Road depression causing severe traffic slowdown and hazard. Initial 48-hour window breached without work order completion.</p>
+                                <div class="text-muted small">
+                                    <i class="fa-solid fa-location-dot text-danger me-1"></i> Ward 14, Lucknow &bull; Filed 10 Sep, 10:30 AM &bull; <i class="fa-solid fa-user-shield text-info me-1"></i> Previous Assignee: JE Rajesh Sharma
+                                </div>
                             </div>
-                            <a th:href="@{/officer/complaint-details}" class="btn btn-danger fw-600 flex-shrink-0">Take Action</a>
+                            <div class="d-flex gap-2">
+                                <a th:href="@{/officer/complaint-details}" class="btn btn-danger fw-700">
+                                    <i class="fa-solid fa-bolt me-1"></i> Expedite Work Order
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Case 2 -->
+                <div class="cr-card shadow-sm" style="border-left:5px solid #dc2626;">
+                    <div class="cr-card-body">
+                        <div class="d-flex align-items-start justify-content-between flex-wrap gap-3">
+                            <div>
+                                <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                                    <span class="cr-complaint-id-tag fw-700">CR-2025-005</span>
+                                    <span class="cr-esc-badge cr-esc-badge--l3">ESCALATION LEVEL 3 (COMMISSIONER)</span>
+                                    <span class="badge bg-danger text-white">SLA Breached by 26 Hours</span>
+                                </div>
+                                <h5 class="fw-800 text-dark mb-1">Water Main Burst Flooding Residential Colony</h5>
+                                <p class="text-muted small mb-2">Drinking water supply contamination risk and street inundation. Both Level 1 and Level 2 response times expired.</p>
+                                <div class="text-muted small">
+                                    <i class="fa-solid fa-location-dot text-danger me-1"></i> Indira Nagar Sector 4 &bull; Filed 9 Sep, 08:00 AM &bull; <i class="fa-solid fa-building text-info me-1"></i> Jal Sansthan Division 2
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a th:href="@{/officer/complaint-details}" class="btn btn-danger fw-700">
+                                    <i class="fa-solid fa-triangle-exclamation me-1"></i> High-Level Review
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>

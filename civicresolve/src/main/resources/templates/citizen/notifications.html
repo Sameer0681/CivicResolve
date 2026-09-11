@@ -9,7 +9,7 @@
     <div class="cr-dashboard-main">
         <div class="cr-topbar">
             <div class="d-flex align-items-center gap-2">
-                <button class="btn btn-sm btn-light d-lg-none" onclick="document.querySelector('.cr-sidebar').classList.toggle('show')"><i class="fa-solid fa-bars"></i></button>
+                <button class="btn btn-sm btn-light d-lg-none" onclick="document.querySelector('.cr-sidebar').classList.toggle('show');document.querySelector('.cr-sidebar-backdrop')?.classList.toggle('show')"><i class="fa-solid fa-bars"></i></button>
                 <h1 class="cr-topbar-title">Notifications</h1>
             </div>
             <button class="btn btn-sm btn-outline-secondary">Mark all as read</button>

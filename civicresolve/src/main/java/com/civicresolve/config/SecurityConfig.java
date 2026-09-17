@@ -18,8 +18,10 @@ public class SecurityConfig {
     private final CustomUserDetailsService customUserDetailsService;
     private final CustomAuthenticationSuccessHandler authenticationSuccessHandler;
 
-    public SecurityConfig(CustomUserDetailsService customUserDetailsService,
-                          CustomAuthenticationSuccessHandler authenticationSuccessHandler) {
+    public SecurityConfig(
+            CustomUserDetailsService customUserDetailsService,
+            CustomAuthenticationSuccessHandler authenticationSuccessHandler) {
+
         this.customUserDetailsService = customUserDetailsService;
         this.authenticationSuccessHandler = authenticationSuccessHandler;
     }
@@ -30,50 +32,92 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration authenticationConfiguration) throws Exception {
+
         return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http
-            .authorizeHttpRequests(auth -> auth
-                // Static web assets
-                .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico", "/webjars/**").permitAll()
-                // Public landing & informational views
-                .requestMatchers("/", "/landing/**", "/about", "/features", "/sectors").permitAll()
-                // Authentication and password reset views
-                .requestMatchers("/login", "/register", "/forgot-password", "/reset-password").permitAll()
-                // Grievance filing flows (accessible to both guests and citizens)
-                .requestMatchers("/report/**").permitAll()
-                // Role-protected workspaces
-                .requestMatchers("/citizen/**").hasAnyRole("CITIZEN", "ADMIN")
-                .requestMatchers("/officer/**").hasAnyRole("OFFICER", "ADMIN")
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
-            )
-            .formLogin(form -> form
-                .loginPage("/login")
-                .loginProcessingUrl("/login")
-                .usernameParameter("username")
-                .passwordParameter("password")
-                .successHandler(authenticationSuccessHandler)
-                .failureUrl("/login?error=true")
-                .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login?logout=true")
-                .invalidateHttpSession(true)
-                .clearAuthentication(true)
-                .deleteCookies("JSESSIONID", "remember-me")
-                .permitAll()
-            )
-            .rememberMe(remember -> remember
-                .key("CivicResolveSecretKey2026")
-                .tokenValiditySeconds(86400 * 30) // 30 days
-                .userDetailsService(customUserDetailsService)
-            );
+                .authorizeHttpRequests(auth -> auth
+
+                        // Static web assets
+                        .requestMatchers(
+                                "/css/**",
+                                "/js/**",
+                                "/images/**",
+                                "/favicon.ico",
+                                "/webjars/**"
+                        ).permitAll()
+
+                        // Public landing & informational views
+                        .requestMatchers(
+                                "/",
+                                "/landing/**",
+                                "/about",
+                                "/features",
+                                "/sectors"
+                        ).permitAll()
+
+                        // Authentication and password reset views
+                        .requestMatchers(
+                                "/login",
+                                "/register",
+                                "/forgot-password",
+                                "/reset-password"
+                        ).permitAll()
+
+                        // Grievance filing flows
+                        .requestMatchers("/report/**").permitAll()
+
+                        // Complaint API - development/testing
+                        .requestMatchers("/api/complaints/**").permitAll()
+
+                        // Role-protected workspaces
+                        .requestMatchers("/citizen/**")
+                        .hasAnyRole("CITIZEN", "ADMIN")
+
+                        .requestMatchers("/officer/**")
+                        .hasAnyRole("OFFICER", "ADMIN")
+
+                        .requestMatchers("/admin/**")
+                        .hasRole("ADMIN")
+
+                        .anyRequest().authenticated()
+                )
+
+                // Allow REST API requests without CSRF token
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/**")
+                )
+
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .usernameParameter("username")
+                        .passwordParameter("password")
+                        .successHandler(authenticationSuccessHandler)
+                        .failureUrl("/login?error=true")
+                        .permitAll()
+                )
+
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout=true")
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID", "remember-me")
+                        .permitAll()
+                )
+
+                .rememberMe(remember -> remember
+                        .key("CivicResolveSecretKey2026")
+                        .tokenValiditySeconds(86400 * 30)
+                        .userDetailsService(customUserDetailsService)
+                );
 
         return http.build();
     }

@@ -6,7 +6,7 @@
     <title>CivicResolve — Citizen Grievance Redressal Portal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@500;600;700;800;900&display=swap" rel="stylesheet"/>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
     <link th:href="@{/css/common.css}" rel="stylesheet"/>
@@ -17,42 +17,73 @@
 <!-- ── NAVBAR ── -->
 <th:block th:replace="~{fragments/navbar :: navbar}"/>
 
-<!-- ── 1. HERO SECTION (STANDARD & CLEAN) ── -->
-<section class="py-5 bg-white border-bottom shadow-sm">
+<!-- ── 1. RESPONSIVE HERO SECTION ── -->
+<section class="py-5 bg-white border-bottom shadow-sm position-relative overflow-hidden">
     <div class="container py-4">
         <div class="row align-items-center gy-5">
             <!-- Left: Hero Content & Search -->
             <div class="col-lg-7">
                 <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3" style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; font-size: 0.85rem; font-weight: 700;">
-                    <i class="fa-solid fa-landmark"></i> Official Municipal Grievance Redressal
+                    <i class="fa-solid fa-landmark"></i> Official Municipal Grievance Redressal &bull; <span class="text-success fw-800">Active 24/7</span>
                 </div>
                 <h1 class="display-5 fw-900 text-dark mb-3" style="letter-spacing: -0.5px; line-height: 1.2;">
                     Report Civic Problems.<br>
                     <span style="color: #2563eb;">Hold Local Authorities Accountable.</span>
                 </h1>
                 <p class="text-muted mb-4 fs-6" style="max-width: 580px; line-height: 1.7;">
-                    A zero-friction public service portal. Submit grievances using voice dictation, camera photo, or text. The system automatically captures your 10-meter standing GPS position, classifies the department, and tracks resolution with enforceable SLAs.
+                    A zero-friction public service portal. Submit grievances using voice dictation, camera photo, or text. The system automatically captures your <strong>10-meter standing GPS position</strong>, classifies the department across <strong>14 sectors</strong>, and tracks resolution with enforceable SLAs.
                 </p>
 
                 <!-- Track Search Bar -->
-                <div class="p-2 mb-4 rounded-3 shadow-sm bg-light border" style="max-width: 480px;">
-                    <form th:action="@{/citizen/complaint-details}" method="get" class="d-flex gap-2">
+                <div class="p-2 mb-4 rounded-3 shadow-sm bg-light border" style="max-width: 500px;">
+                    <form id="heroTrackerForm" th:action="@{/citizen/complaint-details}" method="get" class="d-flex gap-2">
                         <div class="input-group">
                             <span class="input-group-text bg-transparent border-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
-                            <input type="text" name="id" class="form-control bg-transparent border-0" placeholder="Enter Complaint ID to Track..."/>
+                            <input type="text" id="heroTrackerInput" name="id" class="form-control bg-transparent border-0" placeholder="Enter Complaint ID (e.g. CR-2048) to Track..." required/>
                         </div>
                         <button type="submit" class="btn btn-primary fw-700 px-4">Track</button>
                     </form>
                 </div>
 
                 <!-- Action Buttons -->
-                <div class="d-flex gap-3 flex-wrap">
+                <div class="d-flex gap-3 flex-wrap mb-4">
                     <a th:href="@{/report}" class="btn btn-primary btn-lg fw-700 px-4 shadow-sm">
                         <i class="fa-solid fa-plus-circle me-2"></i>Report an Issue
                     </a>
-                    <a th:href="@{/sectors}" class="btn btn-outline-secondary btn-lg fw-600 px-4">
-                        <i class="fa-solid fa-building-columns me-2"></i>View 14 Sectors
+                    <a href="#sectorsShowcaseSection" class="btn btn-outline-secondary btn-lg fw-600 px-4">
+                        <i class="fa-solid fa-building-columns me-2"></i>Explore 14 Sectors
                     </a>
+                    <a href="#faqSection" class="btn btn-link text-muted fw-600 text-decoration-none d-flex align-items-center">
+                        <i class="fa-solid fa-circle-question me-1 text-primary"></i> Citizen FAQs &rarr;
+                    </a>
+                </div>
+
+                <!-- Animated Stats Row -->
+                <div class="row g-2 pt-2" style="max-width: 580px;">
+                    <div class="col-6 col-sm-3">
+                        <div class="p-2 rounded-3 border bg-light text-center">
+                            <div class="fw-900 text-primary fs-5" data-counter-target="48" data-counter-suffix="h">48h</div>
+                            <div class="text-muted" style="font-size: 0.72rem; font-weight: 600;">Response SLA</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-sm-3">
+                        <div class="p-2 rounded-3 border bg-light text-center">
+                            <div class="fw-900 text-dark fs-5" data-counter-target="14" data-counter-suffix="">14</div>
+                            <div class="text-muted" style="font-size: 0.72rem; font-weight: 600;">Civic Sectors</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-sm-3">
+                        <div class="p-2 rounded-3 border bg-light text-center">
+                            <div class="fw-900 text-info fs-5" data-counter-target="10" data-counter-suffix="m">10m</div>
+                            <div class="text-muted" style="font-size: 0.72rem; font-weight: 600;">GPS Accuracy</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-sm-3">
+                        <div class="p-2 rounded-3 border bg-light text-center">
+                            <div class="fw-900 text-success fs-5" data-counter-target="100" data-counter-suffix="%">100%</div>
+                            <div class="text-muted" style="font-size: 0.72rem; font-weight: 600;">Trackable</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -70,12 +101,12 @@
                     </div>
 
                     <p class="text-muted small mb-3">
-                        No manual paperwork or form filling. Provide your issue in any format below — AI automatically captures your 10-meter standing location and handles the filing.
+                        No manual paperwork or form filling. Provide your issue in any format below — the multi-step wizard captures your 10-meter standing location and handles official dispatch.
                     </p>
 
                     <!-- Direct Action Options -->
                     <div class="d-flex flex-column gap-2 mb-3">
-                        <a th:href="@{/report}" class="p-3 rounded-3 border text-decoration-none d-flex align-items-center gap-3 bg-light hover-lift">
+                        <a th:href="@{/report(mode='voice')}" class="p-3 rounded-3 border text-decoration-none d-flex align-items-center gap-3 bg-light hover-lift">
                             <div style="background: #dbeafe; color: #1d4ed8; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
                                 <i class="fa-solid fa-microphone-lines"></i>
                             </div>
@@ -86,13 +117,24 @@
                             <i class="fa-solid fa-chevron-right text-muted small"></i>
                         </a>
 
-                        <a th:href="@{/report}" class="p-3 rounded-3 border text-decoration-none d-flex align-items-center gap-3 bg-light hover-lift">
+                        <a th:href="@{/report(mode='photo')}" class="p-3 rounded-3 border text-decoration-none d-flex align-items-center gap-3 bg-light hover-lift">
                             <div style="background: #dcfce7; color: #15803d; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
                                 <i class="fa-solid fa-camera"></i>
                             </div>
                             <div class="flex-grow-1">
                                 <div class="fw-700 text-dark small">Attach Photo Evidence</div>
                                 <div class="text-muted" style="font-size: 0.75rem;">Upload photo; AI stamps 10m standing GPS</div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right text-muted small"></i>
+                        </a>
+
+                        <a th:href="@{/report(mode='text')}" class="p-3 rounded-3 border text-decoration-none d-flex align-items-center gap-3 bg-light hover-lift">
+                            <div style="background: #fef3c7; color: #d97706; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
+                                <i class="fa-solid fa-keyboard"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-700 text-dark small">Plain Text Description</div>
+                                <div class="text-muted" style="font-size: 0.75rem;">Type your problem; AI auto-selects department</div>
                             </div>
                             <i class="fa-solid fa-chevron-right text-muted small"></i>
                         </a>
@@ -111,7 +153,7 @@
                     </div>
 
                     <a th:href="@{/report}" class="btn btn-primary fw-700 py-2 w-100">
-                        Start Reporting Now &rarr;
+                        Launch Grievance Report Wizard &rarr;
                     </a>
                 </div>
             </div>
@@ -119,7 +161,7 @@
     </div>
 </section>
 
-<!-- ── THE REAL-WORLD UNIFIED PLATFORM CONCEPT ── -->
+<!-- ── 2. UNIFIED CITIZEN PLATFORM OVERVIEW ── -->
 <section class="py-5 bg-white border-bottom">
     <div class="container">
         <div class="row align-items-center gy-4">
@@ -127,7 +169,7 @@
                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1.5 fw-700 mb-2">
                     <i class="fa-solid fa-circle-nodes me-1"></i> Unified Government Service Gateway
                 </span>
-                <h2 class="fw-900 text-dark mb-3">One Place For All Government Services &amp; Portals</h2>
+                <h2 class="fw-900 text-dark mb-3">One Place For All Municipal Services &amp; Portals</h2>
                 <p class="text-muted" style="line-height: 1.7;">
                     In traditional systems, citizens must search through dozens of different departmental websites, find the right jurisdiction, navigate complex forms, and track complaints across fragmented portals.
                 </p>
@@ -135,13 +177,13 @@
                     <strong class="text-dark d-block mb-1">Citizens Do Not Need To Know:</strong>
                     <ul class="list-unstyled mb-0 small text-muted">
                         <li class="mb-1"><i class="fa-solid fa-check text-success me-2"></i> Which government department handles the problem</li>
-                        <li class="mb-1"><i class="fa-solid fa-check text-success me-2"></i> Which official portal or portal URL they must visit</li>
+                        <li class="mb-1"><i class="fa-solid fa-check text-success me-2"></i> Which official portal URL they must visit</li>
                         <li class="mb-1"><i class="fa-solid fa-check text-success me-2"></i> Which form they need to fill or technical terms to use</li>
-                        <li><i class="fa-solid fa-check text-success me-2"></i> What specific department parameters to provide</li>
+                        <li><i class="fa-solid fa-check text-success me-2"></i> What specific municipal ward parameters to provide</li>
                     </ul>
                 </div>
                 <p class="text-dark fw-600 mb-0">
-                    <i class="fa-solid fa-comment-dots text-primary me-2"></i> The citizen simply describes their problem: <em class="text-primary">&ldquo;There is a large pothole near Central Road.&rdquo;</em> CivicResolve handles the rest.
+                    <i class="fa-solid fa-comment-dots text-primary me-2"></i> The citizen simply describes their problem: <em class="text-primary">&ldquo;There is an open manhole leaking near Hospital Road.&rdquo;</em> CivicResolve handles the rest.
                 </p>
             </div>
 
@@ -149,7 +191,7 @@
                 <div class="card border shadow-sm rounded-4 p-4 bg-light">
                     <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
                         <h6 class="fw-800 text-dark mb-0">
-                            <i class="fa-solid fa-route text-primary me-2"></i>Complete End-to-End Flow
+                            <i class="fa-solid fa-route text-primary me-2"></i>Complete End-to-End Pipeline
                         </h6>
                         <span class="badge bg-primary text-white">12 Connected Steps</span>
                     </div>
@@ -206,32 +248,32 @@
                         <div class="col-sm-6">
                             <div class="p-2 bg-white rounded border d-flex align-items-center gap-2">
                                 <span class="badge bg-primary rounded-circle">9</span>
-                                <div><strong>Official Submission:</strong> Sent to govt system</div>
+                                <div><strong>REST Submission:</strong> POST /api/complaints</div>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="p-2 bg-white rounded border d-flex align-items-center gap-2">
                                 <span class="badge bg-primary rounded-circle">10</span>
-                                <div><strong>Unified Reference:</strong> Single Master ID</div>
+                                <div><strong>Master ID:</strong> Unique tracking docket</div>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="p-2 bg-white rounded border d-flex align-items-center gap-2">
                                 <span class="badge bg-primary rounded-circle">11</span>
-                                <div><strong>Live Tracking:</strong> Progress &amp; escalation</div>
+                                <div><strong>Live Tracking:</strong> Progress &amp; SLA clock</div>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="p-2 bg-white rounded border d-flex align-items-center gap-2">
                                 <span class="badge bg-success rounded-circle">12</span>
-                                <div><strong>Resolution &amp; Rating:</strong> Citizen feedback loop</div>
+                                <div><strong>Resolution:</strong> Citizen satisfaction loop</div>
                             </div>
                         </div>
                     </div>
 
                     <div class="mt-3 pt-2 text-center">
                         <a th:href="@{/report}" class="btn btn-primary btn-sm fw-700 px-4">
-                            Try It With Your Problem &rarr;
+                            Try The Multi-Step Wizard &rarr;
                         </a>
                     </div>
                 </div>
@@ -240,201 +282,408 @@
     </div>
 </section>
 
-<!-- ── 2. CORE ACTION HUBS ── -->
-<section class="py-5 bg-light">
+<!-- ── 3. 14 GOVERNMENT SERVICE SECTORS SHOWCASE ── -->
+<section class="py-5 bg-light border-top border-bottom" id="sectorsShowcaseSection">
     <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="fw-800 text-dark">One Platform. Complete Civic Redressal.</h2>
-            <p class="text-muted mx-auto" style="max-width: 580px;">Everything you need to report an issue, track its progress, and ensure accountability.</p>
-        </div>
-
-        <div class="row g-4">
-            <!-- 1. Report Issue -->
-            <div class="col-md-6 col-lg-3">
-                <a th:href="@{/report}" class="card h-100 p-4 border shadow-sm text-decoration-none text-dark bg-white hover-lift">
-                    <div class="cr-sec-icon-wrap mb-3" style="background:#eff6ff; color:#2563eb; width:50px; height:50px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
-                        <i class="fa-solid fa-file-pen"></i>
-                    </div>
-                    <h5 class="fw-700 mb-2">Report Issue</h5>
-                    <p class="text-muted small mb-0">Speak via voice dictation, upload a photo, or enter problem text. AI handles all form creation.</p>
-                </a>
-            </div>
-
-            <!-- 2. Track Status -->
-            <div class="col-md-6 col-lg-3">
-                <a th:href="@{/citizen/complaint-details}" class="card h-100 p-4 border shadow-sm text-decoration-none text-dark bg-white hover-lift">
-                    <div class="cr-sec-icon-wrap mb-3" style="background:#ecfeff; color:#0891b2; width:50px; height:50px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
-                        <i class="fa-solid fa-chart-line"></i>
-                    </div>
-                    <h5 class="fw-700 mb-2">Track Status</h5>
-                    <p class="text-muted small mb-0">Monitor real-time resolution progress, assigned field engineer notes, and verification updates.</p>
-                </a>
-            </div>
-
-            <!-- 3. Find Authority -->
-            <div class="col-md-6 col-lg-3">
-                <a th:href="@{/sectors}" class="card h-100 p-4 border shadow-sm text-decoration-none text-dark bg-white hover-lift">
-                    <div class="cr-sec-icon-wrap mb-3" style="background:#fef3c7; color:#d97706; width:50px; height:50px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
-                        <i class="fa-solid fa-building-columns"></i>
-                    </div>
-                    <h5 class="fw-700 mb-2">Find Authority</h5>
-                    <p class="text-muted small mb-0">Browse all 14 civic service sectors to identify responsible municipal officers and contact desks.</p>
-                </a>
-            </div>
-
-            <!-- 4. Get Resolution -->
-            <div class="col-md-6 col-lg-3">
-                <a th:href="@{/citizen/complaint-details}" class="card h-100 p-4 border shadow-sm text-decoration-none text-dark bg-white hover-lift">
-                    <div class="cr-sec-icon-wrap mb-3" style="background:#f0fdf4; color:#16a34a; width:50px; height:50px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
-                        <i class="fa-solid fa-circle-check"></i>
-                    </div>
-                    <h5 class="fw-700 mb-2">Enforceable Resolution</h5>
-                    <p class="text-muted small mb-0">Guaranteed response within defined SLAs with automated hierarchical escalation on delay.</p>
-                </a>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ── 3. 14 GOVERNMENT SERVICE SECTORS ── -->
-<section class="py-5 bg-white border-top">
-    <div class="container">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 gap-2">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 gap-3">
             <div>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1 mb-2 fw-700">
+                    <i class="fa-solid fa-layer-group me-1"></i> Interactive Civic Taxonomy
+                </span>
                 <h2 class="fw-800 text-dark mb-1">14 Government Service Sectors</h2>
-                <p class="text-muted mb-0">Select a sector to file a report directly or view municipal department responsibilities.</p>
+                <p class="text-muted mb-0">Search or filter by category to inspect department authorities and launch direct reporting.</p>
             </div>
-            <a th:href="@{/sectors}" class="btn btn-outline-primary btn-sm fw-600">View All Sectors &rarr;</a>
+            
+            <!-- Live Search Bar -->
+            <div style="min-width: 280px;">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" id="sectorSearchInput" class="form-control border-start-0" placeholder="Search sectors (e.g. road, water)..."/>
+                </div>
+            </div>
         </div>
 
-        <div class="row g-3">
-            <div class="col-6 col-md-4 col-lg-3">
-                <a th:href="@{/report(sector='ROADS')}" class="card p-3 h-100 border text-decoration-none text-dark hover-lift bg-light">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="fa-solid fa-road text-primary fa-lg"></i>
-                        <span class="fw-700 small">Roads &amp; Transport</span>
+        <!-- Filter Buttons -->
+        <div class="d-flex align-items-center gap-2 overflow-auto pb-3 mb-4">
+            <button class="cr-sector-filter-btn active" data-filter="ALL">All 14 Sectors</button>
+            <button class="cr-sector-filter-btn" data-filter="INFRA">Infrastructure</button>
+            <button class="cr-sector-filter-btn" data-filter="UTILITIES">Utilities &amp; Power</button>
+            <button class="cr-sector-filter-btn" data-filter="CIVIC">Civic &amp; Safety</button>
+            <button class="cr-sector-filter-btn" data-filter="WELFARE">Social &amp; Welfare</button>
+        </div>
+
+        <!-- Sector Cards Grid -->
+        <div class="row g-3" id="sectorCardGrid">
+            <!-- 1. Roads & Transport -->
+            <div class="col-md-6 col-lg-3 sector-showcase-item" data-category="INFRA" data-keywords="road pothole traffic asphalt transport highway bridge">
+                <div class="cr-sector-showcase-card">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="cr-sector-icon-badge" style="background:#eff6ff; color:#2563eb;"><i class="fa-solid fa-road"></i></div>
+                            <span class="cr-sector-sla-tag"><i class="fa-solid fa-clock text-warning me-1"></i>48h SLA</span>
+                        </div>
+                        <h6 class="fw-800 text-dark mb-1 sector-title">Roads &amp; Transport</h6>
+                        <p class="text-muted small mb-2 sector-desc">Potholes, broken footpaths, traffic signals, and damaged road dividers.</p>
+                        <div class="text-muted" style="font-size:0.75rem;"><i class="fa-solid fa-building me-1"></i> Public Works Dept (PWD)</div>
                     </div>
-                </a>
+                    <div class="mt-3 pt-2 border-top">
+                        <a th:href="@{/report(sector='Roads & Transport')}" class="btn btn-outline-primary btn-sm fw-700 w-100">Report in Roads &rarr;</a>
+                    </div>
+                </div>
             </div>
-            <div class="col-6 col-md-4 col-lg-3">
-                <a th:href="@{/report(sector='LIGHTING')}" class="card p-3 h-100 border text-decoration-none text-dark hover-lift bg-light">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="fa-solid fa-lightbulb text-warning fa-lg"></i>
-                        <span class="fw-700 small">Street Lighting</span>
+
+            <!-- 2. Street Lighting -->
+            <div class="col-md-6 col-lg-3 sector-showcase-item" data-category="UTILITIES" data-keywords="light streetlight lamp pole dark blackout bulb">
+                <div class="cr-sector-showcase-card">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="cr-sector-icon-badge" style="background:#fef3c7; color:#d97706;"><i class="fa-solid fa-lightbulb"></i></div>
+                            <span class="cr-sector-sla-tag"><i class="fa-solid fa-clock text-warning me-1"></i>24h SLA</span>
+                        </div>
+                        <h6 class="fw-800 text-dark mb-1 sector-title">Street Lighting</h6>
+                        <p class="text-muted small mb-2 sector-desc">Non-functioning streetlights, damaged poles, dark corridors, and dangling wires.</p>
+                        <div class="text-muted" style="font-size:0.75rem;"><i class="fa-solid fa-building me-1"></i> Municipal Electrical Division</div>
                     </div>
-                </a>
+                    <div class="mt-3 pt-2 border-top">
+                        <a th:href="@{/report(sector='Street Lighting')}" class="btn btn-outline-warning btn-sm fw-700 w-100">Report in Lighting &rarr;</a>
+                    </div>
+                </div>
             </div>
-            <div class="col-6 col-md-4 col-lg-3">
-                <a th:href="@{/report(sector='WATER')}" class="card p-3 h-100 border text-decoration-none text-dark hover-lift bg-light">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="fa-solid fa-droplet text-info fa-lg"></i>
-                        <span class="fw-700 small">Water Supply</span>
+
+            <!-- 3. Water Supply -->
+            <div class="col-md-6 col-lg-3 sector-showcase-item" data-category="UTILITIES" data-keywords="water pipe leak drainage sewer tap drinking contamination">
+                <div class="cr-sector-showcase-card">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="cr-sector-icon-badge" style="background:#ecfeff; color:#0891b2;"><i class="fa-solid fa-droplet"></i></div>
+                            <span class="cr-sector-sla-tag"><i class="fa-solid fa-clock text-warning me-1"></i>24h SLA</span>
+                        </div>
+                        <h6 class="fw-800 text-dark mb-1 sector-title">Water Supply</h6>
+                        <p class="text-muted small mb-2 sector-desc">Pipeline leaks, water supply cut-offs, low pressure, and sewage backflow.</p>
+                        <div class="text-muted" style="font-size:0.75rem;"><i class="fa-solid fa-building me-1"></i> Jal Nigam / Water Works Board</div>
                     </div>
-                </a>
+                    <div class="mt-3 pt-2 border-top">
+                        <a th:href="@{/report(sector='Water Supply')}" class="btn btn-outline-info btn-sm fw-700 w-100">Report in Water &rarr;</a>
+                    </div>
+                </div>
             </div>
-            <div class="col-6 col-md-4 col-lg-3">
-                <a th:href="@{/report(sector='SANITATION')}" class="card p-3 h-100 border text-decoration-none text-dark hover-lift bg-light">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="fa-solid fa-trash-can text-success fa-lg"></i>
-                        <span class="fw-700 small">Sanitation &amp; Waste</span>
+
+            <!-- 4. Sanitation & Waste -->
+            <div class="col-md-6 col-lg-3 sector-showcase-item" data-category="CIVIC" data-keywords="garbage waste trash sanitation dump bin litter filth cleaning">
+                <div class="cr-sector-showcase-card">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="cr-sector-icon-badge" style="background:#f0fdf4; color:#16a34a;"><i class="fa-solid fa-trash-can"></i></div>
+                            <span class="cr-sector-sla-tag"><i class="fa-solid fa-clock text-warning me-1"></i>24h SLA</span>
+                        </div>
+                        <h6 class="fw-800 text-dark mb-1 sector-title">Sanitation &amp; Waste</h6>
+                        <p class="text-muted small mb-2 sector-desc">Overflowing garbage dumpsters, uncollected street waste, and foul odor hazards.</p>
+                        <div class="text-muted" style="font-size:0.75rem;"><i class="fa-solid fa-building me-1"></i> Solid Waste Management Cell</div>
                     </div>
-                </a>
+                    <div class="mt-3 pt-2 border-top">
+                        <a th:href="@{/report(sector='Sanitation & Waste')}" class="btn btn-outline-success btn-sm fw-700 w-100">Report in Waste &rarr;</a>
+                    </div>
+                </div>
             </div>
-            <div class="col-6 col-md-4 col-lg-3">
-                <a th:href="@{/report(sector='ELECTRICITY')}" class="card p-3 h-100 border text-decoration-none text-dark hover-lift bg-light">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="fa-solid fa-bolt text-warning fa-lg"></i>
-                        <span class="fw-700 small">Electricity</span>
+
+            <!-- 5. Electricity -->
+            <div class="col-md-6 col-lg-3 sector-showcase-item" data-category="UTILITIES" data-keywords="electricity power wire transformer current spark meter outage">
+                <div class="cr-sector-showcase-card">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="cr-sector-icon-badge" style="background:#fef3c7; color:#d97706;"><i class="fa-solid fa-bolt"></i></div>
+                            <span class="cr-sector-sla-tag"><i class="fa-solid fa-clock text-warning me-1"></i>24h SLA</span>
+                        </div>
+                        <h6 class="fw-800 text-dark mb-1 sector-title">Electricity</h6>
+                        <p class="text-muted small mb-2 sector-desc">Transformer sparks, live wire dangers, power fluctuations, and meter issues.</p>
+                        <div class="text-muted" style="font-size:0.75rem;"><i class="fa-solid fa-building me-1"></i> State Power DISCOM</div>
                     </div>
-                </a>
+                    <div class="mt-3 pt-2 border-top">
+                        <a th:href="@{/report(sector='Electricity')}" class="btn btn-outline-warning btn-sm fw-700 w-100">Report in Power &rarr;</a>
+                    </div>
+                </div>
             </div>
-            <div class="col-6 col-md-4 col-lg-3">
-                <a th:href="@{/report(sector='HEALTHCARE')}" class="card p-3 h-100 border text-decoration-none text-dark hover-lift bg-light">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="fa-solid fa-hospital text-danger fa-lg"></i>
-                        <span class="fw-700 small">Healthcare</span>
+
+            <!-- 6. Healthcare -->
+            <div class="col-md-6 col-lg-3 sector-showcase-item" data-category="CIVIC" data-keywords="hospital clinic doctor healthcare health medicine ambulance disease">
+                <div class="cr-sector-showcase-card">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="cr-sector-icon-badge" style="background:#fee2e2; color:#dc2626;"><i class="fa-solid fa-hospital"></i></div>
+                            <span class="cr-sector-sla-tag"><i class="fa-solid fa-clock text-warning me-1"></i>48h SLA</span>
+                        </div>
+                        <h6 class="fw-800 text-dark mb-1 sector-title">Healthcare</h6>
+                        <p class="text-muted small mb-2 sector-desc">Primary Health Center negligence, medicine shortages, and sanitation in clinics.</p>
+                        <div class="text-muted" style="font-size:0.75rem;"><i class="fa-solid fa-building me-1"></i> Chief Medical Officer (CMO)</div>
                     </div>
-                </a>
+                    <div class="mt-3 pt-2 border-top">
+                        <a th:href="@{/report(sector='Healthcare')}" class="btn btn-outline-danger btn-sm fw-700 w-100">Report in Health &rarr;</a>
+                    </div>
+                </div>
             </div>
-            <div class="col-6 col-md-4 col-lg-3">
-                <a th:href="@{/report(sector='EDUCATION')}" class="card p-3 h-100 border text-decoration-none text-dark hover-lift bg-light">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="fa-solid fa-graduation-cap text-secondary fa-lg"></i>
-                        <span class="fw-700 small">Education</span>
+
+            <!-- 7. Education -->
+            <div class="col-md-6 col-lg-3 sector-showcase-item" data-category="CIVIC" data-keywords="education school college teacher student classroom books">
+                <div class="cr-sector-showcase-card">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="cr-sector-icon-badge" style="background:#f1f5f9; color:#475569;"><i class="fa-solid fa-graduation-cap"></i></div>
+                            <span class="cr-sector-sla-tag"><i class="fa-solid fa-clock text-warning me-1"></i>72h SLA</span>
+                        </div>
+                        <h6 class="fw-800 text-dark mb-1 sector-title">Education</h6>
+                        <p class="text-muted small mb-2 sector-desc">Public school building safety, teacher absenteeism, and midday meal quality.</p>
+                        <div class="text-muted" style="font-size:0.75rem;"><i class="fa-solid fa-building me-1"></i> Dept of Basic Education</div>
                     </div>
-                </a>
+                    <div class="mt-3 pt-2 border-top">
+                        <a th:href="@{/report(sector='Education')}" class="btn btn-outline-secondary btn-sm fw-700 w-100">Report in Education &rarr;</a>
+                    </div>
+                </div>
             </div>
-            <div class="col-6 col-md-4 col-lg-3">
-                <a th:href="@{/report(sector='SAFETY')}" class="card p-3 h-100 border text-decoration-none text-dark hover-lift bg-light">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="fa-solid fa-shield-halved text-primary fa-lg"></i>
-                        <span class="fw-700 small">Public Safety</span>
+
+            <!-- 8. Public Safety -->
+            <div class="col-md-6 col-lg-3 sector-showcase-item" data-category="CIVIC" data-keywords="police safety crime security hazard threat theft">
+                <div class="cr-sector-showcase-card">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="cr-sector-icon-badge" style="background:#eff6ff; color:#1d4ed8;"><i class="fa-solid fa-shield-halved"></i></div>
+                            <span class="cr-sector-sla-tag"><i class="fa-solid fa-clock text-danger me-1"></i>12h SLA</span>
+                        </div>
+                        <h6 class="fw-800 text-dark mb-1 sector-title">Public Safety</h6>
+                        <p class="text-muted small mb-2 sector-desc">Neighborhood security hazards, illegal activities, and emergency civic concerns.</p>
+                        <div class="text-muted" style="font-size:0.75rem;"><i class="fa-solid fa-building me-1"></i> City Police &amp; Safety Cell</div>
                     </div>
-                </a>
+                    <div class="mt-3 pt-2 border-top">
+                        <a th:href="@{/report(sector='Public Safety')}" class="btn btn-outline-primary btn-sm fw-700 w-100">Report in Safety &rarr;</a>
+                    </div>
+                </div>
             </div>
-            <div class="col-6 col-md-4 col-lg-3">
-                <a th:href="@{/report(sector='MUNICIPAL')}" class="card p-3 h-100 border text-decoration-none text-dark hover-lift bg-light">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="fa-solid fa-building-flag text-secondary fa-lg"></i>
-                        <span class="fw-700 small">Municipal Services</span>
+
+            <!-- 9. Municipal Services -->
+            <div class="col-md-6 col-lg-3 sector-showcase-item" data-category="CIVIC" data-keywords="municipal certificate birth death tax license encroachment">
+                <div class="cr-sector-showcase-card">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="cr-sector-icon-badge" style="background:#f1f5f9; color:#334155;"><i class="fa-solid fa-building-flag"></i></div>
+                            <span class="cr-sector-sla-tag"><i class="fa-solid fa-clock text-warning me-1"></i>72h SLA</span>
+                        </div>
+                        <h6 class="fw-800 text-dark mb-1 sector-title">Municipal Services</h6>
+                        <p class="text-muted small mb-2 sector-desc">Property tax disputes, birth/death registry delays, and market encroachments.</p>
+                        <div class="text-muted" style="font-size:0.75rem;"><i class="fa-solid fa-building me-1"></i> Municipal Corporation</div>
                     </div>
-                </a>
+                    <div class="mt-3 pt-2 border-top">
+                        <a th:href="@{/report(sector='Municipal Services')}" class="btn btn-outline-secondary btn-sm fw-700 w-100">Report in Municipal &rarr;</a>
+                    </div>
+                </div>
             </div>
-            <div class="col-6 col-md-4 col-lg-3">
-                <a th:href="@{/report(sector='REVENUE')}" class="card p-3 h-100 border text-decoration-none text-dark hover-lift bg-light">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="fa-solid fa-file-invoice text-warning fa-lg"></i>
-                        <span class="fw-700 small">Revenue &amp; Certificates</span>
+
+            <!-- 10. Revenue & Certificates -->
+            <div class="col-md-6 col-lg-3 sector-showcase-item" data-category="WELFARE" data-keywords="revenue certificate income caste domicile tehsil land patwari">
+                <div class="cr-sector-showcase-card">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="cr-sector-icon-badge" style="background:#fef3c7; color:#b45309;"><i class="fa-solid fa-file-invoice"></i></div>
+                            <span class="cr-sector-sla-tag"><i class="fa-solid fa-clock text-warning me-1"></i>72h SLA</span>
+                        </div>
+                        <h6 class="fw-800 text-dark mb-1 sector-title">Revenue &amp; Certificates</h6>
+                        <p class="text-muted small mb-2 sector-desc">Delayed caste, income, or domicile certificates and land record discrepancies.</p>
+                        <div class="text-muted" style="font-size:0.75rem;"><i class="fa-solid fa-building me-1"></i> Tehsil Revenue Office</div>
                     </div>
-                </a>
+                    <div class="mt-3 pt-2 border-top">
+                        <a th:href="@{/report(sector='Revenue & Certificates')}" class="btn btn-outline-warning btn-sm fw-700 w-100">Report in Revenue &rarr;</a>
+                    </div>
+                </div>
             </div>
-            <div class="col-6 col-md-4 col-lg-3">
-                <a th:href="@{/report(sector='WELFARE')}" class="card p-3 h-100 border text-decoration-none text-dark hover-lift bg-light">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="fa-solid fa-hand-holding-heart text-danger fa-lg"></i>
-                        <span class="fw-700 small">Social Welfare</span>
+
+            <!-- 11. Social Welfare -->
+            <div class="col-md-6 col-lg-3 sector-showcase-item" data-category="WELFARE" data-keywords="welfare pension ration disability senior widow aid">
+                <div class="cr-sector-showcase-card">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="cr-sector-icon-badge" style="background:#fee2e2; color:#b91c1c;"><i class="fa-solid fa-hand-holding-heart"></i></div>
+                            <span class="cr-sector-sla-tag"><i class="fa-solid fa-clock text-warning me-1"></i>72h SLA</span>
+                        </div>
+                        <h6 class="fw-800 text-dark mb-1 sector-title">Social Welfare</h6>
+                        <p class="text-muted small mb-2 sector-desc">Old age and widow pensions, disability allowances, and ration card issues.</p>
+                        <div class="text-muted" style="font-size:0.75rem;"><i class="fa-solid fa-building me-1"></i> Social Welfare Department</div>
                     </div>
-                </a>
+                    <div class="mt-3 pt-2 border-top">
+                        <a th:href="@{/report(sector='Social Welfare')}" class="btn btn-outline-danger btn-sm fw-700 w-100">Report in Welfare &rarr;</a>
+                    </div>
+                </div>
             </div>
-            <div class="col-6 col-md-4 col-lg-3">
-                <a th:href="@{/report(sector='ENVIRONMENT')}" class="card p-3 h-100 border text-decoration-none text-dark hover-lift bg-light">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="fa-solid fa-leaf text-success fa-lg"></i>
-                        <span class="fw-700 small">Environment</span>
+
+            <!-- 12. Environment -->
+            <div class="col-md-6 col-lg-3 sector-showcase-item" data-category="INFRA" data-keywords="environment tree cutting smoke pollution noise air water industrial">
+                <div class="cr-sector-showcase-card">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="cr-sector-icon-badge" style="background:#dcfce7; color:#15803d;"><i class="fa-solid fa-leaf"></i></div>
+                            <span class="cr-sector-sla-tag"><i class="fa-solid fa-clock text-warning me-1"></i>48h SLA</span>
+                        </div>
+                        <h6 class="fw-800 text-dark mb-1 sector-title">Environment</h6>
+                        <p class="text-muted small mb-2 sector-desc">Illegal tree felling, air pollution, lake contamination, and industrial waste dumping.</p>
+                        <div class="text-muted" style="font-size:0.75rem;"><i class="fa-solid fa-building me-1"></i> Pollution Control Board</div>
                     </div>
-                </a>
+                    <div class="mt-3 pt-2 border-top">
+                        <a th:href="@{/report(sector='Environment')}" class="btn btn-outline-success btn-sm fw-700 w-100">Report in Environment &rarr;</a>
+                    </div>
+                </div>
             </div>
-            <div class="col-6 col-md-4 col-lg-3">
-                <a th:href="@{/report(sector='HOUSING')}" class="card p-3 h-100 border text-decoration-none text-dark hover-lift bg-light">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="fa-solid fa-house-chimney text-info fa-lg"></i>
-                        <span class="fw-700 small">Housing</span>
+
+            <!-- 13. Housing -->
+            <div class="col-md-6 col-lg-3 sector-showcase-item" data-category="INFRA" data-keywords="housing building construction illegal slum cracks tenant">
+                <div class="cr-sector-showcase-card">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="cr-sector-icon-badge" style="background:#ecfeff; color:#0e7490;"><i class="fa-solid fa-house-chimney"></i></div>
+                            <span class="cr-sector-sla-tag"><i class="fa-solid fa-clock text-warning me-1"></i>96h SLA</span>
+                        </div>
+                        <h6 class="fw-800 text-dark mb-1 sector-title">Housing</h6>
+                        <p class="text-muted small mb-2 sector-desc">Dangerous structural cracks, illegal constructions, and municipal housing schemes.</p>
+                        <div class="text-muted" style="font-size:0.75rem;"><i class="fa-solid fa-building me-1"></i> Urban Development Authority</div>
                     </div>
-                </a>
+                    <div class="mt-3 pt-2 border-top">
+                        <a th:href="@{/report(sector='Housing')}" class="btn btn-outline-info btn-sm fw-700 w-100">Report in Housing &rarr;</a>
+                    </div>
+                </div>
             </div>
-            <div class="col-6 col-md-4 col-lg-3">
-                <a th:href="@{/report(sector='AGRICULTURE')}" class="card p-3 h-100 border text-decoration-none text-dark hover-lift bg-light">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="fa-solid fa-seedling text-success fa-lg"></i>
-                        <span class="fw-700 small">Agriculture</span>
+
+            <!-- 14. Agriculture -->
+            <div class="col-md-6 col-lg-3 sector-showcase-item" data-category="WELFARE" data-keywords="agriculture farmer crop canal irrigation fertilizer mandi seed">
+                <div class="cr-sector-showcase-card">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="cr-sector-icon-badge" style="background:#f0fdf4; color:#16a34a;"><i class="fa-solid fa-seedling"></i></div>
+                            <span class="cr-sector-sla-tag"><i class="fa-solid fa-clock text-warning me-1"></i>48h SLA</span>
+                        </div>
+                        <h6 class="fw-800 text-dark mb-1 sector-title">Agriculture</h6>
+                        <p class="text-muted small mb-2 sector-desc">Irrigation canal blockage, adulterated seeds/fertilizer, and mandi market disputes.</p>
+                        <div class="text-muted" style="font-size:0.75rem;"><i class="fa-solid fa-building me-1"></i> District Agriculture Dept</div>
                     </div>
-                </a>
+                    <div class="mt-3 pt-2 border-top">
+                        <a th:href="@{/report(sector='Agriculture')}" class="btn btn-outline-success btn-sm fw-700 w-100">Report in Agriculture &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="sectorNoResults" class="text-center py-4 text-muted" style="display: none;">
+            <i class="fa-solid fa-circle-exclamation fa-2x mb-2 text-warning"></i>
+            <h6>No sectors matched your search.</h6>
+            <p class="small">Try searching for keywords like "light", "pothole", "water", or "sanitation".</p>
+        </div>
+    </div>
+</section>
+
+<!-- ── 4. CITIZEN FREQUENTLY ASKED QUESTIONS (FAQ) VIEW ── -->
+<section class="py-5 bg-white border-bottom" id="faqSection">
+    <div class="container">
+        <div class="text-center mb-4">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1 mb-2 fw-700">
+                <i class="fa-solid fa-circle-question me-1"></i> Help &amp; Support
+            </span>
+            <h2 class="fw-800 text-dark">Frequently Asked Questions</h2>
+            <p class="text-muted mx-auto" style="max-width: 600px;">
+                Everything you need to know about reporting civic issues, location pinning, and automated escalation.
+            </p>
+
+            <!-- FAQ Filter input -->
+            <div class="mt-3 mx-auto" style="max-width: 460px;">
+                <div class="input-group shadow-sm">
+                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" id="faqSearchInput" class="form-control border-start-0" placeholder="Type keywords to filter questions..."/>
+                </div>
+            </div>
+        </div>
+
+        <div class="cr-faq-container mt-4">
+            <!-- FAQ 1 -->
+            <div class="cr-faq-item active">
+                <div class="cr-faq-question">
+                    <span><i class="fa-solid fa-circle-info text-primary me-2"></i> How does the 10-meter standing GPS location pinning work?</span>
+                    <div class="cr-faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
+                </div>
+                <div class="cr-faq-answer">
+                    When you report an issue, CivicResolve requests high-precision device GPS geofencing via HTML5 Geolocation API. If permitted, it locks your coordinates with an accuracy radius within ±10 meters. In Step 2 of the wizard, you can also click anywhere on the interactive Leaflet map or drag the pin marker to specify the exact ground location.
+                </div>
+            </div>
+
+            <!-- FAQ 2 -->
+            <div class="cr-faq-item">
+                <div class="cr-faq-question">
+                    <span><i class="fa-solid fa-building text-primary me-2"></i> Do I need to know which government department handles my complaint?</span>
+                    <div class="cr-faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
+                </div>
+                <div class="cr-faq-answer">
+                    No! CivicResolve features automated problem classification. When you speak, upload a photo, or type problem keywords, the AI analyzes your problem text and automatically routes it to the corresponding authority among the 14 civic service sectors (e.g. PWD, Jal Nigam, DISCOM, Waste Management). You can also manually change the sector if desired.
+                </div>
+            </div>
+
+            <!-- FAQ 3 -->
+            <div class="cr-faq-item">
+                <div class="cr-faq-question">
+                    <span><i class="fa-solid fa-clock text-warning me-2"></i> What happens if a department does not resolve my issue within the SLA?</span>
+                    <div class="cr-faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
+                </div>
+                <div class="cr-faq-answer">
+                    Every complaint carries a legally enforceable SLA (ranging from 12 to 72 hours depending on urgency and sector). If an issue breaches the SLA threshold, CivicResolve’s automated Escalation Engine kicks in, bumping the ticket up to Level 2 (Divisional Executive Engineer) and Level 3 (Municipal Commissioner) with automated breach alerts.
+                </div>
+            </div>
+
+            <!-- FAQ 4 -->
+            <div class="cr-faq-item">
+                <div class="cr-faq-question">
+                    <span><i class="fa-solid fa-microphone text-info me-2"></i> Can I submit photos or speak my grievance in Hindi?</span>
+                    <div class="cr-faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
+                </div>
+                <div class="cr-faq-answer">
+                    Yes. The Multi-Step Wizard supports live voice dictation in English and Hindi using the browser's Web Speech API. You can also upload or snap direct photos of the problem (pothole, broken lamp, overflowing garbage), which the system scans and attaches as evidence.
+                </div>
+            </div>
+
+            <!-- FAQ 5 -->
+            <div class="cr-faq-item">
+                <div class="cr-faq-question">
+                    <span><i class="fa-solid fa-route text-success me-2"></i> How do I track the status of my complaint after filing?</span>
+                    <div class="cr-faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
+                </div>
+                <div class="cr-faq-answer">
+                    Upon submission, you immediately receive a unique Master Docket ID (e.g., <code>CR-2048</code>). You can enter this ID on the homepage tracker or open your Citizen Dashboard anytime to see real-time field engineer progress, photos of completed work, and verification ratings.
+                </div>
+            </div>
+
+            <!-- FAQ 6 -->
+            <div class="cr-faq-item">
+                <div class="cr-faq-question">
+                    <span><i class="fa-solid fa-shield-halved text-danger me-2"></i> Is CivicResolve free to use for all citizens?</span>
+                    <div class="cr-faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
+                </div>
+                <div class="cr-faq-answer">
+                    CivicResolve is 100% free and open public civic infrastructure. There are no fees or hidden charges. It operates as an official gateway connecting citizens directly to state municipal redressal mechanisms.
+                </div>
+            </div>
+
+            <div id="faqNoResults" class="text-center py-3 text-muted" style="display: none;">
+                <i class="fa-solid fa-comment-slash fa-2x mb-1 text-muted"></i>
+                <div class="small">No matching FAQs found for your search query.</div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- ── 4. SIMPLE CALL TO ACTION ── -->
+<!-- ── 5. CALL TO ACTION ── -->
 <section class="py-5 text-center text-white" style="background: #1e40af;">
     <div class="container py-2">
-        <h2 class="fw-800 mb-2">Need to report a civic issue in your area?</h2>
-        <p class="text-white-50 mx-auto mb-4" style="max-width: 500px;">Fast, easy, and accountable. File by voice, photo, or typed text.</p>
+        <h2 class="fw-800 mb-2">Notice a problem in your neighborhood?</h2>
+        <p class="text-white-50 mx-auto mb-4" style="max-width: 520px;">
+            Join thousands of active citizens transforming their cities. File an issue in under 60 seconds with 10-meter precision.
+        </p>
         <div class="d-flex justify-content-center gap-3 flex-wrap">
             <a th:href="@{/report}" class="btn btn-light btn-lg fw-700 text-primary px-4 shadow-sm">
-                <i class="fa-solid fa-pen-to-square me-2"></i>File a Report Now
+                <i class="fa-solid fa-plus-circle me-2"></i>Report an Issue Now
             </a>
             <a th:href="@{/citizen/complaint-details}" class="btn btn-outline-light btn-lg fw-600 px-4">
-                <i class="fa-solid fa-magnifying-glass me-2"></i>Track Existing Issue
+                <i class="fa-solid fa-magnifying-glass me-2"></i>Track Live Docket
             </a>
         </div>
     </div>
@@ -444,5 +693,7 @@
 <th:block th:replace="~{fragments/footer :: footer}"/>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Modular Landing Page JS -->
+<script th:src="@{/js/landing/landing.js}"></script>
 </body>
 </html>

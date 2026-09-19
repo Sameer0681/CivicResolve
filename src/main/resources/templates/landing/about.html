@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>About Us, Architecture &amp; Team | CivicResolve GrievanceProof AI</title>
+    <title>About Us, Architecture &amp; Team | CivicResolve</title>
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
@@ -21,12 +21,20 @@
 <section class="py-5 bg-white border-bottom shadow-sm">
     <div class="container text-center py-3">
         <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3" style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; font-size: 0.85rem; font-weight: 700;">
-            <i class="fa-solid fa-landmark"></i> About The Platform
+            <i class="fa-solid fa-landmark"></i> Engineering Transparent Civic Governance
         </div>
         <h1 class="display-5 fw-900 text-dark mb-2">About CivicResolve</h1>
         <p class="text-muted mx-auto" style="max-width: 680px; font-size: 1.05rem;">
             CivicResolve is an intelligent citizen grievance redressal platform engineered to connect citizens directly with municipal authorities, eliminate bureaucratic friction, and ensure accountable public service delivery across India.
         </p>
+        <div class="d-flex justify-content-center gap-3 mt-3">
+            <a th:href="@{/report}" class="btn btn-primary fw-700 px-4 py-2">
+                <i class="fa-solid fa-plus-circle me-1"></i> File Grievance Report
+            </a>
+            <a th:href="@{/features}" class="btn btn-outline-secondary fw-700 px-4 py-2">
+                <i class="fa-solid fa-microchip me-1"></i> View Capabilities
+            </a>
+        </div>
     </div>
 </section>
 
@@ -34,6 +42,7 @@
 <section class="py-5">
     <div class="container">
         <div class="text-center mb-5">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1 mb-2 fw-700">Infrastructure</span>
             <h2 class="fw-800 text-dark">Platform Architecture</h2>
             <p class="text-muted">Modular, secure, and production-ready civic infrastructure.</p>
         </div>
@@ -41,31 +50,31 @@
         <div class="row g-4 align-items-center">
             <!-- Left: Citizen Side -->
             <div class="col-lg-5">
-                <div class="card p-4 border shadow-sm rounded-3 bg-white h-100">
+                <div class="card p-4 border shadow-sm rounded-4 bg-white h-100">
                     <div class="d-flex align-items-center gap-3 mb-3">
                         <div class="cr-sec-icon-wrap" style="background:#eff6ff; color:#2563eb; width:46px; height:46px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.2rem;">
                             <i class="fa-solid fa-users"></i>
                         </div>
                         <div>
-                            <h5 class="text-dark fw-700 mb-0">CITIZEN INGESTION LAYER</h5>
-                            <div class="text-muted small">Multi-modal reporting via web or mobile</div>
+                            <h5 class="text-dark fw-800 mb-0">CITIZEN INGESTION LAYER</h5>
+                            <div class="text-muted small">Multi-modal reporting via web wizard</div>
                         </div>
                     </div>
-                    <div class="p-3 rounded mb-2 bg-light border-start border-primary border-3">
-                        <strong class="text-dark small">Frontend Interface:</strong>
-                        <div class="text-muted small">Accessible web UI with real-time browser GPS geolocation, voice dictation, and camera photo capture.</div>
+                    <div class="p-3 rounded-3 mb-2 bg-light border-start border-primary border-3">
+                        <strong class="text-dark small">Multi-Step Wizard Interface:</strong>
+                        <div class="text-muted small">Accessible frontend with Leaflet interactive pin map, 10m standing GPS geofence, and real-time form validation.</div>
                     </div>
-                    <div class="p-3 rounded mb-2 bg-light border-start border-primary border-3">
-                        <strong class="text-dark small">Backend Services:</strong>
-                        <div class="text-muted small">Handles business validation, authentication, and unique docket generation (Spring Boot 4 / Java 25).</div>
+                    <div class="p-3 rounded-3 mb-2 bg-light border-start border-primary border-3">
+                        <strong class="text-dark small">Multi-Modal Input:</strong>
+                        <div class="text-muted small">Speech dictation in Hindi/English, direct camera image uploads with laser scanner, and text description.</div>
                     </div>
-                    <div class="p-3 rounded mb-2 bg-light border-start border-primary border-3">
-                        <strong class="text-dark small">Intelligent Classification:</strong>
-                        <div class="text-muted small">Analyzes problem keywords, detects urgency, and routes to one of 14 public service sectors.</div>
+                    <div class="p-3 rounded-3 mb-2 bg-light border-start border-primary border-3">
+                        <strong class="text-dark small">Intelligent 14-Sector Routing:</strong>
+                        <div class="text-muted small">Automatic problem categorization, urgency detection, and municipal department matching.</div>
                     </div>
-                    <div class="p-3 rounded bg-light border-start border-primary border-3">
-                        <strong class="text-dark small">Relational Storage:</strong>
-                        <div class="text-muted small">Maintains structured grievance dossiers, geofenced standing coordinates, audit logs, and status timelines.</div>
+                    <div class="p-3 rounded-3 bg-light border-start border-primary border-3">
+                        <strong class="text-dark small">Asynchronous REST Bus:</strong>
+                        <div class="text-muted small">Direct client-side fetch integration with POST /api/complaints and client-side offline fallback caching.</div>
                     </div>
                 </div>
             </div>
@@ -81,31 +90,31 @@
 
             <!-- Right: Government / Department Side -->
             <div class="col-lg-5">
-                <div class="card p-4 border shadow-sm rounded-3 bg-white h-100">
+                <div class="card p-4 border shadow-sm rounded-4 bg-white h-100">
                     <div class="d-flex align-items-center gap-3 mb-3">
                         <div class="cr-sec-icon-wrap" style="background:#fef3c7; color:#d97706; width:46px; height:46px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.2rem;">
                             <i class="fa-solid fa-building-columns"></i>
                         </div>
                         <div>
-                            <h5 class="text-dark fw-700 mb-0">DEPARTMENT REDRESSAL LAYER</h5>
+                            <h5 class="text-dark fw-800 mb-0">DEPARTMENT REDRESSAL LAYER</h5>
                             <div class="text-muted small">Official review, action, and verification</div>
                         </div>
                     </div>
-                    <div class="p-3 rounded mb-2 bg-light border-start border-success border-3">
-                        <strong class="text-dark small">Authentication:</strong>
-                        <div class="text-muted small">Secure role-based access control for Citizens, Ward Officers, Field Engineers, and Administrators.</div>
+                    <div class="p-3 rounded-3 mb-2 bg-light border-start border-success border-3">
+                        <strong class="text-dark small">Authentication &amp; RBAC:</strong>
+                        <div class="text-muted small">Role-based access control for Citizens, Ward Officers, Field Engineers, and Administrators.</div>
                     </div>
-                    <div class="p-3 rounded mb-2 bg-light border-start border-success border-3">
+                    <div class="p-3 rounded-3 mb-2 bg-light border-start border-success border-3">
                         <strong class="text-dark small">Grievance Management:</strong>
-                        <div class="text-muted small">Assign, inspect, and resolve issues with field engineer remarks, photos, and citizen verification.</div>
+                        <div class="text-muted small">Assign, inspect, and resolve issues with field engineer remarks, resolution photos, and citizen sign-off.</div>
                     </div>
-                    <div class="p-3 rounded mb-2 bg-light border-start border-success border-3">
+                    <div class="p-3 rounded-3 mb-2 bg-light border-start border-success border-3">
                         <strong class="text-dark small">Live Milestone Tracking:</strong>
-                        <div class="text-muted small">Transparent milestone updates: Submitted &rarr; Under Review &rarr; In Progress &rarr; Resolved.</div>
+                        <div class="text-muted small">Transparent status timeline: Submitted &rarr; Under Review &rarr; In Progress &rarr; Resolved.</div>
                     </div>
-                    <div class="p-3 rounded bg-light border-start border-danger border-3">
-                        <strong class="text-dark small">Escalation Engine:</strong>
-                        <div class="text-muted small">Automated rules escalate breached issues upward (Level 1 &rarr; Level 2 &rarr; Level 3) on SLA delay.</div>
+                    <div class="p-3 rounded-3 bg-light border-start border-danger border-3">
+                        <strong class="text-dark small">Automated Escalation Engine:</strong>
+                        <div class="text-muted small">Strict SLA enforcement automatically escalates unresolved cases upwards (Level 1 &rarr; Level 2 &rarr; Level 3).</div>
                     </div>
                 </div>
             </div>
@@ -113,41 +122,84 @@
     </div>
 </section>
 
-<!-- ── 2. TECHNOLOGY STACK ── -->
+<!-- ── 2. TEAM LEADERSHIP & VIVA DEFENSE SECTION ── -->
 <section class="py-5 bg-white border-top border-bottom">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="fw-800 text-dark">Core Technology Foundation</h2>
-            <p class="text-muted">Modern, secure, and production-grade software stack.</p>
+            <span class="badge bg-success-subtle text-success border border-success-subtle px-2.5 py-1 mb-2 fw-700">Team Architecture</span>
+            <h2 class="fw-800 text-dark">Engineering Team Spotlight</h2>
+            <p class="text-muted">Dedicated specialization and architectural ownership behind CivicResolve.</p>
         </div>
 
-        <div class="row g-4">
-            <div class="col-6 col-md-3">
-                <div class="card p-4 text-center h-100 border shadow-sm bg-light">
-                    <i class="fa-brands fa-html5 text-danger fa-3x mb-3"></i>
-                    <h5 class="text-dark fw-700 mb-1">Frontend</h5>
-                    <p class="text-muted small mb-0">HTML5 &bull; CSS3 &bull; JavaScript &bull; Thymeleaf &bull; Bootstrap 5.3</p>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="card p-4 text-center h-100 border shadow-sm bg-light">
-                    <i class="fa-brands fa-java text-primary fa-3x mb-3"></i>
-                    <h5 class="text-dark fw-700 mb-1">Backend</h5>
-                    <p class="text-muted small mb-0">Java 25 &bull; Spring Boot 4.1 &bull; Spring Security &bull; REST APIs</p>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="card p-4 text-center h-100 border shadow-sm bg-light">
-                    <i class="fa-solid fa-database text-info fa-3x mb-3"></i>
-                    <h5 class="text-dark fw-700 mb-1">Data Storage</h5>
-                    <p class="text-muted small mb-0">MySQL &bull; Hibernate JPA &bull; Structured Audit Records</p>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="card p-4 text-center h-100 border shadow-sm bg-light">
-                    <i class="fa-solid fa-robot text-success fa-3x mb-3"></i>
-                    <h5 class="text-dark fw-700 mb-1">Intelligence</h5>
-                    <p class="text-muted small mb-0">NLP &bull; Voice SpeechRecognition &bull; GPS Geofencing &bull; 14 Sectors</p>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card p-4 p-md-5 border-0 shadow-sm rounded-4 bg-light border-start border-primary border-5 position-relative overflow-hidden">
+                    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-900 fs-3 shadow-sm" style="width: 64px; height: 64px;">
+                                PG
+                            </div>
+                            <div>
+                                <h3 class="fw-900 text-dark mb-0">Prince Gupt</h3>
+                                <div class="text-primary fw-700 small">Frontend Lead &mdash; Landing, Public Interfaces &amp; Grievance Submission Wizard</div>
+                            </div>
+                        </div>
+                        <span class="badge bg-primary px-3 py-2 fs-6 rounded-pill">25% Workload</span>
+                    </div>
+
+                    <!-- Viva Defense Statement -->
+                    <div class="p-3 p-md-4 rounded-3 bg-white border shadow-sm mb-4">
+                        <div class="text-muted fw-700 small text-uppercase mb-2" style="letter-spacing: 0.5px;">
+                            <i class="fa-solid fa-quote-left text-primary me-2"></i>Viva Defense
+                        </div>
+                        <blockquote class="mb-0 fs-5 fw-700 text-dark fst-italic" style="line-height: 1.6;">
+                            &ldquo;I architected the citizen-facing web frontend, multi-step grievance submission pipeline, client-side validation, and asynchronous REST integration.&rdquo;
+                        </blockquote>
+                    </div>
+
+                    <!-- Key Responsibilities Breakdown -->
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="p-3 bg-white rounded-3 border h-100">
+                                <div class="fw-800 text-dark small mb-1">
+                                    <i class="fa-solid fa-compass text-primary me-2"></i>Landing &amp; Home Experience
+                                </div>
+                                <p class="text-muted small mb-0">
+                                    Responsive hero, live stats counters, interactive 14-sectors category showcase, and comprehensive search-enabled FAQ view.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-white rounded-3 border h-100">
+                                <div class="fw-800 text-dark small mb-1">
+                                    <i class="fa-solid fa-list-check text-success me-2"></i>Multi-Step Report Wizard
+                                </div>
+                                <p class="text-muted small mb-0">
+                                    5-step guided filing pipeline, Leaflet.js interactive map location pinning, media upload preview with laser scanner, and real-time validation checklist.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-white rounded-3 border h-100">
+                                <div class="fw-800 text-dark small mb-1">
+                                    <i class="fa-solid fa-cloud-arrow-up text-info me-2"></i>Client-Side API Integration
+                                </div>
+                                <p class="text-muted small mb-0">
+                                    Asynchronous fetch connecting report wizard to backend <code>POST /api/complaints</code> endpoint with loading spinner and offline docket fallback.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-white rounded-3 border h-100">
+                                <div class="fw-800 text-dark small mb-1">
+                                    <i class="fa-solid fa-palette text-warning me-2"></i>Universal Design System
+                                </div>
+                                <p class="text-muted small mb-0">
+                                    Maintained shared stylesheet tokens (<code>common.css</code>, <code>landing.css</code>, <code>report.css</code>) and modular client JavaScript.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -155,9 +207,10 @@
 </section>
 
 <!-- ── 3. STRATEGIC ROADMAP ── -->
-<section class="py-5">
+<section class="py-5 bg-light">
     <div class="container">
         <div class="text-center mb-5">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1 mb-2 fw-700">Evolution</span>
             <h2 class="fw-800 text-dark">Platform Roadmap</h2>
             <p class="text-muted">Expanding civic empowerment across cities and utility networks.</p>
         </div>
@@ -165,9 +218,9 @@
         <div class="row g-4">
             <!-- Phase 1 -->
             <div class="col-md-6 col-lg-3">
-                <div class="card p-4 h-100 border shadow-sm bg-white">
+                <div class="card p-4 h-100 border shadow-sm bg-white rounded-4">
                     <span class="badge bg-primary-subtle text-primary border border-primary-subtle mb-2 align-self-start">PHASE 1 &bull; ACCESS</span>
-                    <h5 class="text-dark fw-700 mb-3">Every Citizen's Voice</h5>
+                    <h5 class="text-dark fw-800 mb-3">Every Citizen's Voice</h5>
                     <div class="d-flex flex-column gap-2">
                         <div class="p-2 rounded bg-light">
                             <div class="fw-700 text-dark small">Multilingual Voice</div>
@@ -183,9 +236,9 @@
 
             <!-- Phase 2 -->
             <div class="col-md-6 col-lg-3">
-                <div class="card p-4 h-100 border shadow-sm bg-white">
+                <div class="card p-4 h-100 border shadow-sm bg-white rounded-4">
                     <span class="badge bg-info-subtle text-info border border-info-subtle mb-2 align-self-start">PHASE 2 &bull; INTELLIGENCE</span>
-                    <h5 class="text-dark fw-700 mb-3">Visual &amp; API Integration</h5>
+                    <h5 class="text-dark fw-800 mb-3">Visual &amp; API Integration</h5>
                     <div class="d-flex flex-column gap-2">
                         <div class="p-2 rounded bg-light">
                             <div class="fw-700 text-dark small">Computer Vision</div>
@@ -201,9 +254,9 @@
 
             <!-- Phase 3 -->
             <div class="col-md-6 col-lg-3">
-                <div class="card p-4 h-100 border shadow-sm bg-white">
+                <div class="card p-4 h-100 border shadow-sm bg-white rounded-4">
                     <span class="badge bg-warning-subtle text-warning border border-warning-subtle mb-2 align-self-start">PHASE 3 &bull; SCALE</span>
-                    <h5 class="text-dark fw-700 mb-3">Mobile &amp; City Analytics</h5>
+                    <h5 class="text-dark fw-800 mb-3">Mobile &amp; City Analytics</h5>
                     <div class="d-flex flex-column gap-2">
                         <div class="p-2 rounded bg-light">
                             <div class="fw-700 text-dark small">Mobile Application</div>
@@ -219,9 +272,9 @@
 
             <!-- Phase 4 -->
             <div class="col-md-6 col-lg-3">
-                <div class="card p-4 h-100 border shadow-sm bg-white">
+                <div class="card p-4 h-100 border shadow-sm bg-white rounded-4">
                     <span class="badge bg-success-subtle text-success border border-success-subtle mb-2 align-self-start">PHASE 4 &bull; PREDICT</span>
-                    <h5 class="text-dark fw-700 mb-3">Autonomous Governance</h5>
+                    <h5 class="text-dark fw-800 mb-3">Autonomous Governance</h5>
                     <div class="d-flex flex-column gap-2">
                         <div class="p-2 rounded bg-light">
                             <div class="fw-700 text-dark small">Predictive Prioritization</div>
@@ -238,9 +291,55 @@
     </div>
 </section>
 
+<!-- ── 4. CITIZEN FAQ EMBEDDED VIEW ── -->
+<section class="py-5 bg-white border-top">
+    <div class="container">
+        <div class="text-center mb-4">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1 mb-2 fw-700">FAQ</span>
+            <h2 class="fw-800 text-dark">Frequently Asked Questions</h2>
+            <p class="text-muted mx-auto" style="max-width: 600px;">
+                Learn more about our architecture, SLAs, and data security.
+            </p>
+        </div>
+
+        <div class="cr-faq-container">
+            <div class="cr-faq-item active">
+                <div class="cr-faq-question">
+                    <span><i class="fa-solid fa-code-branch text-primary me-2"></i> How is CivicResolve architected under the hood?</span>
+                    <div class="cr-faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
+                </div>
+                <div class="cr-faq-answer">
+                    CivicResolve uses a decoupled frontend/backend architecture. The citizen-facing frontend utilizes HTML5, Leaflet.js interactive maps, Web Speech API, and Bootstrap 5.3 with universal design tokens in <code>common.css</code>. It connects asynchronously via REST (<code>fetch</code>) to a Spring Boot backend backed by Hibernate JPA, Spring Security, and relational data storage.
+                </div>
+            </div>
+
+            <div class="cr-faq-item">
+                <div class="cr-faq-question">
+                    <span><i class="fa-solid fa-location-crosshairs text-info me-2"></i> How does the location pinning ensure field officer accuracy?</span>
+                    <div class="cr-faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
+                </div>
+                <div class="cr-faq-answer">
+                    The wizard combines real device standing GPS with an interactive Leaflet point-and-click map pin. Field officers receive the exact latitude, longitude, and geocoded address, eliminating ambiguous reports like &ldquo;near the big tree&rdquo; and saving inspection hours.
+                </div>
+            </div>
+
+            <div class="cr-faq-item">
+                <div class="cr-faq-question">
+                    <span><i class="fa-solid fa-shield-halved text-success me-2"></i> Is citizen personal data protected?</span>
+                    <div class="cr-faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
+                </div>
+                <div class="cr-faq-answer">
+                    Yes. Contact details are strictly guarded by Spring Security role-based authorization. Citizens can track grievances safely, and personal telephone numbers or emails are never published publicly on municipal bulletin boards.
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- ── FOOTER ── -->
 <th:block th:replace="~{fragments/footer :: footer}"/>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/landing/landing.js}"></script>
 </body>
 </html>

@@ -545,4 +545,475 @@
     transition: width 1s linear;
 }
 
+/* =========================================================
+   MULTI-STEP COMPLAINT REPORT WIZARD STYLES
+   ========================================================= */
+
+/* Wizard Stepper Navigation */
+.cr-wizard-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    margin-bottom: 2rem;
+    background: #fff;
+    border: 1.5px solid var(--cr-border);
+    border-radius: 14px;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+}
+.cr-wizard-step-item {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    position: relative;
+    cursor: pointer;
+    z-index: 2;
+    flex: 1;
+}
+.cr-wizard-step-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: calc(100% - 140px);
+    max-width: 60px;
+    height: 2px;
+    background: var(--cr-border);
+    transition: background-color .3s ease;
+}
+.cr-wizard-step-item.completed:not(:last-child)::after {
+    background: var(--cr-success);
+}
+.cr-wizard-step-num {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    border: 2px solid var(--cr-border);
+    color: var(--cr-gray);
+    font-weight: 800;
+    font-size: .85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .25s ease;
+    flex-shrink: 0;
+}
+.cr-wizard-step-item.active .cr-wizard-step-num {
+    background: var(--cr-primary);
+    border-color: var(--cr-primary);
+    color: #fff;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+}
+.cr-wizard-step-item.completed .cr-wizard-step-num {
+    background: var(--cr-success);
+    border-color: var(--cr-success);
+    color: #fff;
+}
+.cr-wizard-step-info {
+    min-width: 0;
+}
+.cr-wizard-step-tag {
+    font-size: .68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: var(--cr-gray);
+}
+.cr-wizard-step-title {
+    font-size: .85rem;
+    font-weight: 700;
+    color: var(--cr-dark);
+    white-space: nowrap;
+}
+.cr-wizard-step-item.active .cr-wizard-step-title {
+    color: var(--cr-primary);
+}
+
+@media (max-width: 991.98px) {
+    .cr-wizard-nav {
+        padding: .85rem 1rem;
+        gap: .5rem;
+    }
+    .cr-wizard-step-item:not(:last-child)::after {
+        display: none;
+    }
+    .cr-wizard-step-tag { display: none; }
+    .cr-wizard-step-title { font-size: .75rem; }
+    .cr-wizard-step-num { width: 32px; height: 32px; font-size: .75rem; }
+}
+
+/* Wizard Content Panels */
+.cr-wizard-panel {
+    display: none;
+    animation: crFadeInUp .35s ease forwards;
+}
+.cr-wizard-panel.active {
+    display: block;
+}
+
+/* Interactive Location Pinning Map */
+.cr-map-box {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1.5px solid var(--cr-border);
+    position: relative;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+}
+#locationPinMap {
+    height: 340px;
+    width: 100%;
+    z-index: 1;
+}
+.cr-map-overlay-search {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    z-index: 10;
+    max-width: 380px;
+}
+.cr-map-pin-pill {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    z-index: 10;
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(8px);
+    color: #fff;
+    padding: .45rem .85rem;
+    border-radius: 8px;
+    font-size: .78rem;
+    font-family: monospace;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Media Preview Cards */
+.cr-media-preview-box {
+    border: 1.5px solid var(--cr-border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    background: #fff;
+    position: relative;
+}
+.cr-media-remove-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #fee2e2;
+    color: #dc2626;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .8rem;
+    cursor: pointer;
+    transition: all .2s;
+    z-index: 5;
+}
+.cr-media-remove-btn:hover {
+    background: #dc2626;
+    color: #fff;
+}
+
+/* Validation Live Checklist */
+.cr-val-checklist {
+    background: #f8fafc;
+    border: 1.5px solid var(--cr-border);
+    border-radius: 12px;
+    padding: 1.25rem;
+}
+.cr-val-check-item {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--cr-gray);
+    margin-bottom: .5rem;
+    transition: color .2s ease;
+}
+.cr-val-check-item:last-child {
+    margin-bottom: 0;
+}
+.cr-val-check-item i {
+    font-size: .9rem;
+    color: #cbd5e1;
+    transition: all .2s ease;
+}
+.cr-val-check-item.done {
+    color: var(--cr-success);
+}
+.cr-val-check-item.done i {
+    color: var(--cr-success);
+}
+
+/* Asynchronous Submission Overlay */
+.cr-async-loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(6px);
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+}
+.cr-async-modal {
+    background: #fff;
+    color: var(--cr-dark);
+    padding: 2.5rem 2rem;
+    border-radius: 16px;
+    text-align: center;
+    max-width: 460px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    animation: crFadeInUp .3s ease forwards;
+}
+
+/* =========================================================
+   WORKING FLOW ARCHITECTURE BANNER & GOVERNMENT DESKS
+   ========================================================= */
+
+/* Working Flow Banner */
+.cr-arch-flow-card {
+    background: linear-gradient(135deg, #091326 0%, #0f1f3a 50%, #172554 100%);
+    border: 1px solid rgba(59, 130, 246, 0.35);
+    border-radius: 16px;
+    padding: 1.5rem 1.75rem;
+    color: #fff;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+.cr-arch-flow-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.2) 0%, transparent 70%);
+    pointer-events: none;
+}
+.cr-flow-tier {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    transition: all 0.25s ease;
+}
+.cr-flow-tier:hover {
+    background: rgba(255, 255, 255, 0.09);
+    border-color: rgba(59, 130, 246, 0.5);
+    transform: translateY(-2px);
+}
+.cr-flow-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #60a5fa;
+    font-size: 1.25rem;
+    padding: 0.25rem 0;
+}
+
+/* Government Gateway In-App Desk Cards */
+.cr-desk-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+}
+.cr-desk-card {
+    background: #ffffff;
+    border: 2px solid var(--cr-border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+.cr-desk-card:hover {
+    border-color: #2563eb;
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.12);
+    transform: translateY(-2px);
+}
+.cr-desk-card.active {
+    border-color: #2563eb;
+    background: #f0f7ff;
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.15);
+}
+.cr-desk-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+}
+
+/* 4-Stage Resolution Timeline */
+.cr-stage-timeline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    padding: 1rem 0;
+}
+.cr-stage-timeline::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 40px;
+    right: 40px;
+    height: 3px;
+    background: #e2e8f0;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+.cr-stage-item {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    background: #fff;
+    padding: 0 0.5rem;
+}
+.cr-stage-bubble {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    border: 2px solid #cbd5e1;
+    color: #64748b;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+    transition: all 0.25s ease;
+}
+.cr-stage-item.active .cr-stage-bubble {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #fff;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+}
+.cr-stage-item.completed .cr-stage-bubble {
+    background: #16a34a;
+    border-color: #16a34a;
+    color: #fff;
+}
+.cr-stage-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+.cr-stage-subtitle {
+    font-size: 0.7rem;
+    color: #64748b;
+}
+
+/* Escalation Engine Notice */
+.cr-escalation-box {
+    background: #fffbeb;
+    border: 1.5px solid #fde68a;
+    border-left: 5px solid #f59e0b;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    color: #92400e;
+}
+
+/* Clean Map Box & Pill */
+.cr-clean-map-box {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+}
+.cr-clean-map-pill {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    z-index: 999;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(6px);
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-family: monospace;
+}
+.cr-clean-upload-area {
+    transition: all 0.2s ease;
+}
+.cr-clean-upload-area:hover {
+    background: #eff6ff !important;
+    border-color: #2563eb !important;
+}
+
+/* =========================================================
+   3-WAY PROBLEM DEFINITION (WRITE, SPEAK, UPLOAD IMAGE)
+   ========================================================= */
+.cr-problem-mode-tabs {
+    display: flex;
+    background: #f1f5f9;
+    padding: 5px;
+    border-radius: 12px;
+    gap: 6px;
+    border: 1px solid #e2e8f0;
+}
+.cr-mode-tab-btn {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 0.75rem 1rem;
+    border-radius: 9px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #475569;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+.cr-mode-tab-btn:hover {
+    color: #1e293b;
+    background: rgba(255, 255, 255, 0.6);
+}
+.cr-mode-tab-btn.active {
+    background: #ffffff;
+    color: #2563eb;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.cr-mode-tab-btn.active.mode-speak {
+    color: #dc2626;
+}
+.cr-mode-tab-btn.active.mode-image {
+    color: #16a34a;
+}
+.cr-mode-panel {
+    display: none;
+    animation: crFadeInUp 0.25s ease forwards;
+}
+.cr-mode-panel.active {
+    display: block;
+}
+
+
+
+
+
 

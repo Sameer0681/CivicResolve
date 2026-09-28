@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Officer Escalation Desk')}">
+    <link th:href="@{/css/officer.css}" rel="stylesheet"/>
+</head>
+<body>
+<div class="cr-dashboard-layout">
+    <th:block th:replace="~{fragments/officer-sidebar :: officer-sidebar}"/>
+    <div class="cr-dashboard-main">
+        <div class="cr-topbar">
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn btn-sm btn-light d-lg-none" onclick="document.querySelector('.cr-sidebar').classList.toggle('show');document.querySelector('.cr-sidebar-backdrop')?.classList.toggle('show')"><i class="fa-solid fa-bars"></i></button>
+                <div>
+                    <h1 class="cr-topbar-title">Automatic Escalation Desk</h1>
+                    <span class="text-muted small">GrievanceProof AI SLA Engine</span>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-danger fs-6" th:text="${escalations != null ? escalations.size() + ' Active Escalations' : '0 Escalations'}"><i class="fa-solid fa-triangle-exclamation me-1"></i> 0 Escalations</span>
+            </div>
+        </div>
+
+        <div class="cr-page-content">
+            <!-- Automated Escalation Summary Box -->
+            <div class="p-3 rounded-3 mb-4 text-white" style="background: linear-gradient(135deg, #0f172a, #1e293b); border: 1px solid rgba(239, 68, 68, 0.4);">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                    <span class="badge bg-danger text-white"><i class="fa-solid fa-bolt me-1"></i> AUTOMATIC ESCALATION MECHANISM ACTIVE</span>
+                    <span class="text-white-50 small">Rule: 48h Response SLA Breach &rarr; Auto-promote Tier</span>
+                </div>
+                <div class="row g-3 text-center small pt-2">
+                    <div class="col-sm-4">
+                        <div class="p-2 rounded bg-black-20 border border-white-10">
+                            <span class="badge bg-primary mb-1">TRIGGER RULE</span>
+                            <div class="fw-700">Defined Response Time</div>
+                            <div class="text-white-50" style="font-size:0.7rem;">Detects when expected SLA window is breached.</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="p-2 rounded bg-black-20 border border-white-10">
+                            <span class="badge bg-warning text-dark mb-1">ESCALATION</span>
+                            <div class="fw-700">Higher Authority Level</div>
+                            <div class="text-white-50" style="font-size:0.7rem;">Increases from Level 1 to Level 2/3.</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="p-2 rounded bg-black-20 border border-white-10">
+                            <span class="badge bg-info text-dark mb-1">VISIBILITY</span>
+                            <div class="fw-700">Transparent Citizen Log</div>
+                            <div class="text-white-50" style="font-size:0.7rem;">Citizen notified at each escalation step.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Escalated Cards -->
+            <div class="d-flex flex-column gap-3">
+                <div th:if="${escalations == null or escalations.isEmpty()}" class="cr-card shadow-sm p-4 text-center text-muted">
+                    <i class="fa-solid fa-circle-check fa-3x text-success mb-3"></i>
+                    <h5 class="fw-700 text-dark">No Escalated Grievances Pending</h5>
+                    <p class="mb-0 small">All grievances assigned to your desk are currently operating within SLA operational boundaries.</p>
+                </div>
+
+                <div th:each="esc : ${escalations}" class="cr-card shadow-sm"
+                     th:style="'border-left:5px solid ' + (${esc.escalationLevel == 3 ? '#dc2626' : (esc.escalationLevel == 2 ? '#ef4444' : '#f59e0b')})">
+                    <div class="cr-card-body">
+                        <div class="d-flex align-items-start justify-content-between flex-wrap gap-3">
+                            <div>
+                                <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                                    <span class="cr-complaint-id-tag fw-700" th:text="${esc.complaint?.complaintId} ?: 'CR-849201'">CR-849201</span>
+                                    <span class="cr-esc-badge" th:classappend="${esc.escalationLevel == 3 ? 'cr-esc-badge--l3' : 'cr-esc-badge--l2'}"
+                                          th:text="'ESCALATION LEVEL ' + ${esc.escalationLevel}">ESCALATION LEVEL 2</span>
+                                    <span class="badge bg-danger text-white" th:text="${esc.status} ?: 'SLA BREACHED'">SLA Breached</span>
+                                </div>
+                                <h5 class="fw-800 text-dark mb-1" th:text="${esc.complaint?.title} ?: 'Escalated Grievance'">Hazardous Grievance</h5>
+                                <p class="text-muted small mb-2" th:text="${esc.reason} ?: ${esc.complaint?.description}">SLA response window breached without completion.</p>
+                                <div class="text-muted small">
+                                    <i class="fa-solid fa-location-dot text-danger me-1"></i> <span th:text="${esc.complaint?.location} ?: 'Location N/A'">Location</span> &bull;
+                                    <i class="fa-solid fa-building text-info ms-2 me-1"></i> <span th:text="${esc.complaint?.department} ?: ${esc.complaint?.sector}">Department</span> &bull;
+                                    <i class="fa-solid fa-clock text-warning ms-2 me-1"></i> Escalated: <span th:text="${esc.createdAt != null ? #temporals.format(esc.createdAt, 'dd MMM yyyy, hh:mm a') : 'Recent'}">Date</span>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a th:href="@{/officer/complaint-details(id=${esc.complaint?.complaintId})}" class="btn btn-danger fw-700">
+                                    <i class="fa-solid fa-bolt me-1"></i> Expedite Work Order
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

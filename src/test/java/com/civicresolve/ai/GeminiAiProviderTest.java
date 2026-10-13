@@ -1,26 +1,72 @@
+
 package com.civicresolve.ai;
 
+import com.civicresolve.entity.Complaint;
+import com.civicresolve.entity.User;
+import com.civicresolve.repository.ComplaintRepository;
+import com.civicresolve.repository.UserRepository;
+import com.civicresolve.service.ComplaintServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.civicresolve.ai.AiClassificationResult;
-import com.civicresolve.ai.GeminiAiProvider;
+import java.util.Optional;
 
-@SpringBootTest
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
 class GeminiAiProviderTest {
 
-    @Autowired
+    @Mock
+    private ComplaintRepository complaintRepository;
+
+    @Mock
+    private UserRepository userRepository;
+
+    @Mock
     private GeminiAiProvider geminiAiProvider;
 
+    @InjectMocks
+    private ComplaintServiceImpl complaintService;
+
     @Test
-    void testGeminiConnection() {
+    void createComplaintShouldUseAiClassification() {
+        User citizen = mock(User.class);
+        Complaint complaint = mock(Complaint.class);
 
-        String complaint = "There are dangerous potholes on my street.";
+        when(userRepository.findById(3L))
+                .thenReturn(Optional.of(citizen));
 
-        AiClassificationResult result =
-                geminiAiProvider.classify(complaint);
+        AiClassificationResult aiResult =
+                new AiClassificationResult();
+        aiResult.setSector("Roads & Transport");
+        aiResult.setDepartment("Public Works Department");
 
-        System.out.println("Test completed.");
+        when(complaint.getTitle()).thenReturn("Dangerous potholes");
+        when(complaint.getDescription())
+                .thenReturn("Deep potholes on the main road.");
+
+        when(geminiAiProvider.classify(any(String.class)))
+                .thenReturn(aiResult);
+
+        when(complaintRepository.save(complaint))
+                .thenReturn(complaint);
+
+        complaintService.createComplaint(complaint, 3L);
+
+        verify(geminiAiProvider).classify(
+                "Dangerous potholes\nDeep potholes on the main road.");
+
+        verify(complaint).setSector("Roads & Transport");
+        verify(complaint).setDepartment("Public Works Department");
+        verify(complaint).setCitizen(citizen);
+        verify(complaintRepository).save(complaint);
+
+        assertEquals("Roads & Transport", aiResult.getSector());
     }
 }

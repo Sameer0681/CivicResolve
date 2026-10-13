@@ -6,6 +6,8 @@ import com.civicresolve.entity.User;
 import com.civicresolve.repository.ComplaintRepository;
 import com.civicresolve.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import com.civicresolve.ai.AiClassificationResult;
+import com.civicresolve.ai.GeminiAiProvider;
 
 import java.util.List;
 
@@ -14,21 +16,43 @@ public class ComplaintServiceImpl implements ComplaintService {
 
     private final ComplaintRepository complaintRepository;
     private final UserRepository userRepository;
+    private final GeminiAiProvider geminiAiProvider;
 
     public ComplaintServiceImpl(
             ComplaintRepository complaintRepository,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            GeminiAiProvider geminiAiProvider) {
 
         this.complaintRepository = complaintRepository;
         this.userRepository = userRepository;
+        this.geminiAiProvider = geminiAiProvider;
     }
 
     @Override
     public Complaint createComplaint(Complaint complaint, Long citizenId) {
-
         User citizen = userRepository.findById(citizenId)
                 .orElseThrow(() -> new RuntimeException("Citizen not found"));
 
+        // Combine title and description for better classification
+        String complaintText = complaint.getTitle() + "\n"
+                + complaint.getDescription();
+
+        // Classify the complaint using Gemini
+        AiClassificationResult aiResult = geminiAiProvider.classify(complaintText);
+
+        // Validate essential AI output before saving
+        if (aiResult == null
+                || aiResult.getSector() == null
+                || aiResult.getSector().isBlank()) {
+            throw new RuntimeException(
+                    "AI classification failed: sector is missing");
+        }
+
+        // Store the AI-generated classification
+        complaint.setSector(aiResult.getSector());
+        complaint.setDepartment(aiResult.getDepartment());
+
+        // Preserve the existing citizen relationship
         complaint.setCitizen(citizen);
 
         return complaintRepository.save(complaint);

@@ -2,14 +2,18 @@
 package com.civicresolve.controller;
 
 import com.civicresolve.dto.ComplaintResponse;
+import com.civicresolve.dto.PublicComplaintTrackingResponse;
 import com.civicresolve.entity.Complaint;
 import com.civicresolve.entity.ComplaintStatus;
 import com.civicresolve.service.ComplaintService;
+import com.civicresolve.service.CustomUserDetails;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/complaints")
@@ -21,52 +25,63 @@ public class ComplaintController {
         this.complaintService = complaintService;
     }
 
-    // Create complaint
+    // Create a complaint for the authenticated citizen.
     @PostMapping
     public ResponseEntity<ComplaintResponse> createComplaint(
             @RequestBody Complaint complaint,
-            @RequestParam Long citizenId) {
+            @AuthenticationPrincipal CustomUserDetails currentUser) {
 
-        Complaint created =
-                complaintService.createComplaint(complaint, citizenId);
+        Complaint created = complaintService.createComplaint(
+                complaint, currentUser.getId());
 
         return ResponseEntity.ok(new ComplaintResponse(created));
     }
 
-    // Get all complaints
+    // Citizens see their own complaints; admins see all complaints.
     @GetMapping
-    public ResponseEntity<List<ComplaintResponse>> getAllComplaints() {
-        List<ComplaintResponse> responses =
-                complaintService.getAllComplaints()
-                        .stream()
-                        .map(ComplaintResponse::new)
-                        .collect(Collectors.toList());
+    public ResponseEntity<List<ComplaintResponse>> getComplaints(
+            @AuthenticationPrincipal CustomUserDetails currentUser) {
 
-        return ResponseEntity.ok(responses);
+        List<Complaint> complaints;
+
+        if (isAdmin(currentUser)) {
+            complaints = complaintService.getAllComplaints();
+        } else {
+            complaints = complaintService.getComplaintsByCitizen(
+                    currentUser.getId());
+        }
+
+        return ResponseEntity.ok(
+                complaints.stream().map(ComplaintResponse::new).toList());
     }
 
-    // Get complaint by database ID
+    // Retrieve an individual complaint, checking citizen ownership.
     @GetMapping("/{id}")
     public ResponseEntity<ComplaintResponse> getComplaintById(
-            @PathVariable Long id) {
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails currentUser) {
 
-        Complaint complaint = complaintService.getComplaintById(id);
+        Complaint complaint = isAdmin(currentUser)
+                ? complaintService.getComplaintById(id)
+                : complaintService.getComplaintByIdForCitizen(
+                        id, currentUser.getId());
 
         return ResponseEntity.ok(new ComplaintResponse(complaint));
     }
 
-    // Get complaint by complaint ID
+    // Public tracking returns limited information.
     @GetMapping("/track/{complaintId}")
-    public ResponseEntity<ComplaintResponse> getComplaintByComplaintId(
+    public ResponseEntity<PublicComplaintTrackingResponse> getComplaintByComplaintId(
             @PathVariable String complaintId) {
 
         Complaint complaint =
                 complaintService.getComplaintByComplaintId(complaintId);
 
-        return ResponseEntity.ok(new ComplaintResponse(complaint));
+        return ResponseEntity.ok(
+                new PublicComplaintTrackingResponse(complaint));
     }
 
-    // Get complaints by status
+    // Global status filtering is for admins.
     @GetMapping("/status/{status}")
     public ResponseEntity<List<ComplaintResponse>> getComplaintsByStatus(
             @PathVariable ComplaintStatus status) {
@@ -75,12 +90,12 @@ public class ComplaintController {
                 complaintService.getComplaintsByStatus(status)
                         .stream()
                         .map(ComplaintResponse::new)
-                        .collect(Collectors.toList());
+                        .toList();
 
         return ResponseEntity.ok(responses);
     }
 
-    // Get complaints by sector
+    // Global sector filtering is for admins.
     @GetMapping("/sector/{sector}")
     public ResponseEntity<List<ComplaintResponse>> getComplaintsBySector(
             @PathVariable String sector) {
@@ -89,18 +104,21 @@ public class ComplaintController {
                 complaintService.getComplaintsBySector(sector)
                         .stream()
                         .map(ComplaintResponse::new)
-                        .collect(Collectors.toList());
+                        .toList();
 
         return ResponseEntity.ok(responses);
     }
 
-    // Delete complaint
+    // SecurityConfig must restrict this endpoint to admins.
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteComplaint(
-            @PathVariable Long id) {
-
+    public ResponseEntity<Void> deleteComplaint(@PathVariable Long id) {
         complaintService.deleteComplaint(id);
-
         return ResponseEntity.noContent().build();
+    }
+
+    private boolean isAdmin(CustomUserDetails currentUser) {
+        return currentUser != null
+                && currentUser.getAuthorities().contains(
+                        new SimpleGrantedAuthority("ROLE_ADMIN"));
     }
 }

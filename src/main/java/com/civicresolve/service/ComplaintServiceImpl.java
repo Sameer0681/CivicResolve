@@ -29,6 +29,20 @@ public class ComplaintServiceImpl implements ComplaintService {
     }
 
     @Override
+    public List<Complaint> getComplaintsByCitizen(Long citizenId) {
+        User citizen = userRepository.findById(citizenId)
+                .orElseThrow(() -> new RuntimeException("Citizen not found"));
+
+        return complaintRepository.findByCitizen(citizen);
+    }
+
+    @Override
+    public Complaint getComplaintByIdForCitizen(Long id, Long citizenId) {
+        return complaintRepository.findByIdAndCitizen_Id(id, citizenId)
+                .orElseThrow(() -> new RuntimeException("Complaint not found"));
+    }
+
+    @Override
     public Complaint createComplaint(Complaint complaint, Long citizenId) {
         User citizen = userRepository.findById(citizenId)
                 .orElseThrow(() -> new RuntimeException("Citizen not found"));
@@ -54,6 +68,16 @@ public class ComplaintServiceImpl implements ComplaintService {
 
         // Preserve the existing citizen relationship
         complaint.setCitizen(citizen);
+
+        // Generate a unique tracking ID if one was not provided
+        if (complaint.getComplaintId() == null
+                || complaint.getComplaintId().isBlank()) {
+            complaint.setComplaintId(
+                    "CR-" + java.util.UUID.randomUUID()
+                            .toString()
+                            .substring(0, 8)
+                            .toUpperCase());
+        }
 
         return complaintRepository.save(complaint);
     }

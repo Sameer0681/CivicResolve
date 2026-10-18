@@ -19,5 +19,9 @@ public interface ComplaintService {
 
     List<Complaint> getComplaintsBySector(String sector);
 
+    List<Complaint> getComplaintsByCitizen(Long citizenId);
+
+    Complaint getComplaintByIdForCitizen(Long id, Long citizenId);
+
     void deleteComplaint(Long id);
 }

@@ -10,115 +10,139 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.http.HttpMethod;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final CustomUserDetailsService customUserDetailsService;
-    private final CustomAuthenticationSuccessHandler authenticationSuccessHandler;
+        private final CustomUserDetailsService customUserDetailsService;
+        private final CustomAuthenticationSuccessHandler authenticationSuccessHandler;
 
-    public SecurityConfig(
-            CustomUserDetailsService customUserDetailsService,
-            CustomAuthenticationSuccessHandler authenticationSuccessHandler) {
+        public SecurityConfig(
+                        CustomUserDetailsService customUserDetailsService,
+                        CustomAuthenticationSuccessHandler authenticationSuccessHandler) {
 
-        this.customUserDetailsService = customUserDetailsService;
-        this.authenticationSuccessHandler = authenticationSuccessHandler;
-    }
+                this.customUserDetailsService = customUserDetailsService;
+                this.authenticationSuccessHandler = authenticationSuccessHandler;
+        }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+                return new BCryptPasswordEncoder();
+        }
 
-    @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        @Bean
+        public AuthenticationManager authenticationManager(
+                        AuthenticationConfiguration authenticationConfiguration) throws Exception {
 
-        return authenticationConfiguration.getAuthenticationManager();
-    }
+                return authenticationConfiguration.getAuthenticationManager();
+        }
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        @Bean
+        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http
-                .authorizeHttpRequests(auth -> auth
+                http
+                                .authorizeHttpRequests(auth -> auth
 
-                        // Static web assets
-                        .requestMatchers(
-                                "/css/**",
-                                "/js/**",
-                                "/images/**",
-                                "/favicon.ico",
-                                "/webjars/**"
-                        ).permitAll()
+                                                // Static web assets
+                                                .requestMatchers(
+                                                                "/css/**",
+                                                                "/js/**",
+                                                                "/images/**",
+                                                                "/favicon.ico",
+                                                                "/webjars/**")
+                                                .permitAll()
 
-                        // Public landing & informational views
-                        .requestMatchers(
-                                "/",
-                                "/landing/**",
-                                "/about",
-                                "/features",
-                                "/sectors"
-                        ).permitAll()
+                                                // Public landing & informational views
+                                                .requestMatchers(
+                                                                "/",
+                                                                "/landing/**",
+                                                                "/about",
+                                                                "/features",
+                                                                "/sectors")
+                                                .permitAll()
 
-                        // Authentication and password reset views
-                        .requestMatchers(
-                                "/login",
-                                "/register",
-                                "/forgot-password",
-                                "/reset-password"
-                        ).permitAll()
+                                                // Authentication and password reset views
+                                                .requestMatchers(
+                                                                "/login",
+                                                                "/register",
+                                                                "/forgot-password",
+                                                                "/reset-password")
+                                                .permitAll()
 
-                        // Grievance filing flows
-                        .requestMatchers("/report/**").permitAll()
+                                                // Role-based dashboard access`
+                                                .requestMatchers("/admin/**")
+                                                .hasRole("ADMIN")
 
-                        // Complaint API - development/testing
-                        .requestMatchers("/api/complaints/**").permitAll()
+                                                .requestMatchers("/citizen/**")
+                                                .hasAnyRole("CITIZEN", "ADMIN")
 
-                        // Role-protected workspaces
-                        .requestMatchers("/citizen/**")
-                        .hasAnyRole("CITIZEN", "ADMIN")
+                                                .requestMatchers("/officer/**")
+                                                .hasAnyRole("OFFICER", "ADMIN")
 
-                        .requestMatchers("/officer/**")
-                        .hasAnyRole("OFFICER", "ADMIN")
+                                                // Public complaint tracking — response must contain limited information
+                                                .requestMatchers(
+                                                                HttpMethod.GET,
+                                                                "/api/complaints/track/**")
+                                                .permitAll()
 
-                        .requestMatchers("/admin/**")
-                        .hasRole("ADMIN")
+                                                // Citizens can create complaints
+                                                .requestMatchers(
+                                                                HttpMethod.POST,
+                                                                "/api/complaints")
+                                                .hasRole("CITIZEN")
 
-                        .anyRequest().authenticated()
-                )
+                                                // Citizens can view their own complaints; admins can view all
+                                                .requestMatchers(HttpMethod.GET, "/api/complaints")
+                                                .hasAnyRole("CITIZEN", "ADMIN")
 
-                // Allow REST API requests without CSRF token
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/**")
-                )
+                                                // Only admins can use global complaint filters
+                                                .requestMatchers(
+                                                                HttpMethod.GET,
+                                                                "/api/complaints/status/**",
+                                                                "/api/complaints/sector/**")
+                                                .hasRole("ADMIN")
 
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .loginProcessingUrl("/login")
-                        .usernameParameter("username")
-                        .passwordParameter("password")
-                        .successHandler(authenticationSuccessHandler)
-                        .failureUrl("/login?error=true")
-                        .permitAll()
-                )
+                                                // Only admins can delete complaints
+                                                .requestMatchers(
+                                                                HttpMethod.DELETE,
+                                                                "/api/complaints/**")
+                                                .hasRole("ADMIN")
 
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout=true")
-                        .invalidateHttpSession(true)
-                        .clearAuthentication(true)
-                        .deleteCookies("JSESSIONID", "remember-me")
-                        .permitAll()
-                )
+                                                // Individual complaint retrieval requires authentication.
+                                                // Ownership must also be checked in the controller.
+                                                .requestMatchers(
+                                                                HttpMethod.GET,
+                                                                "/api/complaints/**")
+                                                .authenticated())
 
-                .rememberMe(remember -> remember
-                        .key("CivicResolveSecretKey2026")
-                        .tokenValiditySeconds(86400 * 30)
-                        .userDetailsService(customUserDetailsService)
-                );
+                                // Allow REST API requests without CSRF token
+                                .csrf(csrf -> csrf
+                                                .ignoringRequestMatchers("/api/**"))
 
-        return http.build();
-    }
+                                .formLogin(form -> form
+                                                .loginPage("/login")
+                                                .loginProcessingUrl("/login")
+                                                .usernameParameter("username")
+                                                .passwordParameter("password")
+                                                .successHandler(authenticationSuccessHandler)
+                                                .failureUrl("/login?error=true")
+                                                .permitAll())
+
+                                .logout(logout -> logout
+                                                .logoutUrl("/logout")
+                                                .logoutSuccessUrl("/login?logout=true")
+                                                .invalidateHttpSession(true)
+                                                .clearAuthentication(true)
+                                                .deleteCookies("JSESSIONID", "remember-me")
+                                                .permitAll())
+
+                                .rememberMe(remember -> remember
+                                                .key("CivicResolveSecretKey2026")
+                                                .tokenValiditySeconds(86400 * 30)
+                                                .userDetailsService(customUserDetailsService));
+
+                return http.build();
+        }
 }

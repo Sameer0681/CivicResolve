@@ -1,6 +1,7 @@
 package com.civicresolve.exception;
 
 import com.civicresolve.dto.ErrorResponse;
+import com.civicresolve.dto.OtpRequiredResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,21 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<ErrorResponse> handleConflict(ConflictException ex, HttpServletRequest request) {
         return buildError(HttpStatus.CONFLICT, "CONFLICT", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(OtpRequiredException.class)
+    public ResponseEntity<OtpRequiredResponse> handleOtpRequired(OtpRequiredException ex, HttpServletRequest request) {
+        OtpRequiredResponse response = OtpRequiredResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.PRECONDITION_REQUIRED.value())
+                .error("OTP_REQUIRED")
+                .message(ex.getMessage())
+                .path(request.getRequestURI())
+                .maskedPhone(ex.getMaskedPhone())
+                .expiresInSeconds(ex.getExpiresInSeconds())
+                .resendAfterSeconds(ex.getResendAfterSeconds())
+                .build();
+        return ResponseEntity.status(HttpStatus.PRECONDITION_REQUIRED).body(response);
     }
 
     @ExceptionHandler(OtpException.class)

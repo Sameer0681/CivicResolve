@@ -7,6 +7,7 @@ import com.civicresolve.entity.OtpVerification;
 import com.civicresolve.entity.User;
 import com.civicresolve.exception.BadRequestException;
 import com.civicresolve.exception.ConflictException;
+import com.civicresolve.exception.OtpRequiredException;
 import com.civicresolve.exception.RateLimitException;
 import com.civicresolve.exception.UnauthorizedException;
 import com.civicresolve.repository.OtpVerificationRepository;
@@ -16,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
@@ -219,6 +221,90 @@ public class OtpServiceImpl implements OtpService {
 
         record.setUsed(true);
         otpVerificationRepository.save(record);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW, noRollbackFor = OtpRequiredException.class)
+    public void triggerComplaintSubmissionOtp(User citizen) {
+        if (citizen == null) {
+            throw new UnauthorizedException("Citizen authentication required to submit complaint");
+        }
+
+        // Point 4: If citizen has no valid phone, return 400 asking to add phone via PUT /api/auth/profile/phone, send nothing
+        if (citizen.getPhone() == null || citizen.getPhone().trim().isEmpty()) {
+            throw new BadRequestException("No mobile phone number registered on your account. Please add a valid phone number via PUT /api/auth/profile/phone before submitting complaints.");
+        }
+
+        String normalizedPhone;
+        try {
+            normalizedPhone = normalizeIndianPhone(citizen.getPhone());
+        } catch (BadRequestException e) {
+            throw new BadRequestException("Invalid mobile phone number on your account. Please update your phone number via PUT /api/auth/profile/phone before submitting complaints.");
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        String maskedPhone = MockOtpSender.maskPhone(normalizedPhone);
+
+        // Point 2: If a valid unexpired OTP was already sent within cooldown, do NOT send another; just report it.
+        Optional<OtpVerification> latestOpt = otpVerificationRepository.findTopByUserIdOrderByCreatedAtDesc(citizen.getId());
+        if (latestOpt.isPresent()) {
+            OtpVerification latest = latestOpt.get();
+            boolean isUnexpired = latest.getExpiresAt().isAfter(now);
+            boolean isWithinCooldown = latest.getCreatedAt().plusSeconds(60).isAfter(now);
+            boolean isUnused = !latest.isUsed();
+
+            if (isUnexpired && isWithinCooldown && isUnused) {
+                long resendAfterSeconds = Math.max(1, java.time.Duration.between(now, latest.getCreatedAt().plusSeconds(60)).getSeconds());
+                long expiresInSeconds = Math.max(0, java.time.Duration.between(now, latest.getExpiresAt()).getSeconds());
+
+                throw new OtpRequiredException(
+                        "OTP verification is required to submit a complaint. A verification code was recently sent to your registered phone.",
+                        maskedPhone,
+                        expiresInSeconds,
+                        resendAfterSeconds
+                );
+            }
+        }
+
+        // Rate limits: hourly count and voice calls
+        LocalDateTime oneHourAgo = now.minusHours(1);
+        long hourlyCount = otpVerificationRepository.countByUserIdAndCreatedAtAfter(citizen.getId(), oneHourAgo);
+        if (hourlyCount >= 5) {
+            throw new RateLimitException("Hourly OTP request limit exceeded (max 5 per hour). Please try again later.");
+        }
+
+        long voiceCallCount = otpVerificationRepository.countVoiceCallsAfter(citizen.getId(), oneHourAgo);
+        if (voiceCallCount >= 3) {
+            throw new RateLimitException("Voice call OTP limit exceeded (max 3 calls per hour). Please try again later.");
+        }
+
+        // Generate 6-digit OTP code
+        String otp = String.format("%06d", secureRandom.nextInt(1_000_000));
+        String hashedOtp = hashWithSha256(otp + ":" + citizen.getId());
+
+        // Persist OtpVerification record
+        OtpVerification verification = OtpVerification.builder()
+                .userId(citizen.getId())
+                .phone(normalizedPhone)
+                .otpHash(hashedOtp)
+                .channel("BOTH")
+                .expiresAt(now.plusMinutes(5))
+                .attempts(0)
+                .verified(false)
+                .used(false)
+                .build();
+        otpVerificationRepository.save(verification);
+
+        // Dispatch via OtpSender: BOTH SMS and Voice Call
+        otpSender.sendSms(normalizedPhone, otp);
+        otpSender.sendVoiceCall(normalizedPhone, otp);
+
+        throw new OtpRequiredException(
+                "OTP verification is required to submit a complaint. A verification code has been sent to your registered phone.",
+                maskedPhone,
+                300L,
+                60L
+        );
     }
 
     public static String normalizeIndianPhone(String raw) {

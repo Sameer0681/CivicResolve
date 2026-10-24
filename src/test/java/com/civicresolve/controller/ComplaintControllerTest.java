@@ -17,6 +17,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
+import com.civicresolve.exception.BadRequestException;
+import com.civicresolve.exception.GlobalExceptionHandler;
+import com.civicresolve.exception.OtpRequiredException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -79,6 +82,7 @@ class ComplaintControllerTest {
 
         mockMvc = MockMvcBuilders.standaloneSetup(complaintController)
                 .setCustomArgumentResolvers(authPrincipalResolver)
+                .setControllerAdvice(new GlobalExceptionHandler())
                 .build();
 
         complaint = Complaint.builder()
@@ -185,5 +189,56 @@ class ComplaintControllerTest {
                 .andExpect(status().isOk());
 
         verify(complaintService).createComplaint(any(Complaint.class), eq(1L), any());
+    }
+
+    @Test
+    void testCreateComplaintWithoutTokenTriggersOtpAndReturns428() throws Exception {
+        when(complaintService.createComplaint(any(Complaint.class), eq(1L), isNull()))
+                .thenThrow(new OtpRequiredException(
+                        "OTP verification is required to submit a complaint. A verification code has been sent to your registered phone.",
+                        "+91XXXXXX3210",
+                        300L,
+                        60L
+                ));
+
+        ComplaintCreateRequest request = ComplaintCreateRequest.builder()
+                .title("Drainage blocked")
+                .description("Water overflowing onto pavement")
+                .sector("Sanitation")
+                .build();
+
+        mockMvc.perform(post("/api/complaints")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().is(428))
+                .andExpect(jsonPath("$.status").value(428))
+                .andExpect(jsonPath("$.error").value("OTP_REQUIRED"))
+                .andExpect(jsonPath("$.message").value("OTP verification is required to submit a complaint. A verification code has been sent to your registered phone."))
+                .andExpect(jsonPath("$.maskedPhone").value("+91XXXXXX3210"))
+                .andExpect(jsonPath("$.expiresInSeconds").value(300))
+                .andExpect(jsonPath("$.resendAfterSeconds").value(60))
+                .andExpect(jsonPath("$.otp").doesNotExist());
+    }
+
+    @Test
+    void testCreateComplaintMissingPhoneReturns400() throws Exception {
+        when(complaintService.createComplaint(any(Complaint.class), eq(1L), isNull()))
+                .thenThrow(new BadRequestException(
+                        "No mobile phone number registered on your account. Please add a valid phone number via PUT /api/auth/profile/phone before submitting complaints."
+                ));
+
+        ComplaintCreateRequest request = ComplaintCreateRequest.builder()
+                .title("Street lamp broken")
+                .description("Lamp post #12 dark")
+                .sector("Lighting")
+                .build();
+
+        mockMvc.perform(post("/api/complaints")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("BAD_REQUEST"))
+                .andExpect(jsonPath("$.message").value("No mobile phone number registered on your account. Please add a valid phone number via PUT /api/auth/profile/phone before submitting complaints."));
     }
 }

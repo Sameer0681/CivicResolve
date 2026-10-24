@@ -8,6 +8,7 @@ import com.civicresolve.entity.Role;
 import com.civicresolve.entity.User;
 import com.civicresolve.exception.BadRequestException;
 import com.civicresolve.exception.ConflictException;
+import com.civicresolve.exception.OtpRequiredException;
 import com.civicresolve.exception.UnauthorizedException;
 import com.civicresolve.repository.ComplaintRepository;
 import com.civicresolve.repository.UserRepository;
@@ -235,5 +236,57 @@ class ComplaintServiceTest {
 
         assertThrows(UnauthorizedException.class, () ->
                 complaintService.updateComplaintStatus("CR-2025-001", ComplaintStatus.IN_PROGRESS, "trying", null, 4L, false));
+    }
+
+    @Test
+    void testCreateComplaintNoTokenTriggersOtpSendAndThrowsOtpRequiredExceptionWithoutSaving() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(citizen));
+        when(otpService.isOtpRequired()).thenReturn(true);
+        doThrow(new OtpRequiredException(
+                "OTP verification is required to submit a complaint. A verification code has been sent to your registered phone.",
+                "+91XXXXXX3210",
+                300L,
+                60L
+        )).when(otpService).triggerComplaintSubmissionOtp(citizen);
+
+        assertThrows(OtpRequiredException.class, () -> complaintService.createComplaint(complaint, 1L, null));
+
+        verify(otpService).triggerComplaintSubmissionOtp(citizen);
+        verify(complaintRepository, never()).save(any());
+        verifyNoInteractions(geminiAiProvider);
+    }
+
+    @Test
+    void testCreateComplaintValidTokenSavesAndMarksUsed() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(citizen));
+        when(otpService.isOtpRequired()).thenReturn(true);
+        AiClassificationResult aiResult = new AiClassificationResult();
+        aiResult.setSector("Roads & Transport");
+        when(geminiAiProvider.classify(any())).thenReturn(aiResult);
+        when(complaintRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        Complaint created = complaintService.createComplaint(complaint, 1L, "valid-token-xyz");
+
+        assertNotNull(created);
+        verify(otpService, never()).triggerComplaintSubmissionOtp(any());
+        verify(otpService).validateAndConsumeToken("valid-token-xyz", 1L);
+        verify(complaintRepository).save(any());
+    }
+
+    @Test
+    void testCreateComplaintRequiredFalseSavesDirectlyWithoutOtp() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(citizen));
+        when(otpService.isOtpRequired()).thenReturn(false);
+        AiClassificationResult aiResult = new AiClassificationResult();
+        aiResult.setSector("Roads & Transport");
+        when(geminiAiProvider.classify(any())).thenReturn(aiResult);
+        when(complaintRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        Complaint created = complaintService.createComplaint(complaint, 1L, null);
+
+        assertNotNull(created);
+        verify(otpService, never()).triggerComplaintSubmissionOtp(any());
+        verify(otpService, never()).validateAndConsumeToken(any(), any());
+        verify(complaintRepository).save(any());
     }
 }

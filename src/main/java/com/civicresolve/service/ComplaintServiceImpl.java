@@ -60,8 +60,13 @@ public class ComplaintServiceImpl implements ComplaintService {
         User citizen = userRepository.findById(citizenId)
                 .orElseThrow(() -> new ResourceNotFoundException("Citizen not found with ID: " + citizenId));
 
-        // OTP verification check (enforced if OtpService is wired)
-        if (otpService != null) {
+        // OTP verification check
+        if (otpService != null && otpService.isOtpRequired()) {
+            if (otpToken == null || otpToken.isBlank()) {
+                otpService.triggerComplaintSubmissionOtp(citizen);
+            }
+            otpService.validateAndConsumeToken(otpToken, citizenId);
+        } else if (otpService != null && otpToken != null && !otpToken.isBlank()) {
             otpService.validateAndConsumeToken(otpToken, citizenId);
         }
 

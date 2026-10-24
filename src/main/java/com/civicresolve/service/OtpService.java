@@ -13,5 +13,7 @@ public interface OtpService {
 
     void validateAndConsumeToken(String otpToken, Long citizenId);
 
+    void triggerComplaintSubmissionOtp(User citizen);
+
     boolean isOtpRequired();
 }

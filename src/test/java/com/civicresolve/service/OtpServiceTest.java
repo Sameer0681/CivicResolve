@@ -8,6 +8,7 @@ import com.civicresolve.entity.Role;
 import com.civicresolve.entity.User;
 import com.civicresolve.exception.BadRequestException;
 import com.civicresolve.exception.ConflictException;
+import com.civicresolve.exception.OtpRequiredException;
 import com.civicresolve.exception.RateLimitException;
 import com.civicresolve.exception.UnauthorizedException;
 import com.civicresolve.repository.OtpVerificationRepository;
@@ -238,5 +239,56 @@ class OtpServiceTest {
 
         assertThrows(BadRequestException.class, () -> OtpServiceImpl.normalizeIndianPhone("12345"));
         assertThrows(BadRequestException.class, () -> OtpServiceImpl.normalizeIndianPhone("1234567890")); // starts with 1
+    }
+
+    @Test
+    void testTriggerComplaintSubmissionOtpDispatchesBothChannels() {
+        when(otpVerificationRepository.findTopByUserIdOrderByCreatedAtDesc(1L)).thenReturn(Optional.empty());
+        when(otpVerificationRepository.countByUserIdAndCreatedAtAfter(eq(1L), any(LocalDateTime.class))).thenReturn(0L);
+        when(otpVerificationRepository.countVoiceCallsAfter(eq(1L), any(LocalDateTime.class))).thenReturn(0L);
+
+        OtpRequiredException ex = assertThrows(OtpRequiredException.class, () -> otpService.triggerComplaintSubmissionOtp(citizen));
+
+        assertEquals("+91XXXXXX3210", ex.getMaskedPhone());
+        assertEquals(300L, ex.getExpiresInSeconds());
+        assertEquals(60L, ex.getResendAfterSeconds());
+
+        verify(otpSender).sendSms(eq("+919876543210"), anyString());
+        verify(otpSender).sendVoiceCall(eq("+919876543210"), anyString());
+        verify(otpVerificationRepository).save(any(OtpVerification.class));
+    }
+
+    @Test
+    void testTriggerComplaintSubmissionOtpMissingPhoneThrowsBadRequest() {
+        citizen.setPhone(null);
+
+        BadRequestException ex = assertThrows(BadRequestException.class, () -> otpService.triggerComplaintSubmissionOtp(citizen));
+
+        assertTrue(ex.getMessage().contains("PUT /api/auth/profile/phone"));
+        verifyNoInteractions(otpSender);
+        verify(otpVerificationRepository, never()).save(any());
+    }
+
+    @Test
+    void testTriggerComplaintSubmissionOtpCooldownPreventsSecondSend() {
+        OtpVerification existing = OtpVerification.builder()
+                .userId(1L)
+                .phone("+919876543210")
+                .createdAt(LocalDateTime.now().minusSeconds(15))
+                .expiresAt(LocalDateTime.now().plusMinutes(4))
+                .used(false)
+                .verified(false)
+                .build();
+
+        when(otpVerificationRepository.findTopByUserIdOrderByCreatedAtDesc(1L)).thenReturn(Optional.of(existing));
+
+        OtpRequiredException ex = assertThrows(OtpRequiredException.class, () -> otpService.triggerComplaintSubmissionOtp(citizen));
+
+        assertEquals("+91XXXXXX3210", ex.getMaskedPhone());
+        assertTrue(ex.getResendAfterSeconds() <= 45 && ex.getResendAfterSeconds() >= 40);
+        assertTrue(ex.getExpiresInSeconds() > 0);
+
+        verifyNoInteractions(otpSender);
+        verify(otpVerificationRepository, never()).save(any());
     }
 }

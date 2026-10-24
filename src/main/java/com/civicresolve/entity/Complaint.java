@@ -37,6 +37,25 @@ public class Complaint {
     @Column(nullable = false, length = 30)
     private ComplaintStatus status;
 
+    @Column(length = 30)
+    private String urgency;
+
+    @Column(length = 30)
+    private String priority;
+
+    @Column(columnDefinition = "TEXT")
+    private String officerNotes;
+
+    @Column(length = 500)
+    private String mediaUrl;
+
+    @Column(length = 500)
+    private String proofUrl;
+
+    private Double latitude;
+
+    private Double longitude;
+
     @Column(nullable = false, unique = true, length = 30)
     private String complaintId;
 
@@ -44,10 +63,16 @@ public class Complaint {
     @JoinColumn(name = "citizen_id", nullable = false)
     private User citizen;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "officer_id")
+    private User assignedOfficer;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    private LocalDateTime resolvedAt;
 
     @PrePersist
     protected void onCreate() {
@@ -56,6 +81,12 @@ public class Complaint {
 
         if (this.status == null) {
             this.status = ComplaintStatus.SUBMITTED;
+        }
+        if (this.urgency == null || this.urgency.isBlank()) {
+            this.urgency = "MEDIUM";
+        }
+        if (this.priority == null || this.priority.isBlank()) {
+            this.priority = "MEDIUM";
         }
     }
 

@@ -1,148 +1,227 @@
 package com.civicresolve.config;
 
 import com.civicresolve.service.CustomUserDetailsService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.core.env.Environment;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.http.HttpMethod;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-        private final CustomUserDetailsService customUserDetailsService;
-        private final CustomAuthenticationSuccessHandler authenticationSuccessHandler;
+    private final CustomUserDetailsService customUserDetailsService;
+    private final CustomAuthenticationSuccessHandler authenticationSuccessHandler;
+    private final Environment environment;
 
-        public SecurityConfig(
-                        CustomUserDetailsService customUserDetailsService,
-                        CustomAuthenticationSuccessHandler authenticationSuccessHandler) {
+    public SecurityConfig(
+            CustomUserDetailsService customUserDetailsService,
+            CustomAuthenticationSuccessHandler authenticationSuccessHandler,
+            Environment environment) {
 
-                this.customUserDetailsService = customUserDetailsService;
-                this.authenticationSuccessHandler = authenticationSuccessHandler;
-        }
+        this.customUserDetailsService = customUserDetailsService;
+        this.authenticationSuccessHandler = authenticationSuccessHandler;
+        this.environment = environment;
+    }
 
-        @Bean
-        public PasswordEncoder passwordEncoder() {
-                return new BCryptPasswordEncoder();
-        }
+    private boolean isDevProfileActive() {
+        return environment != null && Arrays.asList(environment.getActiveProfiles()).contains("dev");
+    }
 
-        @Bean
-        public AuthenticationManager authenticationManager(
-                        AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-                return authenticationConfiguration.getAuthenticationManager();
-        }
+    @Bean
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration authenticationConfiguration) throws Exception {
 
-        @Bean
-        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 
-                http
-                                .authorizeHttpRequests(auth -> auth
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-                                                // Static web assets
-                                                .requestMatchers(
-                                                                "/css/**",
-                                                                "/js/**",
-                                                                "/images/**",
-                                                                "/favicon.ico",
-                                                                "/webjars/**")
-                                                .permitAll()
+        http
+                .authorizeHttpRequests(auth -> auth
 
-                                                // Public landing & informational views
-                                                .requestMatchers(
-                                                                "/",
-                                                                "/landing/**",
-                                                                "/about",
-                                                                "/features",
-                                                                "/sectors")
-                                                .permitAll()
+                        // Static web assets
+                        .requestMatchers(
+                                "/css/**",
+                                "/js/**",
+                                "/images/**",
+                                "/favicon.ico",
+                                "/webjars/**")
+                        .permitAll()
 
-                                                // Authentication and password reset views
-                                                .requestMatchers(
-                                                                "/login",
-                                                                "/register",
-                                                                "/forgot-password",
-                                                                "/reset-password")
-                                                .permitAll()
+                        // Public landing & informational views
+                        .requestMatchers(
+                                "/",
+                                "/landing/**",
+                                "/about",
+                                "/features",
+                                "/sectors",
+                                "/report/**",
+                                "/report",
+                                "/pages",
+                                "/preview",
+                                "/dev/pages")
+                        .permitAll()
 
-                                                // Role-based dashboard access`
-                                                .requestMatchers("/admin/**")
-                                                .hasRole("ADMIN")
+                        // Authentication and password reset views
+                        .requestMatchers(
+                                "/login",
+                                "/register",
+                                "/forgot-password",
+                                "/reset-password")
+                        .permitAll()
 
-                                                .requestMatchers("/citizen/**")
-                                                .hasAnyRole("CITIZEN", "ADMIN")
+                        // Public REST endpoints
+                        .requestMatchers(HttpMethod.POST, "/api/auth/register")
+                        .permitAll()
 
-                                                .requestMatchers("/officer/**")
-                                                .hasAnyRole("OFFICER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/complaints/track/**")
+                        .permitAll()
 
-                                                // Public complaint tracking — response must contain limited information
-                                                .requestMatchers(
-                                                                HttpMethod.GET,
-                                                                "/api/complaints/track/**")
-                                                .permitAll()
+                        // Admin-only REST endpoints
+                        .requestMatchers("/api/admin/**")
+                        .hasRole("ADMIN")
 
-                                                // Citizens can create complaints
-                                                .requestMatchers(
-                                                                HttpMethod.POST,
-                                                                "/api/complaints")
-                                                .hasRole("CITIZEN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/complaints/**")
+                        .hasRole("ADMIN")
 
-                                                // Citizens can view their own complaints; admins can view all
-                                                .requestMatchers(HttpMethod.GET, "/api/complaints")
-                                                .hasAnyRole("CITIZEN", "ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/complaints/*/assign")
+                        .hasRole("ADMIN")
 
-                                                // Only admins can use global complaint filters
-                                                .requestMatchers(
-                                                                HttpMethod.GET,
-                                                                "/api/complaints/status/**",
-                                                                "/api/complaints/sector/**")
-                                                .hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/complaints/*/assign")
+                        .hasRole("ADMIN")
 
-                                                // Only admins can delete complaints
-                                                .requestMatchers(
-                                                                HttpMethod.DELETE,
-                                                                "/api/complaints/**")
-                                                .hasRole("ADMIN")
+                        // Citizen profile phone update (Point 4c)
+                        .requestMatchers(HttpMethod.PUT, "/api/auth/profile/phone")
+                        .hasRole("CITIZEN")
 
-                                                // Individual complaint retrieval requires authentication.
-                                                // Ownership must also be checked in the controller.
-                                                .requestMatchers(
-                                                                HttpMethod.GET,
-                                                                "/api/complaints/**")
-                                                .authenticated())
+                        // OTP Verification endpoints: Citizens only (Point 7)
+                        .requestMatchers("/api/otp/**")
+                        .hasRole("CITIZEN")
 
-                                // Allow REST API requests without CSRF token
-                                .csrf(csrf -> csrf
-                                                .ignoringRequestMatchers("/api/**"))
+                        // Role-based web dashboards
+                        .requestMatchers("/admin/**")
+                        .hasRole("ADMIN")
 
-                                .formLogin(form -> form
-                                                .loginPage("/login")
-                                                .loginProcessingUrl("/login")
-                                                .usernameParameter("username")
-                                                .passwordParameter("password")
-                                                .successHandler(authenticationSuccessHandler)
-                                                .failureUrl("/login?error=true")
-                                                .permitAll())
+                        .requestMatchers("/citizen/**")
+                        .hasAnyRole("CITIZEN", "ADMIN")
 
-                                .logout(logout -> logout
-                                                .logoutUrl("/logout")
-                                                .logoutSuccessUrl("/login?logout=true")
-                                                .invalidateHttpSession(true)
-                                                .clearAuthentication(true)
-                                                .deleteCookies("JSESSIONID", "remember-me")
-                                                .permitAll())
+                        .requestMatchers("/officer/**")
+                        .hasAnyRole("OFFICER", "ADMIN")
 
-                                .rememberMe(remember -> remember
-                                                .key("CivicResolveSecretKey2026")
-                                                .tokenValiditySeconds(86400 * 30)
-                                                .userDetailsService(customUserDetailsService));
+                        // Citizen complaints retrieval
+                        .requestMatchers(HttpMethod.GET, "/api/complaints/citizen/**")
+                        .hasAnyRole("CITIZEN", "ADMIN")
 
-                return http.build();
-        }
+                        // Create complaints: Citizens and Admins
+                        .requestMatchers(HttpMethod.POST, "/api/complaints")
+                        .hasAnyRole("CITIZEN", "ADMIN")
+
+                        // List complaints: Citizens, Officers, Admins
+                        .requestMatchers(HttpMethod.GET, "/api/complaints")
+                        .hasAnyRole("CITIZEN", "OFFICER", "ADMIN")
+
+                        // Status updates: Officers and Admins
+                        .requestMatchers(HttpMethod.PATCH, "/api/complaints/*/status")
+                        .hasAnyRole("OFFICER", "ADMIN")
+
+                        .requestMatchers(HttpMethod.PUT, "/api/complaints/*/status")
+                        .hasAnyRole("OFFICER", "ADMIN")
+
+                        // Filter complaints: Admins and Officers
+                        .requestMatchers(HttpMethod.GET, "/api/complaints/status/**", "/api/complaints/sector/**")
+                        .hasAnyRole("ADMIN", "OFFICER")
+
+                        // Individual complaint retrieval requires authentication
+                        .requestMatchers(HttpMethod.GET, "/api/complaints/**")
+                        .authenticated()
+
+                        // Any other request must be authenticated
+                        .anyRequest()
+                        .authenticated())
+
+                // Allow REST API requests without CSRF token
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/**"))
+
+                // HTTP Basic authentication restricted to "dev" profile only (Point 4)
+                .httpBasic(basic -> {
+                    if (!isDevProfileActive()) {
+                        basic.disable();
+                    }
+                })
+
+                // Custom 401 & 403 JSON responses for /api/** requests
+                .exceptionHandling(ex -> ex
+                        .defaultAuthenticationEntryPointFor(
+                                (request, response, authException) -> {
+                                    response.setContentType("application/json");
+                                    response.setCharacterEncoding("UTF-8");
+                                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                                    response.getWriter().write(String.format(
+                                            "{\"timestamp\":\"%s\",\"status\":401,\"error\":\"UNAUTHORIZED\",\"message\":\"Authentication required to access this resource\",\"path\":\"%s\"}",
+                                            LocalDateTime.now(), request.getRequestURI()));
+                                },
+                                request -> request.getRequestURI().startsWith("/api")
+                        )
+                        .defaultAccessDeniedHandlerFor(
+                                (request, response, accessDeniedException) -> {
+                                    response.setContentType("application/json");
+                                    response.setCharacterEncoding("UTF-8");
+                                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                                    response.getWriter().write(String.format(
+                                            "{\"timestamp\":\"%s\",\"status\":403,\"error\":\"FORBIDDEN\",\"message\":\"Access denied: insufficient permissions\",\"path\":\"%s\"}",
+                                            LocalDateTime.now(), request.getRequestURI()));
+                                },
+                                request -> request.getRequestURI().startsWith("/api")
+                        )
+                )
+
+                .sessionManagement(session -> session
+                        .sessionFixation().migrateSession()
+                        .maximumSessions(2)
+                        .maxSessionsPreventsLogin(false))
+
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .usernameParameter("username")
+                        .passwordParameter("password")
+                        .successHandler(authenticationSuccessHandler)
+                        .failureUrl("/login?error=true")
+                        .permitAll())
+
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout=true")
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID", "remember-me")
+                        .permitAll())
+
+                .rememberMe(remember -> remember
+                        .key("CivicResolveSecretKey2026")
+                        .tokenValiditySeconds(86400 * 30)
+                        .userDetailsService(customUserDetailsService));
+
+        return http.build();
+    }
 }

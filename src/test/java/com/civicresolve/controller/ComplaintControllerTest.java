@@ -1,0 +1,189 @@
+package com.civicresolve.controller;
+
+import com.civicresolve.dto.ComplaintCreateRequest;
+import com.civicresolve.dto.ComplaintStatusUpdateRequest;
+import com.civicresolve.entity.Complaint;
+import com.civicresolve.entity.ComplaintStatus;
+import com.civicresolve.entity.Role;
+import com.civicresolve.entity.User;
+import com.civicresolve.service.ComplaintService;
+import com.civicresolve.service.CustomUserDetails;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.MethodParameter;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.support.WebDataBinderFactory;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.method.support.ModelAndViewContainer;
+
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@ExtendWith(MockitoExtension.class)
+class ComplaintControllerTest {
+
+    private MockMvc mockMvc;
+
+    @Mock
+    private ComplaintService complaintService;
+
+    @InjectMocks
+    private ComplaintController complaintController;
+
+    private ObjectMapper objectMapper;
+    private Complaint complaint;
+    private User citizen;
+    private CustomUserDetails userDetails;
+
+    @BeforeEach
+    void setUp() {
+        objectMapper = new ObjectMapper();
+
+        citizen = User.builder()
+                .id(1L)
+                .firstName("Aarav")
+                .lastName("Sharma")
+                .email("citizen@civicresolve.in")
+                .role(Role.ROLE_CITIZEN)
+                .build();
+
+        userDetails = new CustomUserDetails(citizen);
+
+        HandlerMethodArgumentResolver authPrincipalResolver = new HandlerMethodArgumentResolver() {
+            @Override
+            public boolean supportsParameter(MethodParameter parameter) {
+                return parameter.hasParameterAnnotation(AuthenticationPrincipal.class);
+            }
+
+            @Override
+            public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+                                          NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
+                return userDetails;
+            }
+        };
+
+        mockMvc = MockMvcBuilders.standaloneSetup(complaintController)
+                .setCustomArgumentResolvers(authPrincipalResolver)
+                .build();
+
+        complaint = Complaint.builder()
+                .id(10L)
+                .complaintId("CR-2025-001")
+                .title("Severe Pothole on MG Road")
+                .description("Dangerous crater on road")
+                .sector("Roads & Transport")
+                .department("Public Works Department")
+                .status(ComplaintStatus.IN_PROGRESS)
+                .citizen(citizen)
+                .build();
+    }
+
+    @Test
+    void testPublicTrackingEndpoint() throws Exception {
+        when(complaintService.getComplaintByComplaintId("CR-2025-001")).thenReturn(complaint);
+
+        mockMvc.perform(get("/api/complaints/track/CR-2025-001")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.complaintId").value("CR-2025-001"))
+                .andExpect(jsonPath("$.status").value("IN_PROGRESS"))
+                .andExpect(jsonPath("$.sector").value("Roads & Transport"));
+    }
+
+    @Test
+    void testFilterByStatus() throws Exception {
+        when(complaintService.getComplaintsByStatus(ComplaintStatus.IN_PROGRESS)).thenReturn(List.of(complaint));
+
+        mockMvc.perform(get("/api/complaints/status/IN_PROGRESS")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].complaintId").value("CR-2025-001"));
+    }
+
+    @Test
+    void testFilterBySector() throws Exception {
+        when(complaintService.getComplaintsBySector("Roads & Transport")).thenReturn(List.of(complaint));
+
+        mockMvc.perform(get("/api/complaints/sector/Roads & Transport")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].sector").value("Roads & Transport"));
+    }
+
+    @Test
+    void testCreateComplaintEndpoint() throws Exception {
+        when(complaintService.createComplaint(any(Complaint.class), eq(1L), any())).thenReturn(complaint);
+
+        ComplaintCreateRequest request = ComplaintCreateRequest.builder()
+                .title("Severe Pothole on MG Road")
+                .description("Dangerous crater on road")
+                .sector("Roads & Transport")
+                .build();
+
+        mockMvc.perform(post("/api/complaints")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.complaintId").value("CR-2025-001"));
+    }
+
+    @Test
+    void testGetComplaintsByCitizenId() throws Exception {
+        when(complaintService.getComplaintsByCitizen(1L)).thenReturn(List.of(complaint));
+
+        mockMvc.perform(get("/api/complaints/citizen/1")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].complaintId").value("CR-2025-001"));
+    }
+
+    @Test
+    void testUpdateComplaintStatusEndpoint() throws Exception {
+        when(complaintService.updateComplaintStatus(eq("CR-2025-001"), eq(ComplaintStatus.RESOLVED), any(), any(), eq(1L), anyBoolean()))
+                .thenReturn(complaint);
+
+        ComplaintStatusUpdateRequest request = new ComplaintStatusUpdateRequest();
+        request.setStatus(ComplaintStatus.RESOLVED);
+        request.setRemarks("Repaired asphalt");
+
+        mockMvc.perform(put("/api/complaints/CR-2025-001/status")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testCitizenSendingDifferentCitizenIdIsIgnoredAndUsesLoggedInUser() throws Exception {
+        // Point 2: Citizen A (id=1L) sending citizenId=99 in query param (e.g. frontend hardcoding ?citizenId=3)
+        // must strictly be ignored, and complaint created for logged-in citizen A (id=1L).
+        when(complaintService.createComplaint(any(Complaint.class), eq(1L), any())).thenReturn(complaint);
+
+        ComplaintCreateRequest request = ComplaintCreateRequest.builder()
+                .title("Street light not working")
+                .description("Dark road at night")
+                .sector("Street Lighting")
+                .build();
+
+        mockMvc.perform(post("/api/complaints?citizenId=99")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+
+        verify(complaintService).createComplaint(any(Complaint.class), eq(1L), any());
+    }
+}

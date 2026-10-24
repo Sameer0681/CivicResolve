@@ -301,6 +301,51 @@
     </div>
 </div>
 
+<!-- ── PHONE OTP VERIFICATION MODAL ── -->
+<div class="modal fade" id="otpVerificationModal" tabindex="-1" aria-labelledby="otpModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header border-0 pb-0 pt-4 px-4">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-inline-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-800 text-dark mb-0" id="otpModalLabel" style="font-size: 1.1rem;">Phone Verification</h5>
+                        <span class="text-muted small">Citizen Grievance Security</span>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="otpModalCloseBtn"></button>
+            </div>
+            <div class="modal-body pt-3 pb-4 px-4 text-center">
+                <p class="text-muted small mb-3">
+                    A verification code has been dispatched via SMS &amp; automated call to:
+                    <strong class="d-block text-dark fw-700 fs-6 mt-1" id="otpMaskedPhoneText">+91 XXXXX XXXXX</strong>
+                </p>
+
+                <div class="mb-3">
+                    <input type="text" id="otpCodeInput" class="form-control form-control-lg text-center fw-800 fs-4 bg-light border" placeholder="------" maxlength="6" autocomplete="one-time-code" inputmode="numeric" style="letter-spacing: 8px;"/>
+                    <div class="text-danger small mt-2 fw-600 d-none" id="otpErrorMessage"></div>
+                </div>
+
+                <div class="d-grid gap-2 mb-3">
+                    <button type="button" class="btn btn-primary fw-700 py-2.5 rounded-3" id="otpVerifyBtn">
+                        <span class="spinner-border spinner-border-sm me-1 d-none" id="otpVerifySpinner" role="status" aria-hidden="true"></span>
+                        Verify &amp; Submit Grievance
+                    </button>
+                </div>
+
+                <div class="text-center">
+                    <span class="text-muted small">Didn't receive the code? </span>
+                    <button type="button" class="btn btn-link p-0 small fw-700 text-decoration-none" id="otpResendBtn" disabled>
+                        Resend Code <span id="otpTimerText">(60s)</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- ── ASYNCHRONOUS SUBMISSION MODAL OVERLAY ── -->
 <div class="cr-async-loading-overlay" id="restLoadingOverlay">
     <div class="cr-async-modal">

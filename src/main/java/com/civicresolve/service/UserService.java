@@ -29,4 +29,12 @@ public interface UserService {
     boolean validatePasswordResetToken(String token);
 
     boolean resetPassword(String token, String newPassword);
+
+    void sendRegistrationEmailOtp(String email, String firstName);
+
+    boolean verifyRegistrationEmailOtp(String email, String otp);
+
+    void sendForgotPasswordEmailOtp(String email);
+
+    boolean resetPasswordWithOtpOrToken(String email, String otpOrToken, String newPassword);
 }

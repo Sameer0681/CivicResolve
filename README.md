@@ -68,8 +68,12 @@ Update `src/main/resources/application.properties` with your database credential
 ```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/civicresolve_db
 spring.datasource.username=your_username
-spring.datasource.password=your_password
+spring.datasource.password=${DB_PASSWORD:}
 ```
+
+Set `DB_PASSWORD` in the environment instead of storing the database password in the properties file.
+
+To send email OTPs through SMTP, configure `SPRING_MAIL_USERNAME` and `SPRING_MAIL_PASSWORD` in the environment. Set `APP_MAIL_FROM` to override the sender address. Without SMTP credentials, email content is written to the application console for local development.
 
 ### 3. Build the Project
 ```bash

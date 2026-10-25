@@ -90,17 +90,25 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/login",
                                 "/register",
+                                "/register/**",
                                 "/forgot-password",
-                                "/reset-password")
+                                "/forgot-password/**",
+                                "/reset-password",
+                                "/reset-password/**")
                         .permitAll()
                         .requestMatchers(HttpMethod.POST,
                                 "/login",
                                 "/register",
+                                "/register/**",
                                 "/forgot-password",
-                                "/reset-password")
+                                "/forgot-password/**",
+                                "/reset-password",
+                                "/reset-password/**")
                         .permitAll()
 
                         // Public REST endpoints
+                        .requestMatchers("/api/auth/register/**", "/api/auth/forgot-password/**", "/api/auth/send-otp", "/api/auth/verify-otp")
+                        .permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/register")
                         .permitAll()
 

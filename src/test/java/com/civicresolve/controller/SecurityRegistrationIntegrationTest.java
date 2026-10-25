@@ -32,6 +32,9 @@ public class SecurityRegistrationIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private com.civicresolve.repository.EmailOtpVerificationRepository emailOtpVerificationRepository;
+
     private MockMvc mockMvc;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -121,4 +124,139 @@ public class SecurityRegistrationIntegrationTest {
 
         assertTrue(userRepository.existsByEmail(uniqueApiEmail));
     }
+
+    @Test
+    void testRegisterWithEmailOtpAndRoleAdmin_succeeds() throws Exception {
+        String adminEmail = "admin.test." + System.currentTimeMillis() + "@civicresolve.test";
+
+        // 1. Request OTP
+        mockMvc.perform(post("/api/auth/register/send-otp")
+                        .param("email", adminEmail)
+                        .param("name", "Admin User"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"));
+
+        // 2. Fetch the generated OTP from DB or service (or simulate OTP verification)
+        mockMvc.perform(post("/register")
+                        .with(csrf())
+                        .param("firstName", "Admin")
+                        .param("lastName", "Tester")
+                        .param("email", adminEmail)
+                        .param("phone", "+919876543999")
+                        .param("password", "AdminPassword@123")
+                        .param("confirmPassword", "AdminPassword@123")
+                        .param("role", "ADMIN"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login?registered=true"));
+
+        var userOpt = userRepository.findByEmail(adminEmail);
+        assertTrue(userOpt.isPresent());
+        org.junit.jupiter.api.Assertions.assertEquals(com.civicresolve.entity.Role.ROLE_ADMIN, userOpt.get().getRole());
+    }
+
+    @Test
+    void testForgotPasswordAndResetFlow_succeeds() throws Exception {
+        String citizenEmail = "forgot.pass." + System.currentTimeMillis() + "@civicresolve.test";
+
+        // Register user first
+        mockMvc.perform(post("/register")
+                        .with(csrf())
+                        .param("firstName", "Pooja")
+                        .param("lastName", "Rao")
+                        .param("email", citizenEmail)
+                        .param("phone", "+919876543888")
+                        .param("password", "OldPassword@123")
+                        .param("confirmPassword", "OldPassword@123")
+                        .param("role", "CITIZEN"))
+                .andExpect(status().is3xxRedirection());
+
+        // Request forgot password
+        mockMvc.perform(post("/forgot-password")
+                        .with(csrf())
+                        .param("email", citizenEmail))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/reset-password?email=" + java.net.URLEncoder.encode(citizenEmail, java.nio.charset.StandardCharsets.UTF_8)));
+    }
+
+    @Test
+    void testMultiStepServerSideRegistrationFlow_withAdminRole_succeeds() throws Exception {
+        String testEmail = "multistep.admin." + System.currentTimeMillis() + "@civicresolve.test";
+
+        // Step 1: Submit initial registration form to /register/send-otp
+        var session = mockMvc.perform(post("/register/send-otp")
+                        .with(csrf())
+                        .param("firstName", "Rajesh")
+                        .param("lastName", "Kumar")
+                        .param("email", testEmail)
+                        .param("phone", "+919876543111")
+                        .param("password", "AdminSecure@123")
+                        .param("confirmPassword", "AdminSecure@123")
+                        .param("role", "ADMIN"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/register/verify?email=" + java.net.URLEncoder.encode(testEmail, java.nio.charset.StandardCharsets.UTF_8)))
+                .andReturn()
+                .getRequest()
+                .getSession();
+
+        // Verify OTP was stored in database
+        var otpRecord = emailOtpVerificationRepository
+                .findTopByEmailAndPurposeAndUsedFalseOrderByCreatedAtDesc(testEmail, "REGISTRATION");
+        assertTrue(otpRecord.isPresent());
+        String generatedOtp = otpRecord.get().getOtp();
+
+        // Step 2: Submit OTP on /register/verify using the same session
+        mockMvc.perform(post("/register/verify")
+                        .with(csrf())
+                        .session((org.springframework.mock.web.MockHttpSession) session)
+                        .param("otp", generatedOtp))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login?registered=true"));
+
+        // Step 3: Verify user in database has ROLE_ADMIN
+        var userOpt = userRepository.findByEmail(testEmail);
+        assertTrue(userOpt.isPresent());
+        org.junit.jupiter.api.Assertions.assertEquals(com.civicresolve.entity.Role.ROLE_ADMIN, userOpt.get().getRole());
+    }
+
+    @Test
+    void testMultiStepServerSideForgotPasswordAndReset_succeeds() throws Exception {
+        String userEmail = "multistep.reset." + System.currentTimeMillis() + "@civicresolve.test";
+
+        // Create user
+        mockMvc.perform(post("/register")
+                        .with(csrf())
+                        .param("firstName", "Ananya")
+                        .param("lastName", "Sharma")
+                        .param("email", userEmail)
+                        .param("phone", "+919876543222")
+                        .param("password", "InitialPassword@123")
+                        .param("confirmPassword", "InitialPassword@123")
+                        .param("role", "CITIZEN"))
+                .andExpect(status().is3xxRedirection());
+
+        // Step 1: Submit email to /forgot-password
+        mockMvc.perform(post("/forgot-password")
+                        .with(csrf())
+                        .param("email", userEmail))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/reset-password?email=" + java.net.URLEncoder.encode(userEmail, java.nio.charset.StandardCharsets.UTF_8)));
+
+        // Retrieve generated OTP
+        var otpRecord = emailOtpVerificationRepository
+                .findTopByEmailAndPurposeAndUsedFalseOrderByCreatedAtDesc(userEmail, "FORGOT_PASSWORD");
+        assertTrue(otpRecord.isPresent());
+        String resetOtp = otpRecord.get().getOtp();
+
+        // Step 2: Submit new password with OTP to /reset-password
+        mockMvc.perform(post("/reset-password")
+                        .with(csrf())
+                        .param("email", userEmail)
+                        .param("otp", resetOtp)
+                        .param("password", "BrandNewPassword@123")
+                        .param("confirmPassword", "BrandNewPassword@123"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login?resetSuccess=true"));
+    }
 }
+
+

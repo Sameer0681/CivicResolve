@@ -1,5 +1,6 @@
 package com.civicresolve.service;
 
+import com.civicresolve.ai.AiClassificationException;
 import com.civicresolve.ai.AiClassificationResult;
 import com.civicresolve.ai.GeminiAiProvider;
 import com.civicresolve.entity.Complaint;
@@ -288,5 +289,66 @@ class ComplaintServiceTest {
         verify(otpService, never()).triggerComplaintSubmissionOtp(any());
         verify(otpService, never()).validateAndConsumeToken(any(), any());
         verify(complaintRepository).save(any());
+    }
+
+    @Test
+    void testCreateComplaintAiFailureFallbackPreservesCitizenSectorAndSavesTicket() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(citizen));
+        when(geminiAiProvider.classify(any())).thenThrow(new AiClassificationException("Gemini quota 429 failure"));
+        when(complaintRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        complaint.setSector("Roads & Transport");
+        complaint.setDepartment(null);
+
+        Complaint created = complaintService.createComplaint(complaint, 1L, null);
+
+        assertNotNull(created);
+        assertEquals("Roads & Transport", created.getSector());
+        assertEquals("Public Works Department (PWD)", created.getDepartment());
+        assertEquals("MEDIUM", created.getUrgency());
+        assertEquals("MEDIUM", created.getPriority());
+        assertEquals(0.0, created.getConfidence());
+        assertNull(created.getSummary());
+        assertEquals("NEUTRAL", created.getSentiment());
+        assertNotNull(created.getComplaintId());
+        verify(complaintRepository).save(complaint);
+    }
+
+    @Test
+    void testCreateComplaintAiNetworkTimeoutFallbackSavesComplaint() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(citizen));
+        when(geminiAiProvider.classify(any()))
+                .thenThrow(new org.springframework.web.client.ResourceAccessException("Read timed out"));
+        when(complaintRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        complaint.setSector("Water Supply");
+        complaint.setDepartment(null);
+
+        Complaint created = complaintService.createComplaint(complaint, 1L, null);
+
+        assertNotNull(created);
+        assertEquals("Water Supply", created.getSector());
+        assertEquals("Jal Nigam / Municipal Water Works", created.getDepartment());
+        assertEquals("MEDIUM", created.getUrgency());
+        assertEquals("MEDIUM", created.getPriority());
+        assertEquals(0.0, created.getConfidence());
+        verify(complaintRepository).save(complaint);
+    }
+
+    @Test
+    void testCreateComplaintAiFailsAndNoCitizenSectorThrowsBadRequestException() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(citizen));
+        when(geminiAiProvider.classify(any())).thenThrow(new AiClassificationException("Gemini unavailable"));
+
+        Complaint unclassified = Complaint.builder()
+                .title("Mystery issue")
+                .description("No sector chosen")
+                .sector(null)
+                .build();
+
+        assertThrows(BadRequestException.class, () ->
+                complaintService.createComplaint(unclassified, 1L, null));
+
+        verify(complaintRepository, never()).save(unclassified);
     }
 }

@@ -1,6 +1,8 @@
 package com.civicresolve.service;
 
+import com.civicresolve.ai.AiClassificationException;
 import com.civicresolve.ai.AiClassificationResult;
+import com.civicresolve.ai.CivicSectorRegistry;
 import com.civicresolve.ai.GeminiAiProvider;
 import com.civicresolve.entity.Complaint;
 import com.civicresolve.entity.ComplaintStatus;
@@ -12,10 +14,13 @@ import com.civicresolve.exception.ResourceNotFoundException;
 import com.civicresolve.exception.UnauthorizedException;
 import com.civicresolve.repository.ComplaintRepository;
 import com.civicresolve.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClientException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,6 +30,8 @@ import java.util.Optional;
 @Service
 @Transactional
 public class ComplaintServiceImpl implements ComplaintService {
+
+    private static final Logger log = LoggerFactory.getLogger(ComplaintServiceImpl.class);
 
     private final ComplaintRepository complaintRepository;
     private final UserRepository userRepository;
@@ -86,8 +93,18 @@ public class ComplaintServiceImpl implements ComplaintService {
         // Combine title and description for classification
         String complaintText = complaint.getTitle() + "\n" + complaint.getDescription();
 
-        // Classify using Gemini
-        AiClassificationResult aiResult = geminiAiProvider.classify(complaintText);
+        // Classify using AI provider with graceful fallback
+        AiClassificationResult aiResult = null;
+        try {
+            if (geminiAiProvider != null) {
+                aiResult = geminiAiProvider.classify(complaintText);
+            }
+        } catch (AiClassificationException | RestClientException e) {
+            log.warn("AI classification unavailable: {}. Applying fallback routing.", e.getMessage());
+        } catch (Exception e) {
+            log.warn("Unexpected error during AI classification: {}. Applying fallback routing.", e.getClass().getSimpleName());
+        }
+
         if (aiResult != null && aiResult.getSector() != null && !aiResult.getSector().isBlank()) {
             // Store all AI-generated classification results
             complaint.setSector(aiResult.getSector());
@@ -101,7 +118,25 @@ public class ComplaintServiceImpl implements ComplaintService {
             }
             complaint.setConfidence(aiResult.getConfidence());
             complaint.setSummary(aiResult.getSummary());
-        } else if (complaint.getSector() == null || complaint.getSector().isBlank()) {
+        } else if (complaint.getSector() != null && !complaint.getSector().isBlank()) {
+            // Graceful fallback when AI classification is unavailable or invalid:
+            // Retain the citizen-selected valid sector, map official department, and set safe defaults
+            String citizenSector = complaint.getSector();
+            String canonicalSector = CivicSectorRegistry.findCanonicalSector(citizenSector);
+            if (canonicalSector != null) {
+                complaint.setSector(canonicalSector);
+                complaint.setDepartment(CivicSectorRegistry.getDepartmentForSector(canonicalSector));
+            } else if (complaint.getDepartment() == null || complaint.getDepartment().isBlank()) {
+                complaint.setDepartment(citizenSector);
+            }
+            complaint.setUrgency("MEDIUM");
+            complaint.setPriority("MEDIUM");
+            complaint.setConfidence(0.0);
+            complaint.setSummary(null);
+            if (complaint.getSentiment() == null || complaint.getSentiment().isBlank()) {
+                complaint.setSentiment("NEUTRAL");
+            }
+        } else {
             throw new BadRequestException("AI classification failed: sector is missing and no sector was provided");
         }
 

@@ -186,6 +186,7 @@ class GeminiAiProviderUnitTest {
 
         assertThrows(AiClassificationException.class, () ->
                 provider.classify("Some complaint"));
+        mockServer.verify();
     }
 
     @Test
@@ -195,6 +196,17 @@ class GeminiAiProviderUnitTest {
 
         assertThrows(AiClassificationException.class, () ->
                 provider.classify("Some complaint"));
+        mockServer.verify();
+    }
+
+    @Test
+    void testHttp403ForbiddenThrowsAiClassificationExceptionWithoutRetry() {
+        mockServer.expect(requestTo(EXPECTED_URI))
+                .andRespond(withStatus(HttpStatus.FORBIDDEN));
+
+        assertThrows(AiClassificationException.class, () ->
+                provider.classify("Some complaint"));
+        mockServer.verify();
     }
 
     @Test
@@ -206,6 +218,7 @@ class GeminiAiProviderUnitTest {
                 provider.classify("Some complaint"));
 
         assertTrue(ex.getMessage().contains("429"));
+        mockServer.verify();
     }
 
     @Test
@@ -215,6 +228,137 @@ class GeminiAiProviderUnitTest {
 
         assertThrows(AiClassificationException.class, () ->
                 provider.classify("Some complaint"));
+        mockServer.verify();
+    }
+
+    @Test
+    void testHttp503RetriesAndSucceedsOnNextAttempt() {
+        String aiJson = """
+                {
+                  "sector": "Roads & Transport",
+                  "department": "Public Works Department (PWD)",
+                  "urgency": "HIGH",
+                  "sentiment": "NEGATIVE",
+                  "priority": "HIGH",
+                  "confidence": 0.95,
+                  "summary": "Pothole hazard resolved on retry"
+                }
+                """;
+
+        RestClient.Builder builder = RestClient.builder().baseUrl(BASE_URL);
+        MockRestServiceServer customMock = MockRestServiceServer.bindTo(builder).build();
+        GeminiAiProvider fastProvider = new GeminiAiProvider(
+                "mock-api-key-xyz",
+                MODEL,
+                BASE_URL,
+                2000,
+                2000,
+                true,
+                2,
+                10L,
+                builder.build()
+        );
+
+        customMock.expect(requestTo(EXPECTED_URI))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withStatus(HttpStatus.SERVICE_UNAVAILABLE));
+
+        customMock.expect(requestTo(EXPECTED_URI))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withSuccess(buildGeminiResponseBody(aiJson), MediaType.APPLICATION_JSON));
+
+        AiClassificationResult result = fastProvider.classify("Pothole on main road");
+
+        customMock.verify();
+        assertNotNull(result);
+        assertEquals("Roads & Transport", result.getSector());
+        assertEquals(0.95, result.getConfidence());
+        assertTrue(result.getSummary().contains("Pothole"));
+    }
+
+    @Test
+    void testHttp503SucceedsOnSecondRetry() {
+        String aiJson = """
+                {
+                  "sector": "Water Supply",
+                  "department": "Jal Nigam / Municipal Water Works",
+                  "urgency": "HIGH",
+                  "sentiment": "NEGATIVE",
+                  "priority": "HIGH",
+                  "confidence": 0.98,
+                  "summary": "Water supply outage resolved on second retry"
+                }
+                """;
+
+        RestClient.Builder builder = RestClient.builder().baseUrl(BASE_URL);
+        MockRestServiceServer customMock = MockRestServiceServer.bindTo(builder).build();
+        GeminiAiProvider fastProvider = new GeminiAiProvider(
+                "mock-api-key-xyz",
+                MODEL,
+                BASE_URL,
+                2000,
+                2000,
+                true,
+                2,
+                10L,
+                builder.build()
+        );
+
+        customMock.expect(requestTo(EXPECTED_URI))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withStatus(HttpStatus.SERVICE_UNAVAILABLE));
+
+        customMock.expect(requestTo(EXPECTED_URI))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withStatus(HttpStatus.SERVICE_UNAVAILABLE));
+
+        customMock.expect(requestTo(EXPECTED_URI))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withSuccess(buildGeminiResponseBody(aiJson), MediaType.APPLICATION_JSON));
+
+        AiClassificationResult result = fastProvider.classify("Water supply outage for three days");
+
+        customMock.verify();
+        assertNotNull(result);
+        assertEquals("Water Supply", result.getSector());
+        assertEquals("Jal Nigam / Municipal Water Works", result.getDepartment());
+        assertEquals(0.98, result.getConfidence());
+    }
+
+    @Test
+    void testHttp503RepeatedFailuresExhaustsRetries() {
+        RestClient.Builder builder = RestClient.builder().baseUrl(BASE_URL);
+        MockRestServiceServer customMock = MockRestServiceServer.bindTo(builder).build();
+        GeminiAiProvider fastProvider = new GeminiAiProvider(
+                "mock-api-key-xyz",
+                MODEL,
+                BASE_URL,
+                2000,
+                2000,
+                true,
+                2,
+                10L,
+                builder.build()
+        );
+
+        // Initial attempt + 2 retries = 3 total attempts
+        customMock.expect(requestTo(EXPECTED_URI))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withStatus(HttpStatus.SERVICE_UNAVAILABLE));
+
+        customMock.expect(requestTo(EXPECTED_URI))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withStatus(HttpStatus.SERVICE_UNAVAILABLE));
+
+        customMock.expect(requestTo(EXPECTED_URI))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withStatus(HttpStatus.SERVICE_UNAVAILABLE));
+
+        AiClassificationException ex = assertThrows(AiClassificationException.class, () ->
+                fastProvider.classify("Water supply interrupted for three days"));
+
+        customMock.verify();
+        assertTrue(ex.getMessage().contains("503") || ex.getMessage().contains("HTTP failure"));
     }
 
     @Test

@@ -30,6 +30,20 @@ public class Complaint {
     @Column(length = 150)
     private String department;
 
+    @Column(length = 30)
+    private String urgency;
+
+    @Column(length = 30)
+    private String sentiment;
+
+    @Column(length = 30)
+    private String priority;
+
+    private Double confidence;
+
+    @Column(length = 1000)
+    private String summary;
+
     @Column(length = 255)
     private String location;
 

@@ -15,6 +15,11 @@ public class ComplaintResponse {
     private String description;
     private String sector;
     private String department;
+    private String urgency;
+    private String sentiment;
+    private String priority;
+    private Double confidence;
+    private String summary;
     private String location;
     private ComplaintStatus status;
     private String complaintId;
@@ -28,6 +33,11 @@ public class ComplaintResponse {
         this.description = complaint.getDescription();
         this.sector = complaint.getSector();
         this.department = complaint.getDepartment();
+        this.urgency = complaint.getUrgency();
+        this.sentiment = complaint.getSentiment();
+        this.priority = complaint.getPriority();
+        this.confidence = complaint.getConfidence();
+        this.summary = complaint.getSummary();
         this.location = complaint.getLocation();
         this.status = complaint.getStatus();
         this.complaintId = complaint.getComplaintId();

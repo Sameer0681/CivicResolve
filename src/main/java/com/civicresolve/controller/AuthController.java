@@ -1,9 +1,14 @@
 package com.civicresolve.controller;
 
 import com.civicresolve.dto.ForgotPasswordRequest;
+import com.civicresolve.dto.OfficerCreateRequest;
 import com.civicresolve.dto.RegisterRequest;
+import com.civicresolve.dto.UserResponse;
+import com.civicresolve.entity.User;
 import com.civicresolve.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -63,7 +68,7 @@ public class AuthController {
             userService.registerNewUser(request);
             redirectAttributes.addFlashAttribute("successMsg", "Your account has been created successfully! Please sign in.");
             return "redirect:/login?registered=true";
-        } catch (IllegalArgumentException ex) {
+        } catch (com.civicresolve.exception.ConflictException | com.civicresolve.exception.BadRequestException | IllegalArgumentException ex) {
             model.addAttribute("errorMsg", ex.getMessage());
             return "auth/register";
         } catch (Exception ex) {
@@ -137,5 +142,40 @@ public class AuthController {
             model.addAttribute("token", token);
             return "auth/reset-password";
         }
+    }
+
+    // REST API Endpoint for user registration (Point 2: role is always ROLE_CITIZEN)
+    @PostMapping("/api/auth/register")
+    @ResponseBody
+    public ResponseEntity<UserResponse> apiRegister(@Valid @RequestBody RegisterRequest request) {
+        request.setRole("CITIZEN");
+        User created = userService.registerNewUser(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new UserResponse(created));
+    }
+
+    // REST API Endpoint for Admin to create Field Officers
+    @PostMapping("/api/admin/users/officer")
+    @ResponseBody
+    public ResponseEntity<UserResponse> apiCreateOfficer(@Valid @RequestBody OfficerCreateRequest request) {
+        User created = userService.createOfficer(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new UserResponse(created));
+    }
+
+    // REST API Endpoint for citizen to update/add phone number (Point 4c)
+    @PutMapping("/api/auth/profile/phone")
+    @ResponseBody
+    public ResponseEntity<UserResponse> updateProfilePhone(
+            @Valid @RequestBody com.civicresolve.dto.UpdatePhoneRequest request,
+            @org.springframework.security.core.annotation.AuthenticationPrincipal com.civicresolve.service.CustomUserDetails currentUser) {
+
+        if (currentUser == null) {
+            throw new com.civicresolve.exception.UnauthorizedException("Authentication required");
+        }
+        if (currentUser.getRole() != com.civicresolve.entity.Role.ROLE_CITIZEN) {
+            throw new com.civicresolve.exception.ForbiddenException("Only citizens can update their phone via this endpoint");
+        }
+
+        User updated = userService.updateCitizenPhone(currentUser.getId(), request.getPhone());
+        return ResponseEntity.ok(new UserResponse(updated));
     }
 }

@@ -180,6 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initSpeechRecognition();
     initMediaUpload();
     initValidationListeners();
+    initOtpModalListeners();
 });
 
 function initTicketBadge() {
@@ -576,11 +577,190 @@ function initValidationListeners() {
     }
 }
 
+let otpResendInterval = null;
+let cachedComplaintPayload = null;
+let cachedComplaintContext = null;
+
+function initOtpModalListeners() {
+    const verifyBtn = document.getElementById('otpVerifyBtn');
+    const resendBtn = document.getElementById('otpResendBtn');
+    const inputEl = document.getElementById('otpCodeInput');
+
+    if (verifyBtn) {
+        verifyBtn.addEventListener('click', verifyOtpCode);
+    }
+
+    if (resendBtn) {
+        resendBtn.addEventListener('click', () => {
+            hideOtpModal();
+            // Resend complaint submission without token to trigger fresh OTP
+            submitGrievanceAsync(null);
+        });
+    }
+
+    if (inputEl) {
+        inputEl.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                verifyOtpCode();
+            }
+        });
+        inputEl.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/\D/g, '').substring(0, 6);
+        });
+    }
+}
+
+function showOtpModal(data) {
+    const modalEl = document.getElementById('otpVerificationModal');
+    if (!modalEl) {
+        alert(data.message || "OTP verification is required. Please check your phone.");
+        return;
+    }
+
+    const phoneEl = document.getElementById('otpMaskedPhoneText');
+    if (phoneEl) {
+        phoneEl.textContent = data.maskedPhone || 'your registered phone';
+    }
+
+    const inputEl = document.getElementById('otpCodeInput');
+    if (inputEl) {
+        inputEl.value = '';
+        inputEl.classList.remove('is-invalid');
+    }
+
+    const errorEl = document.getElementById('otpErrorMessage');
+    if (errorEl) {
+        errorEl.classList.add('d-none');
+        errorEl.textContent = '';
+    }
+
+    startOtpResendTimer(data.resendAfterSeconds || 60);
+
+    if (window.bootstrap && bootstrap.Modal) {
+        const bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        bsModal.show();
+    } else {
+        modalEl.classList.add('show');
+        modalEl.style.display = 'block';
+    }
+
+    setTimeout(() => {
+        if (inputEl) inputEl.focus();
+    }, 350);
+}
+
+function hideOtpModal() {
+    const modalEl = document.getElementById('otpVerificationModal');
+    if (modalEl) {
+        if (window.bootstrap && bootstrap.Modal) {
+            const bsModal = bootstrap.Modal.getInstance(modalEl);
+            if (bsModal) bsModal.hide();
+        } else {
+            modalEl.classList.remove('show');
+            modalEl.style.display = 'none';
+        }
+    }
+    if (otpResendInterval) {
+        clearInterval(otpResendInterval);
+        otpResendInterval = null;
+    }
+}
+
+function startOtpResendTimer(seconds) {
+    if (otpResendInterval) clearInterval(otpResendInterval);
+
+    const resendBtn = document.getElementById('otpResendBtn');
+    const timerText = document.getElementById('otpTimerText');
+    if (!resendBtn) return;
+
+    let remaining = parseInt(seconds, 10);
+    if (isNaN(remaining) || remaining < 0) remaining = 60;
+
+    resendBtn.disabled = true;
+
+    function render() {
+        if (remaining <= 0) {
+            clearInterval(otpResendInterval);
+            otpResendInterval = null;
+            resendBtn.disabled = false;
+            if (timerText) timerText.textContent = '';
+        } else {
+            if (timerText) timerText.textContent = `(${remaining}s)`;
+            remaining--;
+        }
+    }
+
+    render();
+    otpResendInterval = setInterval(render, 1000);
+}
+
+async function verifyOtpCode() {
+    const inputEl = document.getElementById('otpCodeInput');
+    const errorEl = document.getElementById('otpErrorMessage');
+    const verifyBtn = document.getElementById('otpVerifyBtn');
+    const spinner = document.getElementById('otpVerifySpinner');
+
+    const code = inputEl ? inputEl.value.trim() : '';
+    if (!code || code.length !== 6 || !/^\d{6}$/.test(code)) {
+        if (errorEl) {
+            errorEl.textContent = "Please enter a valid 6-digit verification code.";
+            errorEl.classList.remove('d-none');
+        }
+        if (inputEl) {
+            inputEl.classList.add('is-invalid');
+            inputEl.focus();
+        }
+        return;
+    }
+
+    if (errorEl) errorEl.classList.add('d-none');
+    if (inputEl) inputEl.classList.remove('is-invalid');
+    if (verifyBtn) verifyBtn.disabled = true;
+    if (spinner) spinner.classList.remove('d-none');
+
+    try {
+        const response = await fetch('/api/otp/verify', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ otp: code })
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (response.ok && data.verified && data.otpToken) {
+            hideOtpModal();
+            // Re-submit same complaint payload with X-OTP-Token
+            await submitGrievanceAsync(data.otpToken);
+        } else {
+            const msg = data.message || "Invalid or expired verification code. Please check and try again.";
+            if (errorEl) {
+                errorEl.textContent = msg;
+                errorEl.classList.remove('d-none');
+            }
+            if (inputEl) {
+                inputEl.classList.add('is-invalid');
+                inputEl.select();
+            }
+        }
+    } catch (e) {
+        if (errorEl) {
+            errorEl.textContent = "Network error verifying code. Please try again.";
+            errorEl.classList.remove('d-none');
+        }
+    } finally {
+        if (verifyBtn) verifyBtn.disabled = false;
+        if (spinner) spinner.classList.add('d-none');
+    }
+}
+
 /**
  * Asynchronous Submission to POST /api/complaints
  */
-
-async function submitGrievanceAsync() {
+async function submitGrievanceAsync(otpToken = null) {
     if (PipelineState.isSubmitting) return;
 
     let titleVal = document.getElementById('formTitleInput')?.value.trim() || PipelineState.title;
@@ -630,6 +810,7 @@ async function submitGrievanceAsync() {
     const overlay = document.getElementById('restLoadingOverlay');
     const statusText = document.getElementById('restLoadingStatus');
     if (overlay) overlay.style.display = 'flex';
+    if (statusText) statusText.textContent = "Registering ticket & verifying with authority desk...";
 
     const complaintPayload = {
         complaintId: PipelineState.complaintId,
@@ -641,6 +822,17 @@ async function submitGrievanceAsync() {
         status: "SUBMITTED"
     };
 
+    cachedComplaintPayload = complaintPayload;
+    cachedComplaintContext = { titleVal, descVal, locVal, secVal };
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    };
+    if (otpToken) {
+        headers['X-OTP-Token'] = otpToken;
+    }
+
     try {
         if (statusText) {
             statusText.textContent = "Submitting complaint securely...";
@@ -648,20 +840,55 @@ async function submitGrievanceAsync() {
 
         const response = await fetch('/api/complaints', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
+            headers: headers,
             credentials: 'same-origin',
             body: JSON.stringify(complaintPayload)
         });
 
         // Form-login security may redirect unauthenticated requests to /login.
-        if (response.redirected || response.url.includes('/login')) {
+        if (response.redirected || (response.url && response.url.includes('/login'))) {
             window.location.href =
                 `/login?returnUrl=${encodeURIComponent('/report')}`;
             return;
         }
+
+        // 1. Success (200 OK)
+        if (response.ok) {
+            const savedComplaint = await response.json();
+
+            hideOtpModal();
+
+            // Only use the server-confirmed receipt after successful persistence.
+            const savedId = savedComplaint.complaintId || PipelineState.complaintId;
+
+            sessionStorage.setItem('cr_latest_ticket', JSON.stringify({
+                ...complaintPayload,
+                complaintId: savedId,
+                deskName: PipelineState.deskName,
+                assignedOfficer: PipelineState.assignedOfficer,
+                portal: PipelineState.targetPortal,
+                urgency: savedComplaint.urgency || PipelineState.urgency,
+                createdAt: savedComplaint.createdAt || new Date().toISOString()
+            }));
+
+            const redirectUrl = `/report/submission-success?complaintId=${encodeURIComponent(savedId)}&title=${encodeURIComponent(titleVal)}&sector=${encodeURIComponent(secVal)}&location=${encodeURIComponent(locVal)}&urgency=${encodeURIComponent(savedComplaint.urgency || PipelineState.urgency)}&dept=${encodeURIComponent(PipelineState.department)}&portal=${encodeURIComponent(PipelineState.targetPortal)}`;
+
+            window.location.href = redirectUrl;
+            return;
+        }
+
+        // 2. OTP Required (HTTP 428)
+        if (response.status === 428) {
+            if (overlay) overlay.style.display = 'none';
+            const data = await response.json().catch(() => ({}));
+            showOtpModal(data);
+            return;
+        }
+
+        // 3. Error Handling
+        if (overlay) overlay.style.display = 'none';
+        const errorData = await response.json().catch(() => ({}));
+        const errorMsg = errorData.message || "";
 
         if (response.status === 401 || response.status === 403) {
             alert("You must log in with a Citizen account to submit a complaint.");
@@ -670,30 +897,29 @@ async function submitGrievanceAsync() {
             return;
         }
 
-        if (!response.ok) {
-            throw new Error(`Complaint submission failed (HTTP ${response.status}).`);
+        if (response.status === 400) {
+            if (errorMsg.includes("phone") || errorMsg.includes("PUT /api/auth/profile/phone")) {
+                alert("Your account does not have a registered mobile phone number. Please add your phone number via profile settings before submitting complaints.");
+            } else {
+                alert(errorMsg || "Unable to submit grievance due to invalid input. Please check your details.");
+            }
+            return;
         }
 
-        const savedComplaint = await response.json();
+        if (response.status === 409) {
+            alert(errorMsg || "This verification code or ticket has already been processed. Please request a new verification code.");
+            return;
+        }
 
-        // Only use the server-confirmed receipt after successful persistence.
-        const savedId = savedComplaint.complaintId || PipelineState.complaintId;
+        if (response.status === 429) {
+            alert("Too many OTP requests have been sent recently. Please wait a few minutes before trying again.");
+            return;
+        }
 
-        sessionStorage.setItem('cr_latest_ticket', JSON.stringify({
-            ...complaintPayload,
-            complaintId: savedId,
-            deskName: PipelineState.deskName,
-            assignedOfficer: PipelineState.assignedOfficer,
-            portal: PipelineState.targetPortal,
-            urgency: savedComplaint.urgency || PipelineState.urgency,
-            createdAt: savedComplaint.createdAt || new Date().toISOString()
-        }));
-
-        const redirectUrl = `/report/submission-success?complaintId=${encodeURIComponent(savedId)}&title=${encodeURIComponent(titleVal)}&sector=${encodeURIComponent(secVal)}&location=${encodeURIComponent(locVal)}&urgency=${encodeURIComponent(savedComplaint.urgency || PipelineState.urgency)}&dept=${encodeURIComponent(PipelineState.department)}&portal=${encodeURIComponent(PipelineState.targetPortal)}`;
-
-        window.location.href = redirectUrl;
+        alert(errorMsg || `Server error (${response.status}). Please try again later.`);
 
     } catch (err) {
+        if (overlay) overlay.style.display = 'none';
         console.error("Complaint submission failed:", err);
         alert(
             "Your complaint could not be submitted. No success receipt was created. " +
@@ -704,4 +930,3 @@ async function submitGrievanceAsync() {
         if (overlay) overlay.style.display = 'none';
     }
 }
-

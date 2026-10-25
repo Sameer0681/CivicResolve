@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -53,8 +54,9 @@ public class TwilioOtpSender implements OtpSender {
 
             log.info("Twilio SMS OTP dispatched successfully to {}", masked);
         } catch (Exception e) {
-            log.error("Failed to dispatch Twilio SMS to {}: {}", masked, e.getMessage());
-            throw new OtpException("Failed to dispatch SMS verification code: " + e.getMessage());
+            String sanitizedErr = sanitizeMessage(e.getMessage(), phone, otp);
+            log.error("Failed to dispatch Twilio SMS to {}: {}", masked, sanitizedErr);
+            throw new OtpException("OTP_DELIVERY_FAILED", "Failed to dispatch SMS verification code: " + sanitizedErr, HttpStatus.BAD_GATEWAY);
         }
     }
 
@@ -84,8 +86,23 @@ public class TwilioOtpSender implements OtpSender {
 
             log.info("Twilio Voice OTP call initiated successfully to {}", masked);
         } catch (Exception e) {
-            log.error("Failed to initiate Twilio Voice call to {}: {}", masked, e.getMessage());
-            throw new OtpException("Failed to initiate voice call verification: " + e.getMessage());
+            String sanitizedErr = sanitizeMessage(e.getMessage(), phone, otp);
+            log.error("Failed to initiate Twilio Voice call to {}: {}", masked, sanitizedErr);
+            throw new OtpException("OTP_DELIVERY_FAILED", "Failed to initiate voice call verification: " + sanitizedErr, HttpStatus.BAD_GATEWAY);
         }
+    }
+
+    public static String sanitizeMessage(String message, String phone, String otp) {
+        if (message == null) {
+            return "Unknown upstream error";
+        }
+        String clean = message;
+        if (phone != null && !phone.isBlank()) {
+            clean = clean.replace(phone, MockOtpSender.maskPhone(phone));
+        }
+        if (otp != null && !otp.isBlank()) {
+            clean = clean.replace(otp, "[REDACTED]");
+        }
+        return clean;
     }
 }

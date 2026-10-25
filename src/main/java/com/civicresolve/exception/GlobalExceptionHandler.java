@@ -42,13 +42,15 @@ public class GlobalExceptionHandler {
                 .maskedPhone(ex.getMaskedPhone())
                 .expiresInSeconds(ex.getExpiresInSeconds())
                 .resendAfterSeconds(ex.getResendAfterSeconds())
+                .channel(ex.getChannel())
                 .build();
         return ResponseEntity.status(HttpStatus.PRECONDITION_REQUIRED).body(response);
     }
 
     @ExceptionHandler(OtpException.class)
     public ResponseEntity<ErrorResponse> handleOtpException(OtpException ex, HttpServletRequest request) {
-        return buildError(HttpStatus.FORBIDDEN, ex.getErrorCode(), ex.getMessage(), request);
+        HttpStatus status = ex.getStatus() != null ? ex.getStatus() : HttpStatus.BAD_GATEWAY;
+        return buildError(status, ex.getErrorCode(), ex.getMessage(), request);
     }
 
     @ExceptionHandler(RateLimitException.class)

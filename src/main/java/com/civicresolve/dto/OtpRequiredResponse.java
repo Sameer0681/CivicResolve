@@ -21,4 +21,5 @@ public class OtpRequiredResponse {
     private String maskedPhone;
     private long expiresInSeconds;
     private long resendAfterSeconds;
+    private String channel;
 }

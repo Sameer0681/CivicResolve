@@ -241,4 +241,56 @@ class ComplaintControllerTest {
                 .andExpect(jsonPath("$.error").value("BAD_REQUEST"))
                 .andExpect(jsonPath("$.message").value("No mobile phone number registered on your account. Please add a valid phone number via PUT /api/auth/profile/phone before submitting complaints."));
     }
+
+    @Test
+    void testCreateComplaint_smsFails_callOk_returnsOtpRequired_428() throws Exception {
+        when(complaintService.createComplaint(any(Complaint.class), eq(1L), isNull()))
+                .thenThrow(new OtpRequiredException(
+                        "OTP verification is required to submit a complaint. A verification code has been dispatched to your registered phone via voice call.",
+                        "+91XXXXXX3210",
+                        300L,
+                        60L,
+                        "CALL"
+                ));
+
+        ComplaintCreateRequest request = ComplaintCreateRequest.builder()
+                .title("Pothole")
+                .description("Pothole description")
+                .sector("Roads")
+                .build();
+
+        mockMvc.perform(post("/api/complaints")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().is(428))
+                .andExpect(jsonPath("$.status").value(428))
+                .andExpect(jsonPath("$.error").value("OTP_REQUIRED"))
+                .andExpect(jsonPath("$.maskedPhone").value("+91XXXXXX3210"))
+                .andExpect(jsonPath("$.channel").value("CALL"))
+                .andExpect(jsonPath("$.message").value("OTP verification is required to submit a complaint. A verification code has been dispatched to your registered phone via voice call."));
+    }
+
+    @Test
+    void testCreateComplaint_bothChannelsFail_returns502Json() throws Exception {
+        when(complaintService.createComplaint(any(Complaint.class), eq(1L), isNull()))
+                .thenThrow(new com.civicresolve.exception.OtpException(
+                        "OTP_DELIVERY_FAILED",
+                        "Failed to deliver verification code. Upstream provider error: (SMS: 572006 rejection; Call: Network timeout)",
+                        org.springframework.http.HttpStatus.BAD_GATEWAY
+                ));
+
+        ComplaintCreateRequest request = ComplaintCreateRequest.builder()
+                .title("Pothole")
+                .description("Pothole description")
+                .sector("Roads")
+                .build();
+
+        mockMvc.perform(post("/api/complaints")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadGateway())
+                .andExpect(jsonPath("$.status").value(502))
+                .andExpect(jsonPath("$.error").value("OTP_DELIVERY_FAILED"))
+                .andExpect(jsonPath("$.message").value("Failed to deliver verification code. Upstream provider error: (SMS: 572006 rejection; Call: Network timeout)"));
+    }
 }

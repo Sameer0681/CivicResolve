@@ -7,6 +7,7 @@ import com.civicresolve.entity.OtpVerification;
 import com.civicresolve.entity.User;
 import com.civicresolve.exception.BadRequestException;
 import com.civicresolve.exception.ConflictException;
+import com.civicresolve.exception.OtpException;
 import com.civicresolve.exception.OtpRequiredException;
 import com.civicresolve.exception.RateLimitException;
 import com.civicresolve.exception.UnauthorizedException;
@@ -15,7 +16,9 @@ import com.civicresolve.service.otp.MockOtpSender;
 import com.civicresolve.service.otp.OtpSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,15 +41,34 @@ public class OtpServiceImpl implements OtpService {
     private final OtpVerificationRepository otpVerificationRepository;
     private final OtpSender otpSender;
     private final boolean otpRequired;
+    private final String defaultChannel;
     private final SecureRandom secureRandom = new SecureRandom();
 
     public OtpServiceImpl(
             OtpVerificationRepository otpVerificationRepository,
             OtpSender otpSender,
             @Value("${app.otp.required:false}") boolean otpRequired) {
+        this(otpVerificationRepository, otpSender, otpRequired, "BOTH");
+    }
+
+    @Autowired
+    public OtpServiceImpl(
+            OtpVerificationRepository otpVerificationRepository,
+            OtpSender otpSender,
+            @Value("${app.otp.required:false}") boolean otpRequired,
+            @Value("${app.otp.default-channel:BOTH}") String defaultChannel) {
         this.otpVerificationRepository = otpVerificationRepository;
         this.otpSender = otpSender;
         this.otpRequired = otpRequired;
+        this.defaultChannel = normalizeChannel(defaultChannel);
+    }
+
+    private static String normalizeChannel(String ch) {
+        if (ch == null || ch.isBlank()) {
+            return "BOTH";
+        }
+        String upper = ch.trim().toUpperCase();
+        return (upper.equals("SMS") || upper.equals("CALL") || upper.equals("BOTH")) ? upper : "BOTH";
     }
 
     @Override
@@ -65,13 +87,17 @@ public class OtpServiceImpl implements OtpService {
             throw new BadRequestException("No mobile phone number registered on your citizen account. Please update your profile with a valid 10-digit mobile number.");
         }
         String normalizedPhone = normalizeIndianPhone(citizen.getPhone());
+        String maskedPhone = MockOtpSender.maskPhone(normalizedPhone);
 
-        String channel = (request != null && request.getChannel() != null && !request.getChannel().isBlank())
-                ? request.getChannel().trim().toUpperCase()
-                : "BOTH";
-
-        if (!channel.equals("SMS") && !channel.equals("CALL") && !channel.equals("BOTH")) {
-            throw new BadRequestException("Invalid channel: " + channel + ". Allowed: SMS, CALL, BOTH");
+        String channel;
+        if (request != null && request.getChannel() != null && !request.getChannel().isBlank()) {
+            String ch = request.getChannel().trim().toUpperCase();
+            if (!ch.equals("SMS") && !ch.equals("CALL") && !ch.equals("BOTH")) {
+                throw new BadRequestException("Invalid channel: " + ch + ". Allowed: SMS, CALL, BOTH");
+            }
+            channel = ch;
+        } else {
+            channel = this.defaultChannel;
         }
 
         LocalDateTime now = LocalDateTime.now();
@@ -105,12 +131,65 @@ public class OtpServiceImpl implements OtpService {
         String otp = String.format("%06d", secureRandom.nextInt(1_000_000));
         String hashedOtp = hashWithSha256(otp + ":" + citizen.getId());
 
-        // 5. Persist OtpVerification record
+        // 5. Dispatch via OtpSender
+        boolean smsSuccess = false;
+        boolean callSuccess = false;
+        Exception smsError = null;
+        Exception callError = null;
+
+        if (channel.equals("SMS") || channel.equals("BOTH")) {
+            try {
+                otpSender.sendSms(normalizedPhone, otp);
+                smsSuccess = true;
+            } catch (Exception e) {
+                smsError = e;
+                log.warn("SMS OTP dispatch failed for citizen {} (masked: {}): {}", citizen.getId(), maskedPhone, sanitize(e.getMessage(), normalizedPhone, otp));
+            }
+        }
+
+        if (channel.equals("CALL") || channel.equals("BOTH")) {
+            try {
+                otpSender.sendVoiceCall(normalizedPhone, otp);
+                callSuccess = true;
+            } catch (Exception e) {
+                callError = e;
+                log.warn("Voice Call OTP dispatch failed for citizen {} (masked: {}): {}", citizen.getId(), maskedPhone, sanitize(e.getMessage(), normalizedPhone, otp));
+            }
+        }
+
+        boolean anySuccess = smsSuccess || callSuccess;
+        if (!anySuccess) {
+            log.error("All OTP delivery channels failed for citizen {} (masked: {})", citizen.getId(), maskedPhone);
+            String failDetail = "";
+            if (smsError != null && callError != null) {
+                failDetail = " (SMS: " + sanitize(smsError.getMessage(), normalizedPhone, otp) + "; Call: " + sanitize(callError.getMessage(), normalizedPhone, otp) + ")";
+            } else if (smsError != null) {
+                failDetail = " (SMS: " + sanitize(smsError.getMessage(), normalizedPhone, otp) + ")";
+            } else if (callError != null) {
+                failDetail = " (Call: " + sanitize(callError.getMessage(), normalizedPhone, otp) + ")";
+            }
+            throw new OtpException("OTP_DELIVERY_FAILED", "Failed to deliver verification code. Upstream provider error: " + failDetail, HttpStatus.BAD_GATEWAY);
+        }
+
+        String deliveredChannel;
+        String responseMessage;
+        if (smsSuccess && callSuccess) {
+            deliveredChannel = "BOTH";
+            responseMessage = "Verification code dispatched successfully via SMS and voice call";
+        } else if (callSuccess) {
+            deliveredChannel = "CALL";
+            responseMessage = "Verification code dispatched via voice call (SMS delivery failed)";
+        } else {
+            deliveredChannel = "SMS";
+            responseMessage = "Verification code dispatched via SMS (voice call delivery failed)";
+        }
+
+        // 6. Persist OtpVerification record
         OtpVerification verification = OtpVerification.builder()
                 .userId(citizen.getId())
                 .phone(normalizedPhone)
                 .otpHash(hashedOtp)
-                .channel(channel)
+                .channel(deliveredChannel)
                 .expiresAt(now.plusMinutes(5))
                 .attempts(0)
                 .verified(false)
@@ -119,18 +198,10 @@ public class OtpServiceImpl implements OtpService {
 
         otpVerificationRepository.save(verification);
 
-        // 6. Dispatch via OtpSender
-        if (channel.equals("SMS") || channel.equals("BOTH")) {
-            otpSender.sendSms(normalizedPhone, otp);
-        }
-        if (channel.equals("CALL") || channel.equals("BOTH")) {
-            otpSender.sendVoiceCall(normalizedPhone, otp);
-        }
-
         return OtpSendResponse.builder()
-                .message("Verification code dispatched successfully")
-                .channel(channel)
-                .maskedPhone(MockOtpSender.maskPhone(normalizedPhone))
+                .message(responseMessage)
+                .channel(deliveredChannel)
+                .maskedPhone(maskedPhone)
                 .expiresInSeconds(300)
                 .cooldownSeconds(60)
                 .build();
@@ -245,6 +316,9 @@ public class OtpServiceImpl implements OtpService {
         LocalDateTime now = LocalDateTime.now();
         String maskedPhone = MockOtpSender.maskPhone(normalizedPhone);
 
+        // Channel configured via app.otp.default-channel (default BOTH, supports CALL via APP_OTP_DEFAULT_CHANNEL=CALL)
+        String channel = this.defaultChannel;
+
         // Point 2: If a valid unexpired OTP was already sent within cooldown, do NOT send another; just report it.
         Optional<OtpVerification> latestOpt = otpVerificationRepository.findTopByUserIdOrderByCreatedAtDesc(citizen.getId());
         if (latestOpt.isPresent()) {
@@ -257,11 +331,22 @@ public class OtpServiceImpl implements OtpService {
                 long resendAfterSeconds = Math.max(1, java.time.Duration.between(now, latest.getCreatedAt().plusSeconds(60)).getSeconds());
                 long expiresInSeconds = Math.max(0, java.time.Duration.between(now, latest.getExpiresAt()).getSeconds());
 
+                String recentChannel = latest.getChannel() != null ? latest.getChannel() : "BOTH";
+                String cooldownMessage;
+                if ("CALL".equalsIgnoreCase(recentChannel)) {
+                    cooldownMessage = "OTP verification is required to submit a complaint. A verification code was recently dispatched to your registered phone via voice call.";
+                } else if ("SMS".equalsIgnoreCase(recentChannel)) {
+                    cooldownMessage = "OTP verification is required to submit a complaint. A verification code was recently dispatched to your registered phone via SMS.";
+                } else {
+                    cooldownMessage = "OTP verification is required to submit a complaint. A verification code was recently dispatched to your registered phone via SMS and voice call.";
+                }
+
                 throw new OtpRequiredException(
-                        "OTP verification is required to submit a complaint. A verification code was recently sent to your registered phone.",
+                        cooldownMessage,
                         maskedPhone,
                         expiresInSeconds,
-                        resendAfterSeconds
+                        resendAfterSeconds,
+                        recentChannel
                 );
             }
         }
@@ -273,21 +358,73 @@ public class OtpServiceImpl implements OtpService {
             throw new RateLimitException("Hourly OTP request limit exceeded (max 5 per hour). Please try again later.");
         }
 
-        long voiceCallCount = otpVerificationRepository.countVoiceCallsAfter(citizen.getId(), oneHourAgo);
-        if (voiceCallCount >= 3) {
-            throw new RateLimitException("Voice call OTP limit exceeded (max 3 calls per hour). Please try again later.");
+        if (channel.equals("CALL") || channel.equals("BOTH")) {
+            long voiceCallCount = otpVerificationRepository.countVoiceCallsAfter(citizen.getId(), oneHourAgo);
+            if (voiceCallCount >= 3) {
+                throw new RateLimitException("Voice call OTP limit exceeded (max 3 calls per hour). Please try again later.");
+            }
         }
 
         // Generate 6-digit OTP code
         String otp = String.format("%06d", secureRandom.nextInt(1_000_000));
         String hashedOtp = hashWithSha256(otp + ":" + citizen.getId());
 
+        // Dispatch via OtpSender
+        boolean smsSuccess = false;
+        boolean callSuccess = false;
+        Exception smsError = null;
+        Exception callError = null;
+
+        if (channel.equals("SMS") || channel.equals("BOTH")) {
+            try {
+                otpSender.sendSms(normalizedPhone, otp);
+                smsSuccess = true;
+            } catch (Exception e) {
+                smsError = e;
+                log.warn("SMS OTP dispatch failed for citizen {} (masked: {}): {}", citizen.getId(), maskedPhone, sanitize(e.getMessage(), normalizedPhone, otp));
+            }
+        }
+
+        if (channel.equals("CALL") || channel.equals("BOTH")) {
+            try {
+                otpSender.sendVoiceCall(normalizedPhone, otp);
+                callSuccess = true;
+            } catch (Exception e) {
+                callError = e;
+                log.warn("Voice Call OTP dispatch failed for citizen {} (masked: {}): {}", citizen.getId(), maskedPhone, sanitize(e.getMessage(), normalizedPhone, otp));
+            }
+        }
+
+        boolean anySuccess = smsSuccess || callSuccess;
+        if (!anySuccess) {
+            log.error("All OTP delivery channels failed for citizen {} (masked: {})", citizen.getId(), maskedPhone);
+            String failDetail = "";
+            if (smsError != null && callError != null) {
+                failDetail = " (SMS: " + sanitize(smsError.getMessage(), normalizedPhone, otp) + "; Call: " + sanitize(callError.getMessage(), normalizedPhone, otp) + ")";
+            } else if (smsError != null) {
+                failDetail = " (SMS: " + sanitize(smsError.getMessage(), normalizedPhone, otp) + ")";
+            } else if (callError != null) {
+                failDetail = " (Call: " + sanitize(callError.getMessage(), normalizedPhone, otp) + ")";
+            }
+            throw new OtpException("OTP_DELIVERY_FAILED", "Failed to deliver verification code. Upstream provider error: " + failDetail, HttpStatus.BAD_GATEWAY);
+        }
+
+        // Determine delivered channel
+        String deliveredChannel;
+        if (smsSuccess && callSuccess) {
+            deliveredChannel = "BOTH";
+        } else if (callSuccess) {
+            deliveredChannel = "CALL";
+        } else {
+            deliveredChannel = "SMS";
+        }
+
         // Persist OtpVerification record
         OtpVerification verification = OtpVerification.builder()
                 .userId(citizen.getId())
                 .phone(normalizedPhone)
                 .otpHash(hashedOtp)
-                .channel("BOTH")
+                .channel(deliveredChannel)
                 .expiresAt(now.plusMinutes(5))
                 .attempts(0)
                 .verified(false)
@@ -295,16 +432,37 @@ public class OtpServiceImpl implements OtpService {
                 .build();
         otpVerificationRepository.save(verification);
 
-        // Dispatch via OtpSender: BOTH SMS and Voice Call
-        otpSender.sendSms(normalizedPhone, otp);
-        otpSender.sendVoiceCall(normalizedPhone, otp);
+        // 428 response message: MUST NOT claim SMS was sent if it failed!
+        String responseMessage;
+        if (deliveredChannel.equals("CALL")) {
+            responseMessage = "OTP verification is required to submit a complaint. A verification code has been dispatched to your registered phone via voice call.";
+        } else if (deliveredChannel.equals("SMS")) {
+            responseMessage = "OTP verification is required to submit a complaint. A verification code has been dispatched to your registered phone via SMS.";
+        } else {
+            responseMessage = "OTP verification is required to submit a complaint. A verification code has been dispatched to your registered phone via SMS and voice call.";
+        }
 
         throw new OtpRequiredException(
-                "OTP verification is required to submit a complaint. A verification code has been sent to your registered phone.",
+                responseMessage,
                 maskedPhone,
                 300L,
-                60L
+                60L,
+                deliveredChannel
         );
+    }
+
+    public static String sanitize(String message, String phone, String otp) {
+        if (message == null) {
+            return "";
+        }
+        String clean = message;
+        if (phone != null && !phone.isBlank()) {
+            clean = clean.replace(phone, MockOtpSender.maskPhone(phone));
+        }
+        if (otp != null && !otp.isBlank()) {
+            clean = clean.replace(otp, "[REDACTED]");
+        }
+        return clean;
     }
 
     public static String normalizeIndianPhone(String raw) {

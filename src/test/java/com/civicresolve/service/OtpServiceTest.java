@@ -278,6 +278,7 @@ class OtpServiceTest {
                 .expiresAt(LocalDateTime.now().plusMinutes(4))
                 .used(false)
                 .verified(false)
+                .channel("BOTH")
                 .build();
 
         when(otpVerificationRepository.findTopByUserIdOrderByCreatedAtDesc(1L)).thenReturn(Optional.of(existing));
@@ -290,5 +291,99 @@ class OtpServiceTest {
 
         verifyNoInteractions(otpSender);
         verify(otpVerificationRepository, never()).save(any());
+    }
+
+    @Test
+    void testBothChannel_smsFails_callOk_returnsOtpRequired() {
+        when(otpVerificationRepository.findTopByUserIdOrderByCreatedAtDesc(1L)).thenReturn(Optional.empty());
+        when(otpVerificationRepository.countByUserIdAndCreatedAtAfter(eq(1L), any(LocalDateTime.class))).thenReturn(0L);
+        when(otpVerificationRepository.countVoiceCallsAfter(eq(1L), any(LocalDateTime.class))).thenReturn(0L);
+
+        // Twilio trial error 572006 on SMS
+        doThrow(new com.civicresolve.exception.OtpException("Twilio error 572006: trial rejects custom SMS"))
+                .when(otpSender).sendSms(eq("+919876543210"), anyString());
+        // Voice call succeeds
+        doNothing().when(otpSender).sendVoiceCall(eq("+919876543210"), anyString());
+
+        OtpRequiredException ex = assertThrows(OtpRequiredException.class, () -> otpService.triggerComplaintSubmissionOtp(citizen));
+
+        assertNotNull(ex);
+        assertEquals("+91XXXXXX3210", ex.getMaskedPhone());
+        assertEquals("CALL", ex.getChannel());
+        // Requirement 3: 428 response must NOT claim SMS was sent if it failed!
+        assertFalse(ex.getMessage().toLowerCase().contains("sms"), "Message must not claim SMS was sent when it failed");
+        assertTrue(ex.getMessage().contains("voice call"), "Message must indicate delivery via voice call");
+
+        ArgumentCaptor<OtpVerification> captor = ArgumentCaptor.forClass(OtpVerification.class);
+        verify(otpVerificationRepository).save(captor.capture());
+        assertEquals("CALL", captor.getValue().getChannel());
+    }
+
+    @Test
+    void testBothChannel_bothFail_throws502OtpException() {
+        when(otpVerificationRepository.findTopByUserIdOrderByCreatedAtDesc(1L)).thenReturn(Optional.empty());
+        when(otpVerificationRepository.countByUserIdAndCreatedAtAfter(eq(1L), any(LocalDateTime.class))).thenReturn(0L);
+        when(otpVerificationRepository.countVoiceCallsAfter(eq(1L), any(LocalDateTime.class))).thenReturn(0L);
+
+        doThrow(new com.civicresolve.exception.OtpException("SMS error 572006"))
+                .when(otpSender).sendSms(eq("+919876543210"), anyString());
+        doThrow(new com.civicresolve.exception.OtpException("Voice call busy"))
+                .when(otpSender).sendVoiceCall(eq("+919876543210"), anyString());
+
+        com.civicresolve.exception.OtpException ex = assertThrows(
+                com.civicresolve.exception.OtpException.class,
+                () -> otpService.triggerComplaintSubmissionOtp(citizen)
+        );
+
+        assertEquals(502, ex.getStatus().value());
+        assertEquals("OTP_DELIVERY_FAILED", ex.getErrorCode());
+        assertFalse(ex.getMessage().contains("9876543210"), "Plain phone number must never be leaked");
+        verify(otpVerificationRepository, never()).save(any());
+    }
+
+    @Test
+    void testChannelCall_sendsOnlyVoiceCall() {
+        // OtpServiceImpl configured with defaultChannel="CALL" (as with APP_OTP_DEFAULT_CHANNEL=CALL)
+        OtpServiceImpl callOnlyService = new OtpServiceImpl(otpVerificationRepository, otpSender, true, "CALL");
+
+        when(otpVerificationRepository.findTopByUserIdOrderByCreatedAtDesc(1L)).thenReturn(Optional.empty());
+        when(otpVerificationRepository.countByUserIdAndCreatedAtAfter(eq(1L), any(LocalDateTime.class))).thenReturn(0L);
+        when(otpVerificationRepository.countVoiceCallsAfter(eq(1L), any(LocalDateTime.class))).thenReturn(0L);
+
+        OtpRequiredException ex = assertThrows(OtpRequiredException.class, () -> callOnlyService.triggerComplaintSubmissionOtp(citizen));
+
+        assertNotNull(ex);
+        assertEquals("CALL", ex.getChannel());
+        assertFalse(ex.getMessage().toLowerCase().contains("sms"), "Message must not claim SMS was sent in CALL channel mode");
+        assertTrue(ex.getMessage().contains("voice call"));
+
+        // Channel CALL sends ONLY a call, never SMS
+        verify(otpSender, times(1)).sendVoiceCall(eq("+919876543210"), anyString());
+        verify(otpSender, never()).sendSms(anyString(), anyString());
+
+        ArgumentCaptor<OtpVerification> captor = ArgumentCaptor.forClass(OtpVerification.class);
+        verify(otpVerificationRepository).save(captor.capture());
+        assertEquals("CALL", captor.getValue().getChannel());
+    }
+
+    @Test
+    void testSendOtp_bothChannel_smsFails_callOk_succeeds() {
+        when(otpVerificationRepository.findTopByUserIdOrderByCreatedAtDesc(1L)).thenReturn(Optional.empty());
+        when(otpVerificationRepository.countByUserIdAndCreatedAtAfter(eq(1L), any(LocalDateTime.class))).thenReturn(0L);
+        when(otpVerificationRepository.countVoiceCallsAfter(eq(1L), any(LocalDateTime.class))).thenReturn(0L);
+
+        doThrow(new com.civicresolve.exception.OtpException("SMS 572006 rejection"))
+                .when(otpSender).sendSms(eq("+919876543210"), anyString());
+
+        OtpSendRequest request = OtpSendRequest.builder().channel("BOTH").build();
+        OtpSendResponse response = otpService.sendOtp(citizen, request);
+
+        assertNotNull(response);
+        assertEquals("CALL", response.getChannel());
+        assertTrue(response.getMessage().contains("voice call"));
+        assertEquals("+91XXXXXX3210", response.getMaskedPhone());
+
+        verify(otpSender).sendSms(eq("+919876543210"), anyString());
+        verify(otpSender).sendVoiceCall(eq("+919876543210"), anyString());
     }
 }

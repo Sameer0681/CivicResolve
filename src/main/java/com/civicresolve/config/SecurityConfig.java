@@ -13,7 +13,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.core.env.Environment;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.access.AccessDeniedHandlerImpl;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -78,11 +82,18 @@ public class SecurityConfig {
                                 "/report",
                                 "/pages",
                                 "/preview",
-                                "/dev/pages")
+                                "/dev/pages",
+                                "/error")
                         .permitAll()
 
-                        // Authentication and password reset views
+                        // Authentication and password reset views (GET and POST public)
                         .requestMatchers(
+                                "/login",
+                                "/register",
+                                "/forgot-password",
+                                "/reset-password")
+                        .permitAll()
+                        .requestMatchers(HttpMethod.POST,
                                 "/login",
                                 "/register",
                                 "/forgot-password",
@@ -169,31 +180,37 @@ public class SecurityConfig {
                     }
                 })
 
-                // Custom 401 & 403 JSON responses for /api/** requests
-                .exceptionHandling(ex -> ex
-                        .defaultAuthenticationEntryPointFor(
-                                (request, response, authException) -> {
-                                    response.setContentType("application/json");
-                                    response.setCharacterEncoding("UTF-8");
-                                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                                    response.getWriter().write(String.format(
-                                            "{\"timestamp\":\"%s\",\"status\":401,\"error\":\"UNAUTHORIZED\",\"message\":\"Authentication required to access this resource\",\"path\":\"%s\"}",
-                                            LocalDateTime.now(), request.getRequestURI()));
-                                },
-                                request -> request.getRequestURI().startsWith("/api")
-                        )
-                        .defaultAccessDeniedHandlerFor(
-                                (request, response, accessDeniedException) -> {
-                                    response.setContentType("application/json");
-                                    response.setCharacterEncoding("UTF-8");
-                                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                                    response.getWriter().write(String.format(
-                                            "{\"timestamp\":\"%s\",\"status\":403,\"error\":\"FORBIDDEN\",\"message\":\"Access denied: insufficient permissions\",\"path\":\"%s\"}",
-                                            LocalDateTime.now(), request.getRequestURI()));
-                                },
-                                request -> request.getRequestURI().startsWith("/api")
-                        )
-                )
+                // Custom 401 & 403 responses: JSON ONLY for /api/** requests, standard browser behavior otherwise
+                .exceptionHandling(ex -> {
+                    AccessDeniedHandler defaultDeniedHandler = new AccessDeniedHandlerImpl();
+                    AuthenticationEntryPoint defaultEntryPoint = new LoginUrlAuthenticationEntryPoint("/login");
+
+                    ex.authenticationEntryPoint((request, response, authException) -> {
+                        if (request.getRequestURI() != null && request.getRequestURI().startsWith("/api")) {
+                            response.setContentType("application/json");
+                            response.setCharacterEncoding("UTF-8");
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.getWriter().write(String.format(
+                                    "{\"timestamp\":\"%s\",\"status\":401,\"error\":\"UNAUTHORIZED\",\"message\":\"Authentication required to access this resource\",\"path\":\"%s\"}",
+                                    LocalDateTime.now(), request.getRequestURI()));
+                        } else {
+                            defaultEntryPoint.commence(request, response, authException);
+                        }
+                    });
+
+                    ex.accessDeniedHandler((request, response, accessDeniedException) -> {
+                        if (request.getRequestURI() != null && request.getRequestURI().startsWith("/api")) {
+                            response.setContentType("application/json");
+                            response.setCharacterEncoding("UTF-8");
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.getWriter().write(String.format(
+                                    "{\"timestamp\":\"%s\",\"status\":403,\"error\":\"FORBIDDEN\",\"message\":\"Access denied: insufficient permissions\",\"path\":\"%s\"}",
+                                    LocalDateTime.now(), request.getRequestURI()));
+                        } else {
+                            defaultDeniedHandler.handle(request, response, accessDeniedException);
+                        }
+                    });
+                })
 
                 .sessionManagement(session -> session
                         .sessionFixation().migrateSession()

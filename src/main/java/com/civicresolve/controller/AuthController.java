@@ -68,7 +68,7 @@ public class AuthController {
             userService.registerNewUser(request);
             redirectAttributes.addFlashAttribute("successMsg", "Your account has been created successfully! Please sign in.");
             return "redirect:/login?registered=true";
-        } catch (IllegalArgumentException ex) {
+        } catch (com.civicresolve.exception.ConflictException | com.civicresolve.exception.BadRequestException | IllegalArgumentException ex) {
             model.addAttribute("errorMsg", ex.getMessage());
             return "auth/register";
         } catch (Exception ex) {

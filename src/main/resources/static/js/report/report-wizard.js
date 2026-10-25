@@ -860,18 +860,27 @@ async function submitGrievanceAsync(otpToken = null) {
 
             // Only use the server-confirmed receipt after successful persistence.
             const savedId = savedComplaint.complaintId || PipelineState.complaintId;
+            const finalSector = savedComplaint.sector || secVal;
+            const matchedSector = SECTORS_REGISTRY.find(s => s.name === finalSector || s.name.toLowerCase() === (finalSector || '').trim().toLowerCase());
+            const finalDept = savedComplaint.department || (matchedSector ? matchedSector.dept : PipelineState.department);
+            const finalUrgency = savedComplaint.urgency || PipelineState.urgency;
+            const finalDeskName = matchedSector ? matchedSector.deskName : PipelineState.deskName;
+            const finalOfficer = matchedSector ? matchedSector.assignedOfficer : PipelineState.assignedOfficer;
+            const finalPortal = matchedSector ? matchedSector.portal : PipelineState.targetPortal;
 
             sessionStorage.setItem('cr_latest_ticket', JSON.stringify({
                 ...complaintPayload,
                 complaintId: savedId,
-                deskName: PipelineState.deskName,
-                assignedOfficer: PipelineState.assignedOfficer,
-                portal: PipelineState.targetPortal,
-                urgency: savedComplaint.urgency || PipelineState.urgency,
+                sector: finalSector,
+                department: finalDept,
+                deskName: finalDeskName,
+                assignedOfficer: finalOfficer,
+                portal: finalPortal,
+                urgency: finalUrgency,
                 createdAt: savedComplaint.createdAt || new Date().toISOString()
             }));
 
-            const redirectUrl = `/report/submission-success?complaintId=${encodeURIComponent(savedId)}&title=${encodeURIComponent(titleVal)}&sector=${encodeURIComponent(secVal)}&location=${encodeURIComponent(locVal)}&urgency=${encodeURIComponent(savedComplaint.urgency || PipelineState.urgency)}&dept=${encodeURIComponent(PipelineState.department)}&portal=${encodeURIComponent(PipelineState.targetPortal)}`;
+            const redirectUrl = `/report/submission-success?complaintId=${encodeURIComponent(savedId)}&title=${encodeURIComponent(titleVal)}&sector=${encodeURIComponent(finalSector)}&location=${encodeURIComponent(locVal)}&urgency=${encodeURIComponent(finalUrgency)}&dept=${encodeURIComponent(finalDept)}&portal=${encodeURIComponent(finalPortal)}`;
 
             window.location.href = redirectUrl;
             return;

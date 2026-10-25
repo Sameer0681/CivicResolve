@@ -351,4 +351,28 @@ class ComplaintServiceTest {
 
         verify(complaintRepository, never()).save(unclassified);
     }
+
+    @Test
+    void testCreateComplaintAiServiceUnavailable503FallbackPreservesCitizenSectorAndSavesTicket() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(citizen));
+        when(geminiAiProvider.classify(any()))
+                .thenThrow(new AiClassificationException("Gemini API HTTP failure: 503 SERVICE_UNAVAILABLE"));
+        when(complaintRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        complaint.setSector("Water Supply");
+        complaint.setDepartment(null);
+
+        Complaint created = complaintService.createComplaint(complaint, 1L, null);
+
+        assertNotNull(created);
+        assertEquals("Water Supply", created.getSector());
+        assertEquals("Jal Nigam / Municipal Water Works", created.getDepartment());
+        assertEquals("MEDIUM", created.getUrgency());
+        assertEquals("MEDIUM", created.getPriority());
+        assertEquals(0.0, created.getConfidence());
+        assertNull(created.getSummary());
+        assertEquals("NEUTRAL", created.getSentiment());
+        assertNotNull(created.getComplaintId());
+        verify(complaintRepository).save(complaint);
+    }
 }

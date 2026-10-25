@@ -21,11 +21,16 @@ public class GeminiAiProvider implements AiProvider {
 
     private static final Logger log = LoggerFactory.getLogger(GeminiAiProvider.class);
 
+    public static final int DEFAULT_MAX_RETRIES = 2;
+    public static final long DEFAULT_INITIAL_BACKOFF_MS = 250L;
+
     private final RestClient restClient;
     private final String apiKey;
     private final String model;
     private final String baseUrl;
     private final boolean enabled;
+    private final int maxRetries;
+    private final long initialBackoffMs;
     private final ObjectMapper objectMapper;
 
     @Autowired
@@ -35,12 +40,16 @@ public class GeminiAiProvider implements AiProvider {
             @Value("${civicresolve.ai.gemini.base-url:https://generativelanguage.googleapis.com}") String baseUrl,
             @Value("${civicresolve.ai.gemini.connect-timeout-ms:3000}") int connectTimeoutMs,
             @Value("${civicresolve.ai.gemini.read-timeout-ms:5000}") int readTimeoutMs,
-            @Value("${civicresolve.ai.enabled:true}") boolean enabled) {
+            @Value("${civicresolve.ai.enabled:true}") boolean enabled,
+            @Value("${civicresolve.ai.gemini.max-retries:2}") int maxRetries,
+            @Value("${civicresolve.ai.gemini.initial-backoff-ms:250}") long initialBackoffMs) {
 
         this.apiKey = apiKey != null ? apiKey.trim() : "";
         this.model = (model != null && !model.isBlank()) ? model.trim() : "gemini-3.6-flash";
         this.baseUrl = (baseUrl != null && !baseUrl.isBlank()) ? baseUrl.trim() : "https://generativelanguage.googleapis.com";
         this.enabled = enabled;
+        this.maxRetries = Math.max(0, maxRetries);
+        this.initialBackoffMs = Math.max(0, initialBackoffMs);
         this.objectMapper = new ObjectMapper();
 
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
@@ -51,6 +60,16 @@ public class GeminiAiProvider implements AiProvider {
                 .baseUrl(this.baseUrl)
                 .requestFactory(factory)
                 .build();
+    }
+
+    public GeminiAiProvider(
+            String apiKey,
+            String model,
+            String baseUrl,
+            int connectTimeoutMs,
+            int readTimeoutMs,
+            boolean enabled) {
+        this(apiKey, model, baseUrl, connectTimeoutMs, readTimeoutMs, enabled, DEFAULT_MAX_RETRIES, DEFAULT_INITIAL_BACKOFF_MS);
     }
 
     public GeminiAiProvider(String apiKey) {
@@ -65,17 +84,40 @@ public class GeminiAiProvider implements AiProvider {
             int readTimeoutMs,
             boolean enabled,
             RestClient restClient) {
+        this(apiKey, model, baseUrl, connectTimeoutMs, readTimeoutMs, enabled, DEFAULT_MAX_RETRIES, DEFAULT_INITIAL_BACKOFF_MS, restClient);
+    }
+
+    public GeminiAiProvider(
+            String apiKey,
+            String model,
+            String baseUrl,
+            int connectTimeoutMs,
+            int readTimeoutMs,
+            boolean enabled,
+            int maxRetries,
+            long initialBackoffMs,
+            RestClient restClient) {
 
         this.apiKey = apiKey != null ? apiKey.trim() : "";
         this.model = (model != null && !model.isBlank()) ? model.trim() : "gemini-3.6-flash";
         this.baseUrl = (baseUrl != null && !baseUrl.isBlank()) ? baseUrl.trim() : "https://generativelanguage.googleapis.com";
         this.enabled = enabled;
+        this.maxRetries = Math.max(0, maxRetries);
+        this.initialBackoffMs = Math.max(0, initialBackoffMs);
         this.objectMapper = new ObjectMapper();
         this.restClient = restClient;
     }
 
     public boolean isConfigured() {
         return this.enabled && !this.apiKey.isBlank();
+    }
+
+    public int getMaxRetries() {
+        return maxRetries;
+    }
+
+    public long getInitialBackoffMs() {
+        return initialBackoffMs;
     }
 
     @Override
@@ -111,27 +153,55 @@ public class GeminiAiProvider implements AiProvider {
         }
 
         String endpointUri = "/v1beta/models/" + this.model + ":generateContent";
-        String responseJson;
+        String responseJson = null;
+        int maxAttempts = 1 + this.maxRetries;
 
-        try {
-            responseJson = restClient.post()
-                    .uri(endpointUri)
-                    .header("x-goog-api-key", this.apiKey)
-                    .header("Content-Type", "application/json")
-                    .header("Accept", "application/json")
-                    .body(requestBodyJson)
-                    .retrieve()
-                    .body(String.class);
-        } catch (RestClientResponseException e) {
-            log.warn("Gemini API call failed with HTTP status: {}", e.getStatusCode());
-            throw new AiClassificationException("Gemini API HTTP failure: " + e.getStatusCode(), e);
-        } catch (ResourceAccessException e) {
-            log.warn("Gemini API network timeout or connection failure: {}", e.getMessage());
-            throw new AiClassificationException("Gemini API network timeout/failure", e);
-        } catch (Exception e) {
-            log.warn("Gemini API invocation error: {}", e.getClass().getSimpleName());
-            throw new AiClassificationException("Gemini API execution error", e);
+        for (int attempt = 0; attempt < maxAttempts; attempt++) {
+            try {
+                responseJson = restClient.post()
+                        .uri(endpointUri)
+                        .header("x-goog-api-key", this.apiKey)
+                        .header("Content-Type", "application/json")
+                        .header("Accept", "application/json")
+                        .body(requestBodyJson)
+                        .retrieve()
+                        .body(String.class);
+                break;
+
+            } catch (RestClientResponseException e) {
+                boolean is503 = e.getStatusCode().value() == 503;
+                boolean hasMoreRetries = attempt < maxAttempts - 1;
+
+                if (is503 && hasMoreRetries) {
+                    long backoffMs = calculateBackoff(attempt);
+                    log.warn("Gemini API HTTP 503 (Service Unavailable). Attempt {} of {} failed. Retrying in {}ms...",
+                            attempt + 1, maxAttempts, backoffMs);
+                    sleep(backoffMs);
+                    continue;
+                }
+
+                log.warn("Gemini API HTTP failure. Status: {}, Response: {}",
+                        e.getStatusCode(),
+                        e.getResponseBodyAsString());
+                throw new AiClassificationException(
+                        "Gemini API HTTP failure: " + e.getStatusCode(), e);
+
+            } catch (ResourceAccessException e) {
+                log.warn("Gemini API network/connection failure: {}",
+                        e.getMessage(), e);
+                throw new AiClassificationException(
+                        "Gemini API network timeout/failure", e);
+
+            } catch (Exception e) {
+                log.warn("Gemini API unexpected failure: {} - {}",
+                        e.getClass().getName(),
+                        e.getMessage(),
+                        e);
+                throw new AiClassificationException(
+                        "Gemini API execution error", e);
+            }
         }
+
 
         if (responseJson == null || responseJson.isBlank()) {
             throw new AiClassificationException("Gemini API returned an empty response body");
@@ -283,5 +353,22 @@ public class GeminiAiProvider implements AiProvider {
             case "POSITIVE", "NEUTRAL", "NEGATIVE" -> upper;
             default -> "NEUTRAL";
         };
+    }
+
+    private long calculateBackoff(int attempt) {
+        long backoff = this.initialBackoffMs * (1L << attempt);
+        return Math.min(backoff, 5000L);
+    }
+
+    private void sleep(long backoffMs) {
+        if (backoffMs <= 0) {
+            return;
+        }
+        try {
+            Thread.sleep(backoffMs);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new AiClassificationException("Gemini API retry interrupted", e);
+        }
     }
 }

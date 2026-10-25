@@ -89,14 +89,18 @@ public class ComplaintServiceImpl implements ComplaintService {
         // Classify using Gemini
         AiClassificationResult aiResult = geminiAiProvider.classify(complaintText);
         if (aiResult != null && aiResult.getSector() != null && !aiResult.getSector().isBlank()) {
+            // Store all AI-generated classification results
             complaint.setSector(aiResult.getSector());
             complaint.setDepartment(aiResult.getDepartment());
             if (aiResult.getUrgency() != null && !aiResult.getUrgency().isBlank()) {
                 complaint.setUrgency(aiResult.getUrgency());
             }
+            complaint.setSentiment(aiResult.getSentiment());
             if (aiResult.getPriority() != null && !aiResult.getPriority().isBlank()) {
                 complaint.setPriority(aiResult.getPriority());
             }
+            complaint.setConfidence(aiResult.getConfidence());
+            complaint.setSummary(aiResult.getSummary());
         } else if (complaint.getSector() == null || complaint.getSector().isBlank()) {
             throw new BadRequestException("AI classification failed: sector is missing and no sector was provided");
         }

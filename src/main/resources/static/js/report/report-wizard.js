@@ -777,24 +777,28 @@ async function submitGrievanceAsync(otpToken = null) {
         }
     } else if (PipelineState.problemMode === 'image') {
         const caption = document.getElementById('photoCaptionInput')?.value.trim();
-        if ((!titleVal || titleVal.length < 5)) {
-            titleVal = caption || (PipelineState.mediaFile ? `Photo Evidence: ${PipelineState.mediaFile.name}` : "Civic Issue Reported");
+        if (!titleVal || titleVal.length < 5) {
+            titleVal = caption || (PipelineState.mediaFile
+                ? `Photo Evidence: ${PipelineState.mediaFile.name}`
+                : "Civic Issue Reported");
         }
-        if ((!descVal || descVal.length < 10)) {
+        if (!descVal || descVal.length < 10) {
             descVal = caption || "Civic defect documented with photographic evidence.";
         }
     }
 
     if (!titleVal || titleVal.length < 5) {
-        alert("Please define your complaint title (at least 5 characters). You can Type, Speak, or Upload an Image.");
-        if (PipelineState.problemMode === 'write') document.getElementById('formTitleInput')?.focus();
+        alert("Please define your complaint title (at least 5 characters).");
+        document.getElementById('formTitleInput')?.focus();
         return;
     }
+
     if (!descVal || descVal.length < 10) {
-        alert("Please provide a description of the incident (at least 10 characters).");
-        if (PipelineState.problemMode === 'write') document.getElementById('formDescInput')?.focus();
+        alert("Please provide a description of at least 10 characters.");
+        document.getElementById('formDescInput')?.focus();
         return;
     }
+
     if (!locVal || locVal.length < 3) {
         alert("Please specify the incident location or landmark.");
         document.getElementById('formLocationInput')?.focus();
@@ -803,7 +807,6 @@ async function submitGrievanceAsync(otpToken = null) {
 
     PipelineState.isSubmitting = true;
 
-    // Show Loading Modal
     const overlay = document.getElementById('restLoadingOverlay');
     const statusText = document.getElementById('restLoadingStatus');
     if (overlay) overlay.style.display = 'flex';
@@ -831,11 +834,23 @@ async function submitGrievanceAsync(otpToken = null) {
     }
 
     try {
+        if (statusText) {
+            statusText.textContent = "Submitting complaint securely...";
+        }
+
         const response = await fetch('/api/complaints', {
             method: 'POST',
             headers: headers,
+            credentials: 'same-origin',
             body: JSON.stringify(complaintPayload)
         });
+
+        // Form-login security may redirect unauthenticated requests to /login.
+        if (response.redirected || (response.url && response.url.includes('/login'))) {
+            window.location.href =
+                `/login?returnUrl=${encodeURIComponent('/report')}`;
+            return;
+        }
 
         // 1. Success (200 OK)
         if (response.ok) {
@@ -843,22 +858,22 @@ async function submitGrievanceAsync(otpToken = null) {
 
             hideOtpModal();
 
-            // Store latest ticket for receipt
+            // Only use the server-confirmed receipt after successful persistence.
+            const savedId = savedComplaint.complaintId || PipelineState.complaintId;
+
             sessionStorage.setItem('cr_latest_ticket', JSON.stringify({
                 ...complaintPayload,
-                complaintId: savedComplaint.complaintId || PipelineState.complaintId,
+                complaintId: savedId,
                 deskName: PipelineState.deskName,
                 assignedOfficer: PipelineState.assignedOfficer,
                 portal: PipelineState.targetPortal,
-                urgency: PipelineState.urgency,
-                createdAt: new Date().toISOString()
+                urgency: savedComplaint.urgency || PipelineState.urgency,
+                createdAt: savedComplaint.createdAt || new Date().toISOString()
             }));
 
-            setTimeout(() => {
-                const targetId = savedComplaint.complaintId || PipelineState.complaintId;
-                const redirectUrl = `/report/submission-success?complaintId=${encodeURIComponent(targetId)}&title=${encodeURIComponent(titleVal)}&sector=${encodeURIComponent(secVal)}&location=${encodeURIComponent(locVal)}&urgency=${encodeURIComponent(PipelineState.urgency)}&dept=${encodeURIComponent(PipelineState.department)}&portal=${encodeURIComponent(PipelineState.targetPortal)}`;
-                window.location.href = redirectUrl;
-            }, 500);
+            const redirectUrl = `/report/submission-success?complaintId=${encodeURIComponent(savedId)}&title=${encodeURIComponent(titleVal)}&sector=${encodeURIComponent(secVal)}&location=${encodeURIComponent(locVal)}&urgency=${encodeURIComponent(savedComplaint.urgency || PipelineState.urgency)}&dept=${encodeURIComponent(PipelineState.department)}&portal=${encodeURIComponent(PipelineState.targetPortal)}`;
+
+            window.location.href = redirectUrl;
             return;
         }
 
@@ -875,9 +890,10 @@ async function submitGrievanceAsync(otpToken = null) {
         const errorData = await response.json().catch(() => ({}));
         const errorMsg = errorData.message || "";
 
-        if (response.status === 401) {
-            alert("You must be logged in as a citizen to submit a grievance. Redirecting to login...");
-            window.location.href = '/login';
+        if (response.status === 401 || response.status === 403) {
+            alert("You must log in with a Citizen account to submit a complaint.");
+            window.location.href =
+                `/login?returnUrl=${encodeURIComponent('/report')}`;
             return;
         }
 
@@ -904,8 +920,13 @@ async function submitGrievanceAsync(otpToken = null) {
 
     } catch (err) {
         if (overlay) overlay.style.display = 'none';
-        alert("Network communication error. Please check your connection and try again.");
+        console.error("Complaint submission failed:", err);
+        alert(
+            "Your complaint could not be submitted. No success receipt was created. " +
+            "Please log in as a Citizen if required, then try again."
+        );
     } finally {
         PipelineState.isSubmitting = false;
+        if (overlay) overlay.style.display = 'none';
     }
 }

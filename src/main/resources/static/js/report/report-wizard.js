@@ -579,6 +579,7 @@ function initValidationListeners() {
 /**
  * Asynchronous Submission to POST /api/complaints
  */
+
 async function submitGrievanceAsync() {
     if (PipelineState.isSubmitting) return;
 
@@ -596,24 +597,28 @@ async function submitGrievanceAsync() {
         }
     } else if (PipelineState.problemMode === 'image') {
         const caption = document.getElementById('photoCaptionInput')?.value.trim();
-        if ((!titleVal || titleVal.length < 5)) {
-            titleVal = caption || (PipelineState.mediaFile ? `Photo Evidence: ${PipelineState.mediaFile.name}` : "Civic Issue Reported");
+        if (!titleVal || titleVal.length < 5) {
+            titleVal = caption || (PipelineState.mediaFile
+                ? `Photo Evidence: ${PipelineState.mediaFile.name}`
+                : "Civic Issue Reported");
         }
-        if ((!descVal || descVal.length < 10)) {
+        if (!descVal || descVal.length < 10) {
             descVal = caption || "Civic defect documented with photographic evidence.";
         }
     }
 
     if (!titleVal || titleVal.length < 5) {
-        alert("Please define your complaint title (at least 5 characters). You can Type, Speak, or Upload an Image.");
-        if (PipelineState.problemMode === 'write') document.getElementById('formTitleInput')?.focus();
+        alert("Please define your complaint title (at least 5 characters).");
+        document.getElementById('formTitleInput')?.focus();
         return;
     }
+
     if (!descVal || descVal.length < 10) {
-        alert("Please provide a description of the incident (at least 10 characters).");
-        if (PipelineState.problemMode === 'write') document.getElementById('formDescInput')?.focus();
+        alert("Please provide a description of at least 10 characters.");
+        document.getElementById('formDescInput')?.focus();
         return;
     }
+
     if (!locVal || locVal.length < 3) {
         alert("Please specify the incident location or landmark.");
         document.getElementById('formLocationInput')?.focus();
@@ -622,7 +627,6 @@ async function submitGrievanceAsync() {
 
     PipelineState.isSubmitting = true;
 
-    // Show Loading Modal
     const overlay = document.getElementById('restLoadingOverlay');
     const statusText = document.getElementById('restLoadingStatus');
     if (overlay) overlay.style.display = 'flex';
@@ -638,57 +642,66 @@ async function submitGrievanceAsync() {
     };
 
     try {
-        if (statusText) statusText.textContent = "Registering ticket & verifying with authority desk...";
+        if (statusText) {
+            statusText.textContent = "Submitting complaint securely...";
+        }
 
-        const response = await fetch('/api/complaints?citizenId=3', {
+        const response = await fetch('/api/complaints', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
             },
+            credentials: 'same-origin',
             body: JSON.stringify(complaintPayload)
         });
 
+        // Form-login security may redirect unauthenticated requests to /login.
+        if (response.redirected || response.url.includes('/login')) {
+            window.location.href =
+                `/login?returnUrl=${encodeURIComponent('/report')}`;
+            return;
+        }
+
+        if (response.status === 401 || response.status === 403) {
+            alert("You must log in with a Citizen account to submit a complaint.");
+            window.location.href =
+                `/login?returnUrl=${encodeURIComponent('/report')}`;
+            return;
+        }
+
         if (!response.ok) {
-            throw new Error(`HTTP Error ${response.status}`);
+            throw new Error(`Complaint submission failed (HTTP ${response.status}).`);
         }
 
         const savedComplaint = await response.json();
-        console.log("Complaint successfully saved:", savedComplaint);
 
-        // Store latest ticket for receipt
+        // Only use the server-confirmed receipt after successful persistence.
+        const savedId = savedComplaint.complaintId || PipelineState.complaintId;
+
         sessionStorage.setItem('cr_latest_ticket', JSON.stringify({
             ...complaintPayload,
+            complaintId: savedId,
             deskName: PipelineState.deskName,
             assignedOfficer: PipelineState.assignedOfficer,
             portal: PipelineState.targetPortal,
-            urgency: PipelineState.urgency,
-            createdAt: new Date().toISOString()
+            urgency: savedComplaint.urgency || PipelineState.urgency,
+            createdAt: savedComplaint.createdAt || new Date().toISOString()
         }));
 
-        setTimeout(() => {
-            const redirectUrl = `/report/submission-success?complaintId=${encodeURIComponent(PipelineState.complaintId)}&title=${encodeURIComponent(titleVal)}&sector=${encodeURIComponent(secVal)}&location=${encodeURIComponent(locVal)}&urgency=${encodeURIComponent(PipelineState.urgency)}&dept=${encodeURIComponent(PipelineState.department)}&portal=${encodeURIComponent(PipelineState.targetPortal)}`;
-            window.location.href = redirectUrl;
-        }, 500);
+        const redirectUrl = `/report/submission-success?complaintId=${encodeURIComponent(savedId)}&title=${encodeURIComponent(titleVal)}&sector=${encodeURIComponent(secVal)}&location=${encodeURIComponent(locVal)}&urgency=${encodeURIComponent(savedComplaint.urgency || PipelineState.urgency)}&dept=${encodeURIComponent(PipelineState.department)}&portal=${encodeURIComponent(PipelineState.targetPortal)}`;
+
+        window.location.href = redirectUrl;
 
     } catch (err) {
-        console.warn("Offline continuity mode active:", err);
-
-        sessionStorage.setItem('cr_latest_ticket', JSON.stringify({
-            ...complaintPayload,
-            deskName: PipelineState.deskName,
-            assignedOfficer: PipelineState.assignedOfficer,
-            portal: PipelineState.targetPortal,
-            urgency: PipelineState.urgency,
-            createdAt: new Date().toISOString()
-        }));
-
-        setTimeout(() => {
-            const redirectUrl = `/report/submission-success?complaintId=${encodeURIComponent(PipelineState.complaintId)}&title=${encodeURIComponent(titleVal)}&sector=${encodeURIComponent(secVal)}&location=${encodeURIComponent(locVal)}&urgency=${encodeURIComponent(PipelineState.urgency)}&dept=${encodeURIComponent(PipelineState.department)}&portal=${encodeURIComponent(PipelineState.targetPortal)}`;
-            window.location.href = redirectUrl;
-        }, 600);
-
+        console.error("Complaint submission failed:", err);
+        alert(
+            "Your complaint could not be submitted. No success receipt was created. " +
+            "Please log in as a Citizen if required, then try again."
+        );
     } finally {
         PipelineState.isSubmitting = false;
+        if (overlay) overlay.style.display = 'none';
     }
 }
+

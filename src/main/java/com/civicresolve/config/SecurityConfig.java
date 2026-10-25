@@ -64,11 +64,14 @@ public class SecurityConfig {
                                                 .permitAll()
 
                                                 // Authentication and password reset views
+                                                // Authentication and password reset views
                                                 .requestMatchers(
                                                                 "/login",
                                                                 "/register",
                                                                 "/forgot-password",
-                                                                "/reset-password")
+                                                                "/reset-password",
+                                                                "/report",
+                                                                "/report/**")
                                                 .permitAll()
 
                                                 // Role-based dashboard access`

@@ -62,9 +62,14 @@ public class ComplaintServiceImpl implements ComplaintService {
                     "AI classification failed: sector is missing");
         }
 
-        // Store the AI-generated classification
+        // Store all AI-generated classification results
         complaint.setSector(aiResult.getSector());
         complaint.setDepartment(aiResult.getDepartment());
+        complaint.setUrgency(aiResult.getUrgency());
+        complaint.setSentiment(aiResult.getSentiment());
+        complaint.setPriority(aiResult.getPriority());
+        complaint.setConfidence(aiResult.getConfidence());
+        complaint.setSummary(aiResult.getSummary());
 
         // Preserve the existing citizen relationship
         complaint.setCitizen(citizen);

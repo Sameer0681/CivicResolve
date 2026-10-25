@@ -22,27 +22,11 @@
                             <div class="cr-avatar cr-avatar--lg cr-avatar--officer mx-auto mb-3" style="width:80px;height:80px;font-size:2rem;">
                                 <i class="fa-solid fa-user-shield"></i>
                             </div>
-                            <h5 class="fw-700 mb-1">Rajesh Sharma</h5>
-                            <p class="text-muted small mb-2">rajesh.sharma@civicresolve.in</p>
+                            <h5 class="fw-700 mb-1" th:text="${user?.fullName}"></h5>
+                            <p class="text-muted small mb-2" th:text="${user?.email}"></p>
                             <span class="cr-badge cr-badge--officer">Officer</span>
                             <hr/>
-                            <div class="text-muted small mb-2"><i class="fa-solid fa-building me-2"></i>Roads &amp; Infrastructure</div>
-                            <div class="text-muted small"><i class="fa-solid fa-location-dot me-2"></i>Bangalore Zone 2</div>
-                            <hr/>
-                            <div class="row g-2 text-center">
-                                <div class="col-4">
-                                    <div class="fw-700">28</div>
-                                    <div class="text-muted" style="font-size:.7rem;">Resolved</div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="fw-700">5</div>
-                                    <div class="text-muted" style="font-size:.7rem;">Active</div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="fw-700">96%</div>
-                                    <div class="text-muted" style="font-size:.7rem;">Rating</div>
-                                </div>
-                            </div>
+                            <div class="text-muted small" th:if="${user?.department}" th:text="${user.department}"></div>
                         </div>
                     </div>
                 </div>
@@ -56,27 +40,27 @@
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <label class="cr-form-label">First Name</label>
-                                        <input type="text" name="firstName" class="form-control" value="Rajesh"/>
+                                        <input type="text" name="firstName" class="form-control" th:value="${user?.firstName}"/>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="cr-form-label">Last Name</label>
-                                        <input type="text" name="lastName" class="form-control" value="Sharma"/>
+                                        <input type="text" name="lastName" class="form-control" th:value="${user?.lastName}"/>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="cr-form-label">Email</label>
-                                        <input type="email" name="email" class="form-control" value="rajesh.sharma@civicresolve.in"/>
+                                        <input type="email" name="email" class="form-control" th:value="${user?.email}"/>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="cr-form-label">Phone</label>
-                                        <input type="tel" name="phone" class="form-control" value="+91 98765 11111"/>
+                                        <input type="tel" name="phone" class="form-control" th:value="${user?.phone}"/>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="cr-form-label">Department</label>
-                                        <input type="text" class="form-control" value="Roads &amp; Infrastructure" disabled/>
+                                        <input type="text" class="form-control" th:value="${user?.department}" disabled/>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="cr-form-label">Zone</label>
-                                        <input type="text" class="form-control" value="Bangalore Zone 2" disabled/>
+                                        <input type="text" class="form-control" disabled/>
                                     </div>
                                     <div class="col-12 d-flex justify-content-end gap-2">
                                         <button type="reset" class="btn btn-light">Cancel</button>

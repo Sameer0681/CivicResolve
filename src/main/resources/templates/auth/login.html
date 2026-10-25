@@ -62,22 +62,6 @@
             </button>
         </form>
 
-        <!-- Quick-Fill Seeded Test Accounts for Testing -->
-        <!-- <div class="p-3 bg-light rounded-3 border mt-4 text-center">
-            <div class="text-muted small fw-700 mb-2">QUICK TEST ACCOUNTS (CLICK TO AUTO-FILL):</div>
-            <div class="d-flex flex-wrap gap-2 justify-content-center">
-                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="quickFill('citizen@civicresolve.in', 'Citizen@123')">
-                    <i class="fa-solid fa-user me-1 text-primary"></i> Citizen
-                </button>
-                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="quickFill('officer.verma@civicresolve.gov', 'Officer@123')">
-                    <i class="fa-solid fa-user-shield me-1 text-warning"></i> Officer
-                </button>
-                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="quickFill('admin@civicresolve.gov', 'Admin@123')">
-                    <i class="fa-solid fa-shield-halved me-1 text-danger"></i> Admin
-                </button>
-            </div>
-        </div> -->
-
         <p class="text-center text-muted small mt-4 mb-0">
             Don't have an account?
             <a th:href="@{/register}" class="fw-600 text-decoration-none">Create one free</a>
@@ -122,10 +106,6 @@ function togglePassword(id, btn) {
     }
 }
 
-function quickFill(email, password) {
-    document.getElementById('loginUsername').value = email;
-    document.getElementById('loginPassword').value = password;
-}
 </script>
 </body>
 </html>

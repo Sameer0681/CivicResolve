@@ -29,13 +29,8 @@
                 </div>
                 <h1 class="h3 fw-800 text-dark mb-1">Report a Civic Issue</h1>
                 <p class="text-muted small mb-0">
-                    Define your issue by <strong>Writing</strong>, <strong>Speaking</strong>, or <strong>Uploading an Image</strong>. Automatically routed to the jurisdictional authority.
+                    Describe the issue by writing, speaking, or adding a photo note.
                 </p>
-            </div>
-            <div>
-                <a th:href="@{/citizen/complaint-details}" class="btn btn-outline-secondary btn-sm fw-600">
-                    <i class="fa-solid fa-magnifying-glass me-1"></i> Track Ticket
-                </a>
             </div>
         </div>
     </div>
@@ -83,7 +78,7 @@
                                             <label class="form-label fw-700 text-dark small mb-0">Complaint Title <span class="text-danger">*</span></label>
                                             <span class="text-muted small" id="titleCharCount">0/150</span>
                                         </div>
-                                        <input type="text" id="formTitleInput" class="form-control cr-form-control bg-white" placeholder="e.g. Deep crater pothole on Main Road near Metro Station" maxlength="150"/>
+                                        <input type="text" id="formTitleInput" class="form-control cr-form-control bg-white" placeholder="Enter a short title for the issue" maxlength="150"/>
                                     </div>
                                     <div>
                                         <div class="d-flex justify-content-between align-items-center mb-1">
@@ -103,7 +98,7 @@
                                     </button>
                                     <h6 class="fw-800 text-dark mb-1" id="voiceTitleText">Tap Microphone to Speak</h6>
                                     <p class="text-muted small mb-2" id="voiceHelpText">
-                                        Speak in Hindi or English (e.g., &ldquo;Main MG Road par bada dangerous pothole hai jisse traffic jam ho raha hai&rdquo;).
+                                        Speak clearly in Hindi or English to describe the issue.
                                     </p>
                                     
                                     <div class="cr-wave-container" id="voiceWaveBar" style="display:none;">
@@ -131,8 +126,8 @@
                                 <div class="p-3 bg-light rounded-3 border mb-3">
                                     <div class="cr-clean-upload-area p-4 text-center border rounded-3 bg-white mb-2" id="evidenceDropArea" onclick="document.getElementById('evidenceFileInput').click()" style="cursor: pointer; border-style: dashed !important; border-color: #cbd5e1 !important;">
                                         <i class="fa-solid fa-camera-retro text-success fa-2x mb-2"></i>
-                                        <h6 class="fw-800 text-dark mb-1">Click to Snap Photo or Upload Evidence</h6>
-                                        <div class="text-muted small">JPG, PNG, WebP (Max 10MB) &bull; Visual defect evidence</div>
+                                        <h6 class="fw-800 text-dark mb-1">Select a Photo to Preview</h6>
+                                        <div class="text-muted small">JPG, PNG, WebP (Max 10MB) &bull; Preview only; the image is not attached to the complaint</div>
                                         <input type="file" id="evidenceFileInput" accept="image/*" class="d-none"/>
                                     </div>
 
@@ -143,7 +138,7 @@
                                             <div>
                                                 <div class="fw-700 text-dark small" id="photoMetaText">photo.jpg</div>
                                                 <span class="badge bg-success-subtle text-success" style="font-size: 0.7rem;">
-                                                    <i class="fa-solid fa-check me-1"></i> Image Evidence Ready
+                                                    <i class="fa-solid fa-check me-1"></i> Local Preview Ready
                                                 </span>
                                             </div>
                                         </div>
@@ -154,8 +149,8 @@
 
                                     <!-- Optional Short Note for Image -->
                                     <div class="mt-2">
-                                        <label class="form-label fw-700 text-dark small mb-1">Brief Note about the Photo (Optional)</label>
-                                        <input type="text" id="photoCaptionInput" class="form-control cr-form-control bg-white" placeholder="e.g. Broken water pipe flooding street"/>
+                                        <label class="form-label fw-700 text-dark small mb-1">Issue note (Optional)</label>
+                                        <input type="text" id="photoCaptionInput" class="form-control cr-form-control bg-white" placeholder="Add a short note about the photo"/>
                                     </div>
                                 </div>
                             </div>
@@ -173,7 +168,7 @@
                                 <!-- Populated dynamically by JS -->
                             </select>
                             <div class="form-text text-muted" style="font-size: 0.78rem;">
-                                Controls which government desk (PWD, Municipal Corporation, or Jal Nigam) resolves this issue.
+                                Select the category that best describes your issue.
                             </div>
                         </div>
 
@@ -198,7 +193,7 @@
                             <div class="cr-clean-map-box mt-2">
                                 <div id="locationPinMap" style="height: 200px; border-radius: 10px;"></div>
                                 <div class="cr-clean-map-pill" id="mapCoordsPill">
-                                    <i class="fa-solid fa-location-crosshairs text-primary me-1"></i> 26.8467° N, 80.9462° E
+                                    <i class="fa-solid fa-location-crosshairs text-primary me-1"></i> Use GPS or select a location on the map
                                 </div>
                             </div>
                             <div class="text-muted small mt-1" style="font-size: 0.75rem;">
@@ -214,7 +209,7 @@
                                 <i class="fa-solid fa-paper-plane me-2"></i>Submit Grievance Now &rarr;
                             </button>
                             <div class="text-muted text-center small mt-2" style="font-size: 0.75rem;">
-                                Dispatches directly to official Spring Boot REST backend with 48h SLA tracking.
+                                A reference ID is assigned after your complaint is accepted.
                             </div>
                         </div>
 
@@ -230,68 +225,11 @@
                     <!-- Header -->
                     <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-3">
                         <span class="text-muted fw-700 small" style="font-size: 0.75rem; letter-spacing: 0.5px;">GRIEVANCE SUMMARY</span>
-                        <span class="badge bg-primary text-white fw-700 px-2 py-1" id="docketTicketIdBadge">CR-2025-0842</span>
+                        <span class="badge bg-primary text-white fw-700 px-2 py-1" id="docketTicketIdBadge">Assigned after submission</span>
                     </div>
 
-                    <!-- Authority Routing Desk -->
-                    <div class="mb-3">
-                        <span class="text-muted small fw-700 d-block mb-1">ASSIGNED GOVERNMENT DESK:</span>
-                        <div class="p-3 bg-light rounded-3 border">
-                            <div class="fw-800 text-dark d-flex align-items-center gap-2 mb-1" id="docketDeskBadge">
-                                <i class="fa-solid fa-road text-primary"></i> PWD Desk
-                            </div>
-                            <div class="text-muted small mb-2" id="docketDeptText">Public Works Department (PWD)</div>
-                            <div class="p-2 bg-white rounded border text-muted small" style="font-size: 0.75rem;">
-                                <i class="fa-solid fa-user-shield text-success me-1"></i> Officer: <strong id="docketOfficerText">Junior Engineer (JE)</strong>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- SLA Clock Guarantee -->
-                    <div class="mb-3">
-                        <span class="text-muted small fw-700 d-block mb-1">ENFORCEABLE SLA GUARANTEE:</span>
-                        <div class="p-2.5 rounded-3 border d-flex align-items-center justify-content-between" style="background: #fffbeb; border-color: #fde68a !important;">
-                            <div class="d-flex align-items-center gap-2">
-                                <i class="fa-solid fa-clock text-warning fa-lg"></i>
-                                <div>
-                                    <div class="fw-800 text-dark small" id="docketSlaBadge">48-Hour SLA</div>
-                                    <div class="text-muted" style="font-size: 0.7rem;">Official resolution deadline</div>
-                                </div>
-                            </div>
-                            <span class="badge bg-danger text-white">Active</span>
-                        </div>
-                        <div class="text-muted mt-1" style="font-size: 0.72rem;">
-                            <i class="fa-solid fa-shield-halved text-primary me-1"></i> Auto-promoted to <strong>Zonal Officer</strong> if 48h breached.
-                        </div>
-                    </div>
-
-                    <!-- 4-Stage Resolution Stepper -->
-                    <div class="mb-4">
-                        <span class="text-muted small fw-700 d-block mb-2">RESOLUTION LIFECYCLE:</span>
-                        <div class="d-flex justify-content-between text-center position-relative">
-                            <div class="flex-grow-1">
-                                <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-1" style="width: 26px; height: 26px; font-size: 0.75rem;">1</div>
-                                <div class="fw-700 text-primary" style="font-size: 0.7rem;">Submit</div>
-                            </div>
-                            <div class="flex-grow-1">
-                                <div class="rounded-circle bg-light border text-muted d-inline-flex align-items-center justify-content-center mb-1" style="width: 26px; height: 26px; font-size: 0.75rem;">2</div>
-                                <div class="fw-600 text-muted" style="font-size: 0.7rem;">Route</div>
-                            </div>
-                            <div class="flex-grow-1">
-                                <div class="rounded-circle bg-light border text-muted d-inline-flex align-items-center justify-content-center mb-1" style="width: 26px; height: 26px; font-size: 0.75rem;">3</div>
-                                <div class="fw-600 text-muted" style="font-size: 0.7rem;">Action</div>
-                            </div>
-                            <div class="flex-grow-1">
-                                <div class="rounded-circle bg-light border text-muted d-inline-flex align-items-center justify-content-center mb-1" style="width: 26px; height: 26px; font-size: 0.75rem;">4</div>
-                                <div class="fw-600 text-muted" style="font-size: 0.7rem;">Done</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Helpline Support -->
-                    <div class="p-2.5 rounded-3 bg-light border text-muted small" style="font-size: 0.75rem;">
-                        <i class="fa-solid fa-headset text-primary me-1"></i>
-                        Municipal Helpline: <strong>1800-180-5353</strong> (Toll-Free 24/7)
+                    <div class="alert alert-info small mb-0">
+                        Department assignment, response deadlines, and live status are not shown until confirmed by the system.
                     </div>
 
                 </div>

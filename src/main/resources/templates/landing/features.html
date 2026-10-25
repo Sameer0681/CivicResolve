@@ -100,7 +100,7 @@
                         <span class="badge bg-warning-subtle text-warning border border-warning-subtle">Feature 05</span>
                     </div>
                     <h5 class="text-dark fw-700 mb-2">Autonomous Dossier Generation</h5>
-                    <p class="text-muted small mb-0">Compiles a structured complaint payload with unique tracking ID, timestamp, and enforceable SLA window.</p>
+                    <p class="text-muted small mb-0">Submits a structured complaint and shows the server-assigned reference ID after it is saved.</p>
                 </div>
             </div>
 
@@ -111,8 +111,8 @@
                         <div class="cr-sec-icon-wrap" style="background:#f5f3ff; color:#7c3aed; width:46px; height:46px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.2rem;"><i class="fa-solid fa-clock-rotate-left"></i></div>
                         <span class="badge bg-purple-subtle text-purple border border-purple-subtle">Feature 06</span>
                     </div>
-                    <h5 class="text-dark fw-700 mb-2">Transparent Real-Time Tracking</h5>
-                    <p class="text-muted small mb-0">Track complaint status through every stage: Submitted &rarr; Under Review &rarr; In Progress &rarr; Resolved.</p>
+                    <h5 class="text-dark fw-700 mb-2">Complaint Reference Receipt</h5>
+                    <p class="text-muted small mb-0">A receipt includes the reference ID and details confirmed by the server.</p>
                 </div>
             </div>
 
@@ -123,8 +123,8 @@
                         <div class="cr-sec-icon-wrap" style="background:#ecfeff; color:#0891b2; width:46px; height:46px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.2rem;"><i class="fa-solid fa-bell"></i></div>
                         <span class="badge bg-info-subtle text-info border border-info-subtle">Feature 07</span>
                     </div>
-                    <h5 class="text-dark fw-700 mb-2">Automated SLA Monitoring</h5>
-                    <p class="text-muted small mb-0">Pushes reminders to designated ward officers and field engineers as SLA milestones approach, without requiring citizen calls.</p>
+                    <h5 class="text-dark fw-700 mb-2">Response-Time Monitoring</h5>
+                    <p class="text-muted small mb-0">Automated response-time monitoring is not currently configured.</p>
                 </div>
             </div>
 
@@ -135,8 +135,8 @@
                         <div class="cr-sec-icon-wrap" style="background:#fef2f2; color:#ef4444; width:46px; height:46px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.2rem;"><i class="fa-solid fa-arrow-up-right-dots"></i></div>
                         <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Feature 08</span>
                     </div>
-                    <h5 class="text-dark fw-700 mb-2">Hierarchical Escalation Engine</h5>
-                    <p class="text-muted small mb-0">Auto-escalates breached complaints upward to higher administrative officers when designated resolution windows elapse.</p>
+                    <h5 class="text-dark fw-700 mb-2">Escalation Management</h5>
+                    <p class="text-muted small mb-0">Automated complaint escalation is not currently configured.</p>
                 </div>
             </div>
 
@@ -148,7 +148,7 @@
                         <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Feature 09</span>
                     </div>
                     <h5 class="text-dark fw-700 mb-2">Official Service Mapping</h5>
-                    <p class="text-muted small mb-0">Links grievances to official municipal departmental rosters to provide full officer contact information and public auditability.</p>
+                    <p class="text-muted small mb-0">External municipal rosters and officer contact details are not configured.</p>
                 </div>
             </div>
         </div>
@@ -161,7 +161,7 @@
         <div class="text-center mb-5">
             <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1 mb-2 fw-700">Workflow</span>
             <h2 class="fw-800 text-dark">7-Step Redressal Workflow</h2>
-            <p class="text-muted">One complaint. One structured workflow. Accountable government response.</p>
+            <p class="text-muted">Complaint submission and a server-confirmed reference receipt.</p>
         </div>
 
         <div class="row g-4">
@@ -171,7 +171,7 @@
                         <span class="badge bg-primary text-white">STEP 01</span>
                         <h6 class="text-dark fw-800 mb-0">Understand Problem</h6>
                     </div>
-                    <p class="text-muted small mb-0">Citizen provides input via voice, photo, or typed text. The system analyzes context, keywords, and problem type.</p>
+                    <p class="text-muted small mb-0">Citizens provide details through text or speech. Photo selection is a local preview and is not submitted.</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-4">
@@ -180,7 +180,7 @@
                         <span class="badge bg-primary text-white">STEP 02</span>
                         <h6 class="text-dark fw-800 mb-0">Pinpoint Location</h6>
                     </div>
-                    <p class="text-muted small mb-0">Standing GPS coordinates are acquired and bound to municipal ward boundaries to pinpoint jurisdiction.</p>
+                    <p class="text-muted small mb-0">Users may enter a location, use browser location, or select a point on the map.</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-4">
@@ -189,7 +189,7 @@
                         <span class="badge bg-primary text-white">STEP 03</span>
                         <h6 class="text-dark fw-800 mb-0">Department Routing</h6>
                     </div>
-                    <p class="text-muted small mb-0">Categorizes into one of 14 public service sectors and routes the file to the responsible municipal department.</p>
+                    <p class="text-muted small mb-0">The selected category is sent with the complaint; department classification depends on the configured AI provider.</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-4">
@@ -198,37 +198,34 @@
                         <span class="badge bg-primary text-white">STEP 04</span>
                         <h6 class="text-dark fw-800 mb-0">Dossier Generation</h6>
                     </div>
-                    <p class="text-muted small mb-0">A structured complaint payload is compiled with a unique tracking ID and assigned SLA clock.</p>
+                    <p class="text-muted small mb-0">The server returns a reference ID after the complaint is saved.</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-4">
                 <div class="card p-4 rounded-4 h-100 border shadow-sm bg-light">
                     <div class="d-flex align-items-center gap-2 mb-2">
                         <span class="badge bg-primary text-white">STEP 05</span>
-                        <h6 class="text-dark fw-800 mb-0">Live Status Tracking</h6>
+                        <h6 class="text-dark fw-800 mb-0">Submission Receipt</h6>
                     </div>
-                    <p class="text-muted small mb-0">Both citizen and authority track real-time progression through the 4-phase lifecycle with timestamped logs.</p>
+                    <p class="text-muted small mb-0">A receipt confirms the saved complaint details; live status updates are not currently available.</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-4">
                 <div class="card p-4 rounded-4 h-100 border shadow-sm bg-light">
                     <div class="d-flex align-items-center gap-2 mb-2">
                         <span class="badge bg-primary text-white">STEP 06</span>
-                        <h6 class="text-dark fw-800 mb-0">Authority Contact Mapping</h6>
+                        <h6 class="text-dark fw-800 mb-0">Authority Contact Details</h6>
                     </div>
-                    <p class="text-muted small mb-0">Provides the designated municipal officer designation, department helpline, and office location.</p>
+                    <p class="text-muted small mb-0">Municipal officer and department contact details are not configured.</p>
                 </div>
             </div>
             <div class="col-12">
-                <div class="card p-4 rounded-4 text-center border-danger shadow-sm bg-white">
-                    <span class="badge bg-danger text-white mb-2 align-self-center px-3 py-1">STEP 07 &bull; THE ACCOUNTABILITY NET</span>
-                    <h5 class="text-dark fw-800 mb-2">Automated Hierarchical Escalation</h5>
+                <div class="card p-4 rounded-4 text-center border-secondary shadow-sm bg-white">
+                    <span class="badge bg-secondary text-white mb-2 align-self-center px-3 py-1">STEP 07</span>
+                    <h5 class="text-dark fw-800 mb-2">Escalation Status</h5>
                     <p class="text-muted max-w-600 mx-auto small mb-3">
-                        If an assigned officer fails to review or act upon a complaint within the prescribed SLA window (e.g. 48h), the system triggers an automatic escalation event, promoting the file to higher administrative tiers.
+                        Automated SLA tracking and escalation are not configured in this deployment.
                     </p>
-                    <div>
-                        <a th:href="@{/citizen/complaint-details}" class="btn btn-sm btn-danger fw-700 px-4">View Live Escalation Tracker &rarr;</a>
-                    </div>
                 </div>
             </div>
         </div>
@@ -263,17 +260,17 @@
                     <div class="cr-faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
                 </div>
                 <div class="cr-faq-answer">
-                    Uploaded photographs are analyzed for file integrity, format, and size. The preview screen runs a laser-scanner overlay while checking coordinates and tagging the evidence to your complaint docket.
+                    Selected photographs can be previewed locally. They are not attached to the submitted complaint.
                 </div>
             </div>
 
             <div class="cr-faq-item">
                 <div class="cr-faq-question">
-                    <span><i class="fa-solid fa-hourglass-start text-warning me-2"></i> How is the 48-hour SLA deadline enforced?</span>
+                    <span><i class="fa-solid fa-hourglass-start text-warning me-2"></i> Are response-time updates available?</span>
                     <div class="cr-faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
                 </div>
                 <div class="cr-faq-answer">
-                    Every ticket has a live countdown clock tied to database timestamps. Ward officers receive automated notifications at 24h, 36h, and on breach, escalating the ticket to higher officials.
+                    Response-time countdowns and automated escalation are not currently available.
                 </div>
             </div>
         </div>

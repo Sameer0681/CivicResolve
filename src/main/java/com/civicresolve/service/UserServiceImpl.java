@@ -201,23 +201,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String createPasswordResetToken(String email) {
-        Optional<User> userOpt = userRepository.findByEmail(email.trim().toLowerCase());
+        Optional<User> userOpt = userRepository.findByEmailForUpdate(email.trim().toLowerCase());
         if (userOpt.isEmpty() || !userOpt.get().isEnabled()) {
             return null;
         }
 
         User user = userOpt.get();
-        passwordResetTokenRepository.deleteByUser(user);
-
-        String token = UUID.randomUUID().toString();
-        PasswordResetToken resetToken = PasswordResetToken.builder()
-                .token(token)
-                .user(user)
-                .expiryDate(LocalDateTime.now().plusHours(1))
-                .build();
-
-        passwordResetTokenRepository.save(resetToken);
-        return token;
+        return replacePasswordResetToken(user);
     }
 
     @Override
@@ -305,7 +295,7 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException("Please enter a valid email address.");
         }
         String normalizedEmail = email.trim().toLowerCase();
-        Optional<User> userOpt = userRepository.findByEmail(normalizedEmail);
+        Optional<User> userOpt = userRepository.findByEmailForUpdate(normalizedEmail);
         if (userOpt.isEmpty() || !userOpt.get().isEnabled()) {
             log.info("Password reset requested for non-existent or disabled email: {}", normalizedEmail);
             return;
@@ -313,14 +303,7 @@ public class UserServiceImpl implements UserService {
 
         User user = userOpt.get();
 
-        passwordResetTokenRepository.deleteByUser(user);
-        String token = UUID.randomUUID().toString();
-        PasswordResetToken resetToken = PasswordResetToken.builder()
-                .token(token)
-                .user(user)
-                .expiryDate(LocalDateTime.now().plusHours(1))
-                .build();
-        passwordResetTokenRepository.save(resetToken);
+        String token = replacePasswordResetToken(user);
 
         String otp = String.format("%06d", new java.security.SecureRandom().nextInt(1_000_000));
         if (emailOtpVerificationRepository != null) {
@@ -336,9 +319,21 @@ public class UserServiceImpl implements UserService {
         }
 
         String resetLink = "http://localhost:8080/reset-password?email=" + normalizedEmail + "&token=" + token;
-        if (emailService != null) {
-            emailService.sendPasswordResetOtp(normalizedEmail, otp, resetLink);
+        if (emailService == null) {
+            throw new IllegalStateException("Email delivery is not configured.");
         }
+        emailService.sendPasswordResetOtp(normalizedEmail, otp, resetLink);
+    }
+
+    private String replacePasswordResetToken(User user) {
+        PasswordResetToken resetToken = passwordResetTokenRepository.findByUser(user)
+                .orElseGet(PasswordResetToken::new);
+        String token = UUID.randomUUID().toString();
+        resetToken.setToken(token);
+        resetToken.setUser(user);
+        resetToken.setExpiryDate(LocalDateTime.now().plusHours(1));
+        passwordResetTokenRepository.save(resetToken);
+        return token;
     }
 
     @Override

@@ -62,19 +62,19 @@
                     </div>
                     <div class="p-3 rounded-3 mb-2 bg-light border-start border-primary border-3">
                         <strong class="text-dark small">Multi-Step Wizard Interface:</strong>
-                        <div class="text-muted small">Accessible frontend with Leaflet interactive pin map, 10m standing GPS geofence, and real-time form validation.</div>
+                        <div class="text-muted small">Leaflet map supports manual location selection, and the form validates required fields.</div>
                     </div>
                     <div class="p-3 rounded-3 mb-2 bg-light border-start border-primary border-3">
                         <strong class="text-dark small">Multi-Modal Input:</strong>
-                        <div class="text-muted small">Speech dictation in Hindi/English, direct camera image uploads with laser scanner, and text description.</div>
+                        <div class="text-muted small">Speech dictation and text entry are available; photo files are previewed locally and are not submitted.</div>
                     </div>
                     <div class="p-3 rounded-3 mb-2 bg-light border-start border-primary border-3">
                         <strong class="text-dark small">Intelligent 14-Sector Routing:</strong>
-                        <div class="text-muted small">Automatic problem categorization, urgency detection, and municipal department matching.</div>
+                        <div class="text-muted small">Server-side classification uses the configured AI provider; the selected sector is retained when classification is unavailable.</div>
                     </div>
                     <div class="p-3 rounded-3 bg-light border-start border-primary border-3">
                         <strong class="text-dark small">Asynchronous REST Bus:</strong>
-                        <div class="text-muted small">Direct client-side fetch integration with POST /api/complaints and client-side offline fallback caching.</div>
+                        <div class="text-muted small">Complaint details are submitted to POST /api/complaints; a receipt is shown after the server confirms persistence.</div>
                     </div>
                 </div>
             </div>
@@ -97,7 +97,7 @@
                         </div>
                         <div>
                             <h5 class="text-dark fw-800 mb-0">DEPARTMENT REDRESSAL LAYER</h5>
-                            <div class="text-muted small">Official review, action, and verification</div>
+                            <div class="text-muted small">Role-based administration views</div>
                         </div>
                     </div>
                     <div class="p-3 rounded-3 mb-2 bg-light border-start border-success border-3">
@@ -106,15 +106,15 @@
                     </div>
                     <div class="p-3 rounded-3 mb-2 bg-light border-start border-success border-3">
                         <strong class="text-dark small">Grievance Management:</strong>
-                        <div class="text-muted small">Assign, inspect, and resolve issues with field engineer remarks, resolution photos, and citizen sign-off.</div>
+                        <div class="text-muted small">Complaint assignment and resolution actions are not configured in this deployment.</div>
                     </div>
                     <div class="p-3 rounded-3 mb-2 bg-light border-start border-success border-3">
-                        <strong class="text-dark small">Live Milestone Tracking:</strong>
-                        <div class="text-muted small">Transparent status timeline: Submitted &rarr; Under Review &rarr; In Progress &rarr; Resolved.</div>
+                        <strong class="text-dark small">Complaint Reference:</strong>
+                        <div class="text-muted small">A server-assigned reference ID is included in the submission receipt.</div>
                     </div>
                     <div class="p-3 rounded-3 bg-light border-start border-danger border-3">
-                        <strong class="text-dark small">Automated Escalation Engine:</strong>
-                        <div class="text-muted small">Strict SLA enforcement automatically escalates unresolved cases upwards (Level 1 &rarr; Level 2 &rarr; Level 3).</div>
+                        <strong class="text-dark small">Escalation Monitoring:</strong>
+                        <div class="text-muted small">Live escalation and response-time monitoring are not configured in this deployment.</div>
                     </div>
                 </div>
             </div>
@@ -165,7 +165,7 @@
                                     <i class="fa-solid fa-compass text-primary me-2"></i>Landing &amp; Home Experience
                                 </div>
                                 <p class="text-muted small mb-0">
-                                    Responsive hero, live stats counters, interactive 14-sectors category showcase, and comprehensive search-enabled FAQ view.
+                                    Responsive landing page, civic category showcase, and searchable FAQ view.
                                 </p>
                             </div>
                         </div>
@@ -175,7 +175,7 @@
                                     <i class="fa-solid fa-list-check text-success me-2"></i>Multi-Step Report Wizard
                                 </div>
                                 <p class="text-muted small mb-0">
-                                    5-step guided filing pipeline, Leaflet.js interactive map location pinning, media upload preview with laser scanner, and real-time validation checklist.
+                                    Report form with text and speech entry, map location selection, local photo preview, and required-field validation.
                                 </p>
                             </div>
                         </div>
@@ -185,7 +185,7 @@
                                     <i class="fa-solid fa-cloud-arrow-up text-info me-2"></i>Client-Side API Integration
                                 </div>
                                 <p class="text-muted small mb-0">
-                                    Asynchronous fetch connecting report wizard to backend <code>POST /api/complaints</code> endpoint with loading spinner and offline docket fallback.
+                                    The report wizard submits to <code>POST /api/complaints</code> and displays a receipt after a successful response.
                                 </p>
                             </div>
                         </div>
@@ -228,7 +228,7 @@
                         </div>
                         <div class="p-2 rounded bg-light">
                             <div class="fw-700 text-dark small">Voice Interaction</div>
-                            <div class="text-muted" style="font-size:0.75rem;">Direct voice reporting and query tracking.</div>
+                            <div class="text-muted" style="font-size:0.75rem;">Voice dictation is available in the report form.</div>
                         </div>
                     </div>
                 </div>
@@ -264,7 +264,7 @@
                         </div>
                         <div class="p-2 rounded bg-light">
                             <div class="fw-700 text-dark small">Analytics Dashboard</div>
-                            <div class="text-muted" style="font-size:0.75rem;">Geospatial heatmaps and department SLA performance metrics.</div>
+                            <div class="text-muted" style="font-size:0.75rem;">Analytics are not currently configured.</div>
                         </div>
                     </div>
                 </div>
@@ -298,7 +298,7 @@
             <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1 mb-2 fw-700">FAQ</span>
             <h2 class="fw-800 text-dark">Frequently Asked Questions</h2>
             <p class="text-muted mx-auto" style="max-width: 600px;">
-                Learn more about our architecture, SLAs, and data security.
+                Learn more about the application structure and current reporting capabilities.
             </p>
         </div>
 
@@ -319,7 +319,7 @@
                     <div class="cr-faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
                 </div>
                 <div class="cr-faq-answer">
-                    The wizard combines real device standing GPS with an interactive Leaflet point-and-click map pin. Field officers receive the exact latitude, longitude, and geocoded address, eliminating ambiguous reports like &ldquo;near the big tree&rdquo; and saving inspection hours.
+                    Users may request their device location or select a point on the map. Location accuracy depends on the device and the available location services.
                 </div>
             </div>
 

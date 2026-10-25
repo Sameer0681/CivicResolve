@@ -19,10 +19,10 @@ A comprehensive civic engagement platform designed to bridge the gap between cit
 
 ## 🛠️ Tech Stack
 
-- **Backend**: **Spring Boot** (Java 17+) - RESTful APIs and business logic.
-- **Database**: **PostgreSQL** - Relational data storage.
+- **Backend**: **Spring Boot** (Java 21+) - RESTful APIs and business logic.
+- **Database**: **MySQL** - Relational data storage.
 - **Security**: Spring Security, JWT (JSON Web Tokens), BCrypt.
-- **AI Integration**: Apache OpenNLP for text processing and categorization.
+- **AI Integration**: Gemini API for complaint classification (configure `GEMINI_API_KEY`).
 - **Frontend**: **Thymeleaf** & **HTML5** with modern CSS.
 
 ## 📂 Project Structure
@@ -51,9 +51,9 @@ CivicResolve/
 ## ⚙️ Setup & Installation
 
 ### Prerequisites
-- Java 17 or higher
+- Java 21 or higher
 - Maven 3.6 or higher
-- PostgreSQL 12 or higher
+- MySQL 8 or higher
 
 ### 1. Clone the Repository
 ```bash
@@ -62,18 +62,20 @@ cd CivicResolve
 ```
 
 ### 2. Database Configuration
-Ensure PostgreSQL is running and create a database named `civicresolve_db`.
+Ensure MySQL is running and create a database named `civicresolve`.
 
-Update `src/main/resources/application.properties` with your database credentials:
+The application uses the following local database settings:
 ```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/civicresolve_db
-spring.datasource.username=your_username
+spring.datasource.url=jdbc:mysql://localhost:3306/civicresolve
+spring.datasource.username=${DB_USERNAME}
 spring.datasource.password=${DB_PASSWORD:}
 ```
 
-Set `DB_PASSWORD` in the environment instead of storing the database password in the properties file.
+Set `DB_USERNAME` and `DB_PASSWORD` in the environment instead of storing database credentials in the properties file.
 
-To send email OTPs through SMTP, configure `SPRING_MAIL_USERNAME` and `SPRING_MAIL_PASSWORD` in the environment. Set `APP_MAIL_FROM` to override the sender address. Without SMTP credentials, email content is written to the application console for local development.
+Email OTPs require working SMTP credentials. Configure `SPRING_MAIL_USERNAME` and `SPRING_MAIL_PASSWORD` in the environment, and set `APP_MAIL_FROM` to an address accepted by your SMTP provider. For Gmail, use a Google App Password (with 2-Step Verification enabled), not your regular account password. If SMTP is not configured or delivery fails, the application reports an email delivery error; OTPs are never printed to logs or the console.
+
+SMS and voice OTPs use Twilio by default. Configure `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, and `TWILIO_PHONE_NUMBER`, or explicitly set `OTP_PROVIDER=mock` for local development. The application no longer seeds demo users or complaints; create real accounts through registration.
 
 ### 3. Build the Project
 ```bash
@@ -90,10 +92,6 @@ mvn spring-boot:run
 Access the application at:
 - **Frontend**: [http://localhost:8080](http://localhost:8080)
 - **API Docs**: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
-
-### Default Credentials
-- **Admin**: [EMAIL_ADDRESS] / admin123
-- **Citizen**: [EMAIL_ADDRESS] / citizen123
 
 ## 📜 License
 

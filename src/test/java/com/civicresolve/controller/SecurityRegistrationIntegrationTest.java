@@ -1,7 +1,9 @@
 package com.civicresolve.controller;
 
 import com.civicresolve.dto.RegisterRequest;
+import com.civicresolve.repository.PasswordResetTokenRepository;
 import com.civicresolve.repository.UserRepository;
+import com.civicresolve.service.EmailService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -33,7 +36,13 @@ public class SecurityRegistrationIntegrationTest {
     private UserRepository userRepository;
 
     @Autowired
+    private PasswordResetTokenRepository passwordResetTokenRepository;
+
+    @Autowired
     private com.civicresolve.repository.EmailOtpVerificationRepository emailOtpVerificationRepository;
+
+    @MockitoBean
+    private EmailService emailService;
 
     private MockMvc mockMvc;
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -241,6 +250,16 @@ public class SecurityRegistrationIntegrationTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/reset-password?email=" + java.net.URLEncoder.encode(userEmail, java.nio.charset.StandardCharsets.UTF_8)));
 
+        // A repeated request replaces the existing per-user token instead of inserting a duplicate.
+        mockMvc.perform(post("/forgot-password")
+                        .with(csrf())
+                        .param("email", userEmail))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/reset-password?email=" + java.net.URLEncoder.encode(userEmail, java.nio.charset.StandardCharsets.UTF_8)));
+
+        var user = userRepository.findByEmail(userEmail).orElseThrow();
+        assertTrue(passwordResetTokenRepository.findByUser(user).isPresent());
+
         // Retrieve generated OTP
         var otpRecord = emailOtpVerificationRepository
                 .findTopByEmailAndPurposeAndUsedFalseOrderByCreatedAtDesc(userEmail, "FORGOT_PASSWORD");
@@ -258,5 +277,3 @@ public class SecurityRegistrationIntegrationTest {
                 .andExpect(redirectedUrl("/login?resetSuccess=true"));
     }
 }
-
-

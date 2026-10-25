@@ -1,10 +1,12 @@
 package com.civicresolve.service;
 
+import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -17,14 +19,17 @@ public class EmailServiceImpl implements EmailService {
     private final JavaMailSender mailSender;
     private final String fromEmail;
     private final String mailUsername;
+    private final String mailPassword;
 
     public EmailServiceImpl(
             @Autowired(required = false) JavaMailSender mailSender,
             @Value("${app.mail.from:noreply@civicresolve.gov}") String fromEmail,
-            @Value("${spring.mail.username:}") String mailUsername) {
+            @Value("${spring.mail.username:}") String mailUsername,
+            @Value("${spring.mail.password:}") String mailPassword) {
         this.mailSender = mailSender;
         this.fromEmail = fromEmail;
         this.mailUsername = mailUsername;
+        this.mailPassword = mailPassword;
     }
 
     @Override
@@ -71,7 +76,7 @@ public class EmailServiceImpl implements EmailService {
             </html>
             """.formatted(displayName, otp);
 
-        sendEmailOrLog(email, subject, htmlContent, "REGISTRATION OTP", otp);
+        sendEmail(email, subject, htmlContent, "REGISTRATION OTP");
     }
 
     @Override
@@ -121,34 +126,28 @@ public class EmailServiceImpl implements EmailService {
             </html>
             """.formatted(email, otp, resetLink, resetLink, resetLink);
 
-        sendEmailOrLog(email, subject, htmlContent, "PASSWORD RESET CODE", otp + " | Link: " + resetLink);
+        sendEmail(email, subject, htmlContent, "PASSWORD RESET CODE");
     }
 
-    private void sendEmailOrLog(String toEmail, String subject, String htmlContent, String flowType, String details) {
-        boolean sent = false;
-        if (mailSender != null && mailUsername != null && !mailUsername.isBlank()) {
-            try {
-                MimeMessage message = mailSender.createMimeMessage();
-                MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-                helper.setFrom(fromEmail);
-                helper.setTo(toEmail);
-                helper.setSubject(subject);
-                helper.setText(htmlContent, true);
-                mailSender.send(message);
-                sent = true;
-                log.info(">>> Sent {} email to: {}", flowType, toEmail);
-            } catch (Exception ex) {
-                log.warn(">>> Could not dispatch live SMTP email to {} (falling back to console log): {}", toEmail, ex.getMessage());
-            }
+    private void sendEmail(String toEmail, String subject, String htmlContent, String flowType) {
+        if (mailSender == null || mailUsername == null || mailUsername.isBlank()
+                || mailPassword == null || mailPassword.isBlank()) {
+            throw new IllegalStateException(
+                    "Email delivery is not configured. Set SPRING_MAIL_USERNAME and SPRING_MAIL_PASSWORD.");
         }
 
-        // Always print to console / logs for instant local development & verification
-        System.out.println("================================================================================");
-        System.out.printf("  [CIVICRESOLVE EMAIL DISPATCH - %s]%n", flowType);
-        System.out.printf("  TO:      %s%n", toEmail);
-        System.out.printf("  SUBJECT: %s%n", subject);
-        System.out.printf("  DETAILS: %s%n", details);
-        System.out.printf("  STATUS:  %s%n", sent ? "DELIVERED VIA SMTP" : "DEV CONSOLE SIMULATION (ACTIVE)");
-        System.out.println("================================================================================");
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom(fromEmail);
+            helper.setTo(toEmail);
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true);
+            mailSender.send(message);
+            log.info("Sent {} email", flowType);
+        } catch (MessagingException | MailException ex) {
+            log.error("Failed to send {} email", flowType, ex);
+            throw new IllegalStateException("Could not send email. Please try again later.", ex);
+        }
     }
 }

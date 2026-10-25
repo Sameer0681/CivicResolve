@@ -4,59 +4,15 @@
  * Handles:
  * - 14 Sectors showcase live search & category filtering
  * - Interactive Accordion FAQ view with search filter
- * - Hero animated counters & quick tracker redirection
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    initHeroCounters();
     initSectorFilter();
     initFaqAccordion();
-    initHeroTracker();
 });
 
 /**
- * 1. Animated Numbers Counter for Hero Statistics
- */
-function initHeroCounters() {
-    const statElements = document.querySelectorAll('[data-counter-target]');
-    if (!statElements || statElements.length === 0) return;
-
-    const observer = new IntersectionObserver((entries, obs) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const el = entry.target;
-                const target = parseFloat(el.getAttribute('data-counter-target'));
-                const suffix = el.getAttribute('data-counter-suffix') || '';
-                const prefix = el.getAttribute('data-counter-prefix') || '';
-                const duration = 1200; // ms
-                const start = 0;
-                const startTime = performance.now();
-
-                function update(now) {
-                    const elapsed = now - startTime;
-                    const progress = Math.min(elapsed / duration, 1);
-                    // Ease out expo
-                    const ease = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-                    const current = Math.floor(start + (target - start) * ease);
-                    el.textContent = `${prefix}${current.toLocaleString()}${suffix}`;
-                    if (progress < 1) {
-                        requestAnimationFrame(update);
-                    } else {
-                        el.textContent = `${prefix}${target.toLocaleString()}${suffix}`;
-                    }
-                }
-
-                requestAnimationFrame(update);
-                obs.unobserve(el);
-            }
-        });
-    }, { threshold: 0.2 });
-
-    statElements.forEach(el => observer.observe(el));
-}
-
-/**
- * 2. 14 Sectors Live Search & Category Filtering
+ * 1. Sector Search & Category Filtering
  */
 function initSectorFilter() {
     const searchInput = document.getElementById('sectorSearchInput');
@@ -111,7 +67,7 @@ function initSectorFilter() {
 }
 
 /**
- * 3. Interactive Accordion FAQ View with Search
+ * 2. Interactive FAQ Accordion with Search
  */
 function initFaqAccordion() {
     const faqItems = document.querySelectorAll('.cr-faq-item');
@@ -156,26 +112,6 @@ function initFaqAccordion() {
 
             const noFaq = document.getElementById('faqNoResults');
             if (noFaq) noFaq.style.display = (visibleCount === 0) ? 'block' : 'none';
-        });
-    }
-}
-
-/**
- * 4. Hero Tracker Form Redirect
- */
-function initHeroTracker() {
-    const form = document.getElementById('heroTrackerForm');
-    const input = document.getElementById('heroTrackerInput');
-
-    if (form && input) {
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const id = input.value.trim();
-            if (!id) {
-                input.focus();
-                return;
-            }
-            window.location.href = `/citizen/complaint-details?id=${encodeURIComponent(id)}`;
         });
     }
 }

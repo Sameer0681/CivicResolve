@@ -80,9 +80,6 @@ public class SecurityConfig {
                                 "/sectors",
                                 "/report/**",
                                 "/report",
-                                "/pages",
-                                "/preview",
-                                "/dev/pages",
                                 "/error")
                         .permitAll()
 

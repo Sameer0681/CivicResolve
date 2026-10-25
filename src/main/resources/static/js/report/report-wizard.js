@@ -6,169 +6,43 @@
  * 3. Upload Image (Photo Evidence)
  */
 
-// Generate Ticket ID in format: CR-2025-XXXX (e.g., CR-2025-0842)
-function generateTicketId() {
-    const randomNum = String(Math.floor(1000 + Math.random() * 9000)).padStart(4, '0');
-    return `CR-2025-${randomNum}`;
-}
-
 // ── State Management ──
 const PipelineState = {
-    complaintId: generateTicketId(),
     problemMode: "write", // "write", "speak", or "image"
     title: "",
     description: "",
     sector: "Roads & Transport",
-    department: "Public Works Department (PWD)",
-    deskName: "PWD Desk",
-    deskIcon: "fa-road",
-    assignedOfficer: "Junior Engineer (JE)",
-    targetPortal: "State PWD Grievance Redressal Portal / CPGRAMS Gateway",
-    urgency: "HIGH",
-    slaHours: 48,
     coords: {
-        lat: 26.8467,
-        lng: 80.9462,
-        accuracy: 8.5
+        lat: null,
+        lng: null,
+        accuracy: null
     },
-    address: "Ward 14, Main Road, Municipal Area [26.8467, 80.9462]",
-    mediaFile: null,
+    address: "",
     isSubmitting: false
 };
 
-// 14 Civic Sectors Taxonomy with In-App Desk & Officer Tier Mapping
+// Civic service categories accepted by the complaint form.
 const SECTORS_REGISTRY = [
-    {
-        name: "Roads & Transport",
-        icon: "fa-road",
-        dept: "Public Works Department (PWD)",
-        deskName: "PWD Desk",
-        assignedOfficer: "Junior Engineer (JE)",
-        portal: "State PWD Grievance Redressal Portal / CPGRAMS Gateway",
-        slaHours: 48
-    },
-    {
-        name: "Sanitation & Waste",
-        icon: "fa-trash-can",
-        dept: "Municipal Solid Waste Management Division",
-        deskName: "Municipal Corporation Desk",
-        assignedOfficer: "Sanitation Inspector",
-        portal: "Swachhata Citizen Grievance Portal & Nagar Nigam System",
-        slaHours: 24
-    },
-    {
-        name: "Water Supply",
-        icon: "fa-droplet",
-        dept: "Jal Nigam / Municipal Water Works",
-        deskName: "Jal Nigam Desk",
-        assignedOfficer: "Water Board Assistant Engineer (AE)",
-        portal: "Jal Sansthan Citizen Water Redressal Portal & e-Jal Seva",
-        slaHours: 24
-    },
-    {
-        name: "Street Lighting",
-        icon: "fa-lightbulb",
-        dept: "Municipal Electrical & Lighting Cell",
-        deskName: "Streetlight Command Desk",
-        assignedOfficer: "Junior Electrical Engineer",
-        portal: "Smart City Municipal Streetlight Command Center",
-        slaHours: 24
-    },
-    {
-        name: "Electricity",
-        icon: "fa-bolt",
-        dept: "State Power Distribution Corporation (DISCOM)",
-        deskName: "DISCOM 1912 Desk",
-        assignedOfficer: "Sub-Divisional Officer (SDO)",
-        portal: "State DISCOM 1912 Power Consumer Grievance Portal",
-        slaHours: 24
-    },
-    {
-        name: "Healthcare",
-        icon: "fa-hospital",
-        dept: "Chief Medical Office & Public Health Dept",
-        deskName: "Health Redressal Cell",
-        assignedOfficer: "Medical Superintendent",
-        portal: "National Health Mission Grievance Redressal Portal",
-        slaHours: 48
-    },
-    {
-        name: "Education",
-        icon: "fa-graduation-cap",
-        dept: "Department of Basic & Secondary Education",
-        deskName: "District Education Desk",
-        assignedOfficer: "Block Education Officer (BEO)",
-        portal: "State Shiksha Seva & District Education Portal",
-        slaHours: 72
-    },
-    {
-        name: "Public Safety",
-        icon: "fa-shield-halved",
-        dept: "City Police & Public Safety Cell",
-        deskName: "Public Safety Desk",
-        assignedOfficer: "Station House Officer (SHO)",
-        portal: "State Police Citizen Portal (CCTNS National Gateway)",
-        slaHours: 12
-    },
-    {
-        name: "Municipal Services",
-        icon: "fa-building-flag",
-        dept: "Municipal Corporation Administration",
-        deskName: "Municipal Corporation Desk",
-        assignedOfficer: "Assistant Municipal Commissioner",
-        portal: "e-Nagarpalika Citizen Services Single Window",
-        slaHours: 72
-    },
-    {
-        name: "Revenue & Certificates",
-        icon: "fa-file-invoice",
-        dept: "Revenue & Tehsil Sub-Divisional Office",
-        deskName: "Tehsil Revenue Desk",
-        assignedOfficer: "Nayab Tehsildar",
-        portal: "e-District Revenue & Jan Seva Portal",
-        slaHours: 72
-    },
-    {
-        name: "Social Welfare",
-        icon: "fa-hand-holding-heart",
-        dept: "Social Welfare & Pension Department",
-        deskName: "Social Welfare Desk",
-        assignedOfficer: "District Social Welfare Officer",
-        portal: "National Social Assistance Portal (NSAP)",
-        slaHours: 72
-    },
-    {
-        name: "Environment",
-        icon: "fa-leaf",
-        dept: "Pollution Control Board & Parks Department",
-        deskName: "Environment Board Desk",
-        assignedOfficer: "Regional Environment Officer",
-        portal: "State Pollution Control Board (SPCB) Grievance Portal",
-        slaHours: 48
-    },
-    {
-        name: "Housing",
-        icon: "fa-house-chimney",
-        dept: "Urban Development & Housing Authority",
-        deskName: "Housing Board Desk",
-        assignedOfficer: "Executive Engineer (Housing)",
-        portal: "State Housing Board & PMAY Grievance Desk",
-        slaHours: 96
-    },
-    {
-        name: "Agriculture",
-        icon: "fa-seedling",
-        dept: "District Agriculture & Irrigation Department",
-        deskName: "District Agriculture Desk",
-        assignedOfficer: "Assistant Director of Agriculture",
-        portal: "Kisan Grievance Redressal System & Irrigation Desk",
-        slaHours: 48
-    }
+    "Roads & Transport",
+    "Sanitation & Waste",
+    "Water Supply",
+    "Street Lighting",
+    "Electricity",
+    "Healthcare",
+    "Education",
+    "Public Safety",
+    "Municipal Services",
+    "Revenue & Certificates",
+    "Social Welfare",
+    "Environment",
+    "Housing",
+    "Agriculture"
 ];
 
 let leafletMap = null;
 let leafletMarker = null;
 let leafletCircle = null;
+let leafletPin = null;
 
 // ── DOM Initialization ──
 document.addEventListener('DOMContentLoaded', () => {
@@ -185,15 +59,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initTicketBadge() {
     const badge = document.getElementById('docketTicketIdBadge');
-    if (badge) badge.textContent = PipelineState.complaintId;
+    if (badge) badge.textContent = "Assigned after submission";
 }
 
 function checkUrlParams() {
     const params = new URLSearchParams(window.location.search);
     const secParam = params.get('sector');
     if (secParam) {
-        const found = SECTORS_REGISTRY.find(s => s.name.toLowerCase().includes(secParam.toLowerCase()));
-        if (found) setSector(found.name);
+        const found = SECTORS_REGISTRY.find(s => s.toLowerCase().includes(secParam.toLowerCase()));
+        if (found) setSector(found);
     }
 }
 
@@ -216,11 +90,11 @@ function populateSectorSelect() {
     if (!sel) return;
 
     sel.innerHTML = '';
-    SECTORS_REGISTRY.forEach(s => {
+    SECTORS_REGISTRY.forEach(name => {
         const opt = document.createElement('option');
-        opt.value = s.name;
-        opt.textContent = s.name;
-        if (s.name === PipelineState.sector) opt.selected = true;
+        opt.value = name;
+        opt.textContent = name;
+        if (name === PipelineState.sector) opt.selected = true;
         sel.appendChild(opt);
     });
 
@@ -230,33 +104,9 @@ function populateSectorSelect() {
 }
 
 function setSector(sectorName) {
-    const found = SECTORS_REGISTRY.find(s => s.name === sectorName) || SECTORS_REGISTRY[0];
-    PipelineState.sector = found.name;
-    PipelineState.department = found.dept;
-    PipelineState.deskName = found.deskName;
-    PipelineState.deskIcon = found.icon;
-    PipelineState.assignedOfficer = found.assignedOfficer;
-    PipelineState.targetPortal = found.portal;
-    PipelineState.slaHours = found.slaHours;
-
-    // Update Select
+    PipelineState.sector = sectorName;
     const sel = document.getElementById('formSectorSelect');
-    if (sel && sel.value !== found.name) sel.value = found.name;
-
-    // Update Right-Hand Summary Card
-    const deskEl = document.getElementById('docketDeskBadge');
-    if (deskEl) {
-        deskEl.innerHTML = `<i class="fa-solid ${found.icon} text-primary me-2"></i> ${found.deskName}`;
-    }
-
-    const deptEl = document.getElementById('docketDeptText');
-    if (deptEl) deptEl.textContent = found.dept;
-
-    const officerEl = document.getElementById('docketOfficerText');
-    if (officerEl) officerEl.textContent = found.assignedOfficer;
-
-    const slaEl = document.getElementById('docketSlaBadge');
-    if (slaEl) slaEl.textContent = `${found.slaHours}-Hour SLA`;
+    if (sel && sel.value !== sectorName) sel.value = sectorName;
 }
 
 /**
@@ -270,35 +120,17 @@ function initLeafletMap() {
         leafletMap = L.map('locationPinMap', {
             zoomControl: true,
             attributionControl: false
-        }).setView([PipelineState.coords.lat, PipelineState.coords.lng], 15);
+        }).setView([0, 0], 2);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19
         }).addTo(leafletMap);
 
-        const customPin = L.divIcon({
+        leafletPin = L.divIcon({
             className: 'cr-clean-pin',
             html: '<div style="background:#2563eb; color:#fff; width:32px; height:32px; border-radius:50% 50% 50% 0; transform:rotate(-45deg); display:flex; align-items:center; justify-content:center; border:2px solid #fff; box-shadow:0 3px 10px rgba(37,99,235,0.4);"><i class="fa-solid fa-location-dot" style="transform:rotate(45deg); font-size:14px;"></i></div>',
             iconSize: [32, 32],
             iconAnchor: [16, 32]
-        });
-
-        leafletMarker = L.marker([PipelineState.coords.lat, PipelineState.coords.lng], {
-            draggable: true,
-            icon: customPin
-        }).addTo(leafletMap);
-
-        leafletCircle = L.circle([PipelineState.coords.lat, PipelineState.coords.lng], {
-            radius: PipelineState.coords.accuracy || 8.5,
-            color: '#2563eb',
-            fillColor: '#60a5fa',
-            fillOpacity: 0.15,
-            weight: 1.5
-        }).addTo(leafletMap);
-
-        leafletMarker.on('dragend', (e) => {
-            const p = e.target.getLatLng();
-            updateCoords(p.lat, p.lng, 5.0, true);
         });
 
         leafletMap.on('click', (e) => {
@@ -312,16 +144,32 @@ function updateCoords(lat, lng, accuracy = 8.0, doReverse = true) {
     PipelineState.coords.lng = Number(lng.toFixed(5));
     PipelineState.coords.accuracy = Number(accuracy.toFixed(1));
 
-    if (leafletMarker) leafletMarker.setLatLng([lat, lng]);
-    if (leafletCircle) {
+    if (leafletMap && !leafletMarker && leafletPin) {
+        leafletMarker = L.marker([lat, lng], { draggable: true, icon: leafletPin }).addTo(leafletMap);
+        leafletMarker.on('dragend', (e) => {
+            const p = e.target.getLatLng();
+            updateCoords(p.lat, p.lng, 5.0, true);
+        });
+    } else if (leafletMarker) {
+        leafletMarker.setLatLng([lat, lng]);
+    }
+    if (leafletMap && !leafletCircle) {
+        leafletCircle = L.circle([lat, lng], {
+            radius: accuracy,
+            color: '#2563eb',
+            fillColor: '#60a5fa',
+            fillOpacity: 0.15,
+            weight: 1.5
+        }).addTo(leafletMap);
+    } else if (leafletCircle) {
         leafletCircle.setLatLng([lat, lng]);
         leafletCircle.setRadius(accuracy);
     }
-    if (leafletMap) leafletMap.panTo([lat, lng]);
+    if (leafletMap) leafletMap.setView([lat, lng], Math.max(leafletMap.getZoom(), 15));
 
     const pill = document.getElementById('mapCoordsPill');
     if (pill) {
-        pill.innerHTML = `<i class="fa-solid fa-location-crosshairs text-primary me-1"></i> ${PipelineState.coords.lat}° N, ${PipelineState.coords.lng}° E`;
+        pill.innerHTML = `<i class="fa-solid fa-location-crosshairs text-primary me-1"></i> ${PipelineState.coords.lat}, ${PipelineState.coords.lng}`;
     }
 
     if (doReverse) reverseGeocode(lat, lng);
@@ -339,13 +187,20 @@ function detectDeviceGPS() {
             },
             () => {
                 if (refreshIcon) refreshIcon.classList.remove('fa-spin');
-                updateCoords(26.8467, 80.9462, 10.0, true);
+                showLocationHint("Location unavailable. Enter an address or select a point on the map.");
             },
             { enableHighAccuracy: true, timeout: 7000, maximumAge: 0 }
         );
     } else {
         if (refreshIcon) refreshIcon.classList.remove('fa-spin');
-        updateCoords(26.8467, 80.9462, 10.0, true);
+        showLocationHint("Location is not supported by this browser. Enter an address or select a point on the map.");
+    }
+}
+
+function showLocationHint(message) {
+    const pill = document.getElementById('mapCoordsPill');
+    if (pill) {
+        pill.innerHTML = `<i class="fa-solid fa-location-crosshairs text-primary me-1"></i> ${message}`;
     }
 }
 
@@ -369,10 +224,7 @@ function reverseGeocode(lat, lng) {
 }
 
 function fallbackAddr(lat, lng) {
-    const addrInput = document.getElementById('formLocationInput');
-    const text = `Ward 14, Main Road, Municipal Area [${lat}, ${lng}]`;
-    PipelineState.address = text;
-    if (addrInput && !addrInput.value) addrInput.value = text;
+    showLocationHint(`Address lookup unavailable. Coordinates selected: ${lat.toFixed(5)}, ${lng.toFixed(5)}.`);
 }
 
 /**
@@ -464,6 +316,7 @@ function initMediaUpload() {
     const fileMeta = document.getElementById('photoMetaText');
     const removeBtn = document.getElementById('photoRemoveBtn');
     const captionInput = document.getElementById('photoCaptionInput');
+    let lastCaption = '';
 
     if (!fileInput || !dropArea) return;
 
@@ -485,21 +338,22 @@ function initMediaUpload() {
         captionInput.addEventListener('input', () => {
             const formTitle = document.getElementById('formTitleInput');
             const formDesc = document.getElementById('formDescInput');
-            if (formTitle && (!formTitle.value || formTitle.value.startsWith('Photo Evidence:'))) {
-                formTitle.value = captionInput.value ? captionInput.value : `Photo Evidence: ${PipelineState.mediaFile?.name || 'Issue'}`;
+            const caption = captionInput.value.trim();
+            if (formTitle && (!formTitle.value || formTitle.value === lastCaption)) {
+                formTitle.value = caption;
                 formTitle.dispatchEvent(new Event('input'));
             }
-            if (formDesc && (!formDesc.value || formDesc.value.includes('photographic proof'))) {
-                formDesc.value = captionInput.value ? captionInput.value : `Photographic evidence attached showing civic issue.`;
+            if (formDesc && (!formDesc.value || formDesc.value === lastCaption)) {
+                formDesc.value = caption;
                 formDesc.dispatchEvent(new Event('input'));
             }
+            lastCaption = caption;
         });
     }
 
     if (removeBtn) {
         removeBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            PipelineState.mediaFile = null;
             fileInput.value = '';
             if (previewBox) previewBox.style.display = 'none';
             if (dropArea) dropArea.style.display = 'block';
@@ -511,25 +365,12 @@ function initMediaUpload() {
             alert("File size exceeds 10MB limit.");
             return;
         }
-        PipelineState.mediaFile = file;
         const reader = new FileReader();
         reader.onload = (e) => {
             if (previewImg) previewImg.src = e.target.result;
             if (fileMeta) fileMeta.textContent = `${file.name} (${(file.size / 1024).toFixed(0)} KB)`;
             dropArea.style.display = 'none';
             if (previewBox) previewBox.style.display = 'flex';
-
-            // Auto-populate title & desc if empty
-            const formTitle = document.getElementById('formTitleInput');
-            const formDesc = document.getElementById('formDescInput');
-            if (formTitle && !formTitle.value) {
-                formTitle.value = `Photo Evidence: ${file.name}`;
-                formTitle.dispatchEvent(new Event('input'));
-            }
-            if (formDesc && !formDesc.value) {
-                formDesc.value = `Civic defect documented with attached photographic proof (${file.name}).`;
-                formDesc.dispatchEvent(new Event('input'));
-            }
         };
         reader.readAsDataURL(file);
     }
@@ -778,12 +619,10 @@ async function submitGrievanceAsync(otpToken = null) {
     } else if (PipelineState.problemMode === 'image') {
         const caption = document.getElementById('photoCaptionInput')?.value.trim();
         if (!titleVal || titleVal.length < 5) {
-            titleVal = caption || (PipelineState.mediaFile
-                ? `Photo Evidence: ${PipelineState.mediaFile.name}`
-                : "Civic Issue Reported");
+            titleVal = caption || "";
         }
         if (!descVal || descVal.length < 10) {
-            descVal = caption || "Civic defect documented with photographic evidence.";
+            descVal = caption || "";
         }
     }
 
@@ -813,12 +652,12 @@ async function submitGrievanceAsync(otpToken = null) {
     if (statusText) statusText.textContent = "Registering ticket & verifying with authority desk...";
 
     const complaintPayload = {
-        complaintId: PipelineState.complaintId,
         title: titleVal,
         description: descVal,
         sector: secVal,
-        department: PipelineState.department,
-        location: `${locVal} [${PipelineState.coords.lat}, ${PipelineState.coords.lng}]`,
+        location: PipelineState.coords.lat !== null && PipelineState.coords.lng !== null
+            ? `${locVal} [${PipelineState.coords.lat}, ${PipelineState.coords.lng}]`
+            : locVal,
         status: "SUBMITTED"
     };
 
@@ -858,29 +697,12 @@ async function submitGrievanceAsync(otpToken = null) {
 
             hideOtpModal();
 
-            // Only use the server-confirmed receipt after successful persistence.
-            const savedId = savedComplaint.complaintId || PipelineState.complaintId;
-            const finalSector = savedComplaint.sector || secVal;
-            const matchedSector = SECTORS_REGISTRY.find(s => s.name === finalSector || s.name.toLowerCase() === (finalSector || '').trim().toLowerCase());
-            const finalDept = savedComplaint.department || (matchedSector ? matchedSector.dept : PipelineState.department);
-            const finalUrgency = savedComplaint.urgency || PipelineState.urgency;
-            const finalDeskName = matchedSector ? matchedSector.deskName : PipelineState.deskName;
-            const finalOfficer = matchedSector ? matchedSector.assignedOfficer : PipelineState.assignedOfficer;
-            const finalPortal = matchedSector ? matchedSector.portal : PipelineState.targetPortal;
-
-            sessionStorage.setItem('cr_latest_ticket', JSON.stringify({
-                ...complaintPayload,
-                complaintId: savedId,
-                sector: finalSector,
-                department: finalDept,
-                deskName: finalDeskName,
-                assignedOfficer: finalOfficer,
-                portal: finalPortal,
-                urgency: finalUrgency,
-                createdAt: savedComplaint.createdAt || new Date().toISOString()
-            }));
-
-            const redirectUrl = `/report/submission-success?complaintId=${encodeURIComponent(savedId)}&title=${encodeURIComponent(titleVal)}&sector=${encodeURIComponent(finalSector)}&location=${encodeURIComponent(locVal)}&urgency=${encodeURIComponent(finalUrgency)}&dept=${encodeURIComponent(finalDept)}&portal=${encodeURIComponent(finalPortal)}`;
+            const savedId = savedComplaint.complaintId;
+            if (!savedId) {
+                alert("The complaint was saved, but the server did not return its assigned ID. Do not submit again; contact support for the receipt.");
+                return;
+            }
+            const redirectUrl = `/report/submission-success?complaintId=${encodeURIComponent(savedId)}&title=${encodeURIComponent(savedComplaint.title || titleVal)}&description=${encodeURIComponent(savedComplaint.description || descVal)}&sector=${encodeURIComponent(savedComplaint.sector || secVal)}&location=${encodeURIComponent(savedComplaint.location || complaintPayload.location)}&urgency=${encodeURIComponent(savedComplaint.urgency || "")}&dept=${encodeURIComponent(savedComplaint.department || "")}`;
 
             window.location.href = redirectUrl;
             return;

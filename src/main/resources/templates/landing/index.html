@@ -31,19 +31,8 @@
                     <span style="color: #2563eb;">Hold Local Authorities Accountable.</span>
                 </h1>
                 <p class="text-muted mb-4 fs-6" style="max-width: 580px; line-height: 1.7;">
-                    A zero-friction public service portal. Submit grievances using voice dictation, camera photo, or text. The system automatically captures your <strong>10-meter standing GPS position</strong>, classifies the department across <strong>14 sectors</strong>, and tracks resolution with enforceable SLAs.
+                    Submit a civic complaint with a description and incident location. Voice dictation is available to help enter the details.
                 </p>
-
-                <!-- Track Search Bar -->
-                <div class="p-2 mb-4 rounded-3 shadow-sm bg-light border" style="max-width: 500px;">
-                    <form id="heroTrackerForm" th:action="@{/citizen/complaint-details}" method="get" class="d-flex gap-2">
-                        <div class="input-group">
-                            <span class="input-group-text bg-transparent border-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
-                            <input type="text" id="heroTrackerInput" name="id" class="form-control bg-transparent border-0" placeholder="Enter Complaint ID (e.g. CR-2048) to Track..." required/>
-                        </div>
-                        <button type="submit" class="btn btn-primary fw-700 px-4">Track</button>
-                    </form>
-                </div>
 
                 <!-- Action Buttons -->
                 <div class="d-flex gap-3 flex-wrap mb-4">
@@ -58,33 +47,6 @@
                     </a>
                 </div>
 
-                <!-- Animated Stats Row -->
-                <div class="row g-2 pt-2" style="max-width: 580px;">
-                    <div class="col-6 col-sm-3">
-                        <div class="p-2 rounded-3 border bg-light text-center">
-                            <div class="fw-900 text-primary fs-5" data-counter-target="48" data-counter-suffix="h">48h</div>
-                            <div class="text-muted" style="font-size: 0.72rem; font-weight: 600;">Response SLA</div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-sm-3">
-                        <div class="p-2 rounded-3 border bg-light text-center">
-                            <div class="fw-900 text-dark fs-5" data-counter-target="14" data-counter-suffix="">14</div>
-                            <div class="text-muted" style="font-size: 0.72rem; font-weight: 600;">Civic Sectors</div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-sm-3">
-                        <div class="p-2 rounded-3 border bg-light text-center">
-                            <div class="fw-900 text-info fs-5" data-counter-target="10" data-counter-suffix="m">10m</div>
-                            <div class="text-muted" style="font-size: 0.72rem; font-weight: 600;">GPS Accuracy</div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-sm-3">
-                        <div class="p-2 rounded-3 border bg-light text-center">
-                            <div class="fw-900 text-success fs-5" data-counter-target="100" data-counter-suffix="%">100%</div>
-                            <div class="text-muted" style="font-size: 0.72rem; font-weight: 600;">Trackable</div>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <!-- Right: Standard Clean Reporting Assistant Card -->
@@ -101,7 +63,7 @@
                     </div>
 
                     <p class="text-muted small mb-3">
-                        No manual paperwork or form filling. Provide your issue in any format below — the multi-step wizard captures your 10-meter standing location and handles official dispatch.
+                        Describe your issue, choose a category, and provide its location in the reporting wizard.
                     </p>
 
                     <!-- Direct Action Options -->
@@ -122,8 +84,8 @@
                                 <i class="fa-solid fa-camera"></i>
                             </div>
                             <div class="flex-grow-1">
-                                <div class="fw-700 text-dark small">Attach Photo Evidence</div>
-                                <div class="text-muted" style="font-size: 0.75rem;">Upload photo; AI stamps 10m standing GPS</div>
+                                <div class="fw-700 text-dark small">Preview a Photo</div>
+                                <div class="text-muted" style="font-size: 0.75rem;">Photo previews are local and are not submitted</div>
                             </div>
                             <i class="fa-solid fa-chevron-right text-muted small"></i>
                         </a>
@@ -134,22 +96,10 @@
                             </div>
                             <div class="flex-grow-1">
                                 <div class="fw-700 text-dark small">Plain Text Description</div>
-                                <div class="text-muted" style="font-size: 0.75rem;">Type your problem; AI auto-selects department</div>
+                                <div class="text-muted" style="font-size: 0.75rem;">Describe the problem and choose a category</div>
                             </div>
                             <i class="fa-solid fa-chevron-right text-muted small"></i>
                         </a>
-                    </div>
-
-                    <!-- Key Guarantees -->
-                    <div class="p-3 rounded-3 mb-3 bg-light border" style="font-size: 0.8rem;">
-                        <div class="d-flex align-items-center gap-2 text-dark mb-1 fw-600">
-                            <i class="fa-solid fa-location-crosshairs text-primary"></i>
-                            <span>10-Meter High Precision Standing GPS</span>
-                        </div>
-                        <div class="d-flex align-items-center gap-2 text-dark fw-600">
-                            <i class="fa-solid fa-clock text-warning"></i>
-                            <span>48-Hour Response SLA with Automatic Escalation</span>
-                        </div>
                     </div>
 
                     <a th:href="@{/report}" class="btn btn-primary fw-700 py-2 w-100">
@@ -212,7 +162,7 @@
                         <div class="col-sm-6">
                             <div class="p-2 bg-white rounded border d-flex align-items-center gap-2">
                                 <span class="badge bg-primary rounded-circle">3</span>
-                                <div><strong>10m Standing GPS:</strong> Device geofencing</div>
+                                <div><strong>Location:</strong> Enter an address or select a point on the map</div>
                             </div>
                         </div>
                         <div class="col-sm-6">
@@ -230,13 +180,13 @@
                         <div class="col-sm-6">
                             <div class="p-2 bg-white rounded border d-flex align-items-center gap-2">
                                 <span class="badge bg-primary rounded-circle">6</span>
-                                <div><strong>Official Portal:</strong> Mapped to govt gateway</div>
+                                <div><strong>Department:</strong> Identified from the submitted complaint</div>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="p-2 bg-white rounded border d-flex align-items-center gap-2">
                                 <span class="badge bg-primary rounded-circle">7</span>
-                                <div><strong>Auto Form Gen:</strong> Legal complaint docket</div>
+                                <div><strong>Complaint entry:</strong> Structured submission</div>
                             </div>
                         </div>
                         <div class="col-sm-6">
@@ -260,13 +210,13 @@
                         <div class="col-sm-6">
                             <div class="p-2 bg-white rounded border d-flex align-items-center gap-2">
                                 <span class="badge bg-primary rounded-circle">11</span>
-                                <div><strong>Live Tracking:</strong> Progress &amp; SLA clock</div>
+                                <div><strong>Reference:</strong> Included in the submission receipt</div>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="p-2 bg-white rounded border d-flex align-items-center gap-2">
                                 <span class="badge bg-success rounded-circle">12</span>
-                                <div><strong>Resolution:</strong> Citizen satisfaction loop</div>
+                                <div><strong>Follow-up:</strong> Status updates are not currently available</div>
                             </div>
                         </div>
                     </div>
@@ -320,11 +270,9 @@
                     <div>
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div class="cr-sector-icon-badge" style="background:#eff6ff; color:#2563eb;"><i class="fa-solid fa-road"></i></div>
-                            <span class="cr-sector-sla-tag"><i class="fa-solid fa-clock text-warning me-1"></i>48h SLA</span>
                         </div>
                         <h6 class="fw-800 text-dark mb-1 sector-title">Roads &amp; Transport</h6>
                         <p class="text-muted small mb-2 sector-desc">Potholes, broken footpaths, traffic signals, and damaged road dividers.</p>
-                        <div class="text-muted" style="font-size:0.75rem;"><i class="fa-solid fa-building me-1"></i> Public Works Dept (PWD)</div>
                     </div>
                     <div class="mt-3 pt-2 border-top">
                         <a th:href="@{/report(sector='Roads & Transport')}" class="btn btn-outline-primary btn-sm fw-700 w-100">Report in Roads &rarr;</a>
@@ -338,7 +286,6 @@
                     <div>
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div class="cr-sector-icon-badge" style="background:#fef3c7; color:#d97706;"><i class="fa-solid fa-lightbulb"></i></div>
-                            <span class="cr-sector-sla-tag"><i class="fa-solid fa-clock text-warning me-1"></i>24h SLA</span>
                         </div>
                         <h6 class="fw-800 text-dark mb-1 sector-title">Street Lighting</h6>
                         <p class="text-muted small mb-2 sector-desc">Non-functioning streetlights, damaged poles, dark corridors, and dangling wires.</p>
@@ -356,11 +303,9 @@
                     <div>
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div class="cr-sector-icon-badge" style="background:#ecfeff; color:#0891b2;"><i class="fa-solid fa-droplet"></i></div>
-                            <span class="cr-sector-sla-tag"><i class="fa-solid fa-clock text-warning me-1"></i>24h SLA</span>
                         </div>
                         <h6 class="fw-800 text-dark mb-1 sector-title">Water Supply</h6>
                         <p class="text-muted small mb-2 sector-desc">Pipeline leaks, water supply cut-offs, low pressure, and sewage backflow.</p>
-                        <div class="text-muted" style="font-size:0.75rem;"><i class="fa-solid fa-building me-1"></i> Jal Nigam / Water Works Board</div>
                     </div>
                     <div class="mt-3 pt-2 border-top">
                         <a th:href="@{/report(sector='Water Supply')}" class="btn btn-outline-info btn-sm fw-700 w-100">Report in Water &rarr;</a>
@@ -374,7 +319,6 @@
                     <div>
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div class="cr-sector-icon-badge" style="background:#f0fdf4; color:#16a34a;"><i class="fa-solid fa-trash-can"></i></div>
-                            <span class="cr-sector-sla-tag"><i class="fa-solid fa-clock text-warning me-1"></i>24h SLA</span>
                         </div>
                         <h6 class="fw-800 text-dark mb-1 sector-title">Sanitation &amp; Waste</h6>
                         <p class="text-muted small mb-2 sector-desc">Overflowing garbage dumpsters, uncollected street waste, and foul odor hazards.</p>
@@ -392,11 +336,9 @@
                     <div>
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div class="cr-sector-icon-badge" style="background:#fef3c7; color:#d97706;"><i class="fa-solid fa-bolt"></i></div>
-                            <span class="cr-sector-sla-tag"><i class="fa-solid fa-clock text-warning me-1"></i>24h SLA</span>
                         </div>
                         <h6 class="fw-800 text-dark mb-1 sector-title">Electricity</h6>
                         <p class="text-muted small mb-2 sector-desc">Transformer sparks, live wire dangers, power fluctuations, and meter issues.</p>
-                        <div class="text-muted" style="font-size:0.75rem;"><i class="fa-solid fa-building me-1"></i> State Power DISCOM</div>
                     </div>
                     <div class="mt-3 pt-2 border-top">
                         <a th:href="@{/report(sector='Electricity')}" class="btn btn-outline-warning btn-sm fw-700 w-100">Report in Power &rarr;</a>
@@ -410,7 +352,6 @@
                     <div>
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div class="cr-sector-icon-badge" style="background:#fee2e2; color:#dc2626;"><i class="fa-solid fa-hospital"></i></div>
-                            <span class="cr-sector-sla-tag"><i class="fa-solid fa-clock text-warning me-1"></i>48h SLA</span>
                         </div>
                         <h6 class="fw-800 text-dark mb-1 sector-title">Healthcare</h6>
                         <p class="text-muted small mb-2 sector-desc">Primary Health Center negligence, medicine shortages, and sanitation in clinics.</p>
@@ -428,7 +369,6 @@
                     <div>
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div class="cr-sector-icon-badge" style="background:#f1f5f9; color:#475569;"><i class="fa-solid fa-graduation-cap"></i></div>
-                            <span class="cr-sector-sla-tag"><i class="fa-solid fa-clock text-warning me-1"></i>72h SLA</span>
                         </div>
                         <h6 class="fw-800 text-dark mb-1 sector-title">Education</h6>
                         <p class="text-muted small mb-2 sector-desc">Public school building safety, teacher absenteeism, and midday meal quality.</p>
@@ -446,7 +386,6 @@
                     <div>
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div class="cr-sector-icon-badge" style="background:#eff6ff; color:#1d4ed8;"><i class="fa-solid fa-shield-halved"></i></div>
-                            <span class="cr-sector-sla-tag"><i class="fa-solid fa-clock text-danger me-1"></i>12h SLA</span>
                         </div>
                         <h6 class="fw-800 text-dark mb-1 sector-title">Public Safety</h6>
                         <p class="text-muted small mb-2 sector-desc">Neighborhood security hazards, illegal activities, and emergency civic concerns.</p>
@@ -464,11 +403,9 @@
                     <div>
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div class="cr-sector-icon-badge" style="background:#f1f5f9; color:#334155;"><i class="fa-solid fa-building-flag"></i></div>
-                            <span class="cr-sector-sla-tag"><i class="fa-solid fa-clock text-warning me-1"></i>72h SLA</span>
                         </div>
                         <h6 class="fw-800 text-dark mb-1 sector-title">Municipal Services</h6>
                         <p class="text-muted small mb-2 sector-desc">Property tax disputes, birth/death registry delays, and market encroachments.</p>
-                        <div class="text-muted" style="font-size:0.75rem;"><i class="fa-solid fa-building me-1"></i> Municipal Corporation</div>
                     </div>
                     <div class="mt-3 pt-2 border-top">
                         <a th:href="@{/report(sector='Municipal Services')}" class="btn btn-outline-secondary btn-sm fw-700 w-100">Report in Municipal &rarr;</a>
@@ -482,7 +419,6 @@
                     <div>
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div class="cr-sector-icon-badge" style="background:#fef3c7; color:#b45309;"><i class="fa-solid fa-file-invoice"></i></div>
-                            <span class="cr-sector-sla-tag"><i class="fa-solid fa-clock text-warning me-1"></i>72h SLA</span>
                         </div>
                         <h6 class="fw-800 text-dark mb-1 sector-title">Revenue &amp; Certificates</h6>
                         <p class="text-muted small mb-2 sector-desc">Delayed caste, income, or domicile certificates and land record discrepancies.</p>
@@ -500,7 +436,6 @@
                     <div>
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div class="cr-sector-icon-badge" style="background:#fee2e2; color:#b91c1c;"><i class="fa-solid fa-hand-holding-heart"></i></div>
-                            <span class="cr-sector-sla-tag"><i class="fa-solid fa-clock text-warning me-1"></i>72h SLA</span>
                         </div>
                         <h6 class="fw-800 text-dark mb-1 sector-title">Social Welfare</h6>
                         <p class="text-muted small mb-2 sector-desc">Old age and widow pensions, disability allowances, and ration card issues.</p>
@@ -518,7 +453,6 @@
                     <div>
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div class="cr-sector-icon-badge" style="background:#dcfce7; color:#15803d;"><i class="fa-solid fa-leaf"></i></div>
-                            <span class="cr-sector-sla-tag"><i class="fa-solid fa-clock text-warning me-1"></i>48h SLA</span>
                         </div>
                         <h6 class="fw-800 text-dark mb-1 sector-title">Environment</h6>
                         <p class="text-muted small mb-2 sector-desc">Illegal tree felling, air pollution, lake contamination, and industrial waste dumping.</p>
@@ -536,7 +470,6 @@
                     <div>
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div class="cr-sector-icon-badge" style="background:#ecfeff; color:#0e7490;"><i class="fa-solid fa-house-chimney"></i></div>
-                            <span class="cr-sector-sla-tag"><i class="fa-solid fa-clock text-warning me-1"></i>96h SLA</span>
                         </div>
                         <h6 class="fw-800 text-dark mb-1 sector-title">Housing</h6>
                         <p class="text-muted small mb-2 sector-desc">Dangerous structural cracks, illegal constructions, and municipal housing schemes.</p>
@@ -554,7 +487,6 @@
                     <div>
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div class="cr-sector-icon-badge" style="background:#f0fdf4; color:#16a34a;"><i class="fa-solid fa-seedling"></i></div>
-                            <span class="cr-sector-sla-tag"><i class="fa-solid fa-clock text-warning me-1"></i>48h SLA</span>
                         </div>
                         <h6 class="fw-800 text-dark mb-1 sector-title">Agriculture</h6>
                         <p class="text-muted small mb-2 sector-desc">Irrigation canal blockage, adulterated seeds/fertilizer, and mandi market disputes.</p>
@@ -622,11 +554,11 @@
             <!-- FAQ 3 -->
             <div class="cr-faq-item">
                 <div class="cr-faq-question">
-                    <span><i class="fa-solid fa-clock text-warning me-2"></i> What happens if a department does not resolve my issue within the SLA?</span>
+                    <span><i class="fa-solid fa-clock text-warning me-2"></i> How can I follow up on a submitted issue?</span>
                     <div class="cr-faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
                 </div>
                 <div class="cr-faq-answer">
-                    Every complaint carries a legally enforceable SLA (ranging from 12 to 72 hours depending on urgency and sector). If an issue breaches the SLA threshold, CivicResolve’s automated Escalation Engine kicks in, bumping the ticket up to Level 2 (Divisional Executive Engineer) and Level 3 (Municipal Commissioner) with automated breach alerts.
+                    A reference ID is included in the submission receipt. Live status and escalation updates are not currently available in this deployment.
                 </div>
             </div>
 
@@ -648,7 +580,7 @@
                     <div class="cr-faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
                 </div>
                 <div class="cr-faq-answer">
-                    Upon submission, you immediately receive a unique Master Docket ID (e.g., <code>CR-2048</code>). You can enter this ID on the homepage tracker or open your Citizen Dashboard anytime to see real-time field engineer progress, photos of completed work, and verification ratings.
+                    After a complaint is accepted, its receipt includes a reference ID. Live status updates are not currently available.
                 </div>
             </div>
 
@@ -659,7 +591,7 @@
                     <div class="cr-faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
                 </div>
                 <div class="cr-faq-answer">
-                    CivicResolve is 100% free and open public civic infrastructure. There are no fees or hidden charges. It operates as an official gateway connecting citizens directly to state municipal redressal mechanisms.
+                    CivicResolve provides a place to submit civic complaints. Department assignment and follow-up depend on the services configured for your deployment.
                 </div>
             </div>
 
@@ -676,14 +608,11 @@
     <div class="container py-2">
         <h2 class="fw-800 mb-2">Notice a problem in your neighborhood?</h2>
         <p class="text-white-50 mx-auto mb-4" style="max-width: 520px;">
-            Join thousands of active citizens transforming their cities. File an issue in under 60 seconds with 10-meter precision.
+            Submit an issue with its location and a description.
         </p>
         <div class="d-flex justify-content-center gap-3 flex-wrap">
             <a th:href="@{/report}" class="btn btn-light btn-lg fw-700 text-primary px-4 shadow-sm">
                 <i class="fa-solid fa-plus-circle me-2"></i>Report an Issue Now
-            </a>
-            <a th:href="@{/citizen/complaint-details}" class="btn btn-outline-light btn-lg fw-600 px-4">
-                <i class="fa-solid fa-magnifying-glass me-2"></i>Track Live Docket
             </a>
         </div>
     </div>

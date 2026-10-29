@@ -60,10 +60,16 @@
                         <i class="fa-solid fa-user me-1"></i> My Dashboard
                     </a>
 
-                    <!-- User Name Pill -->
-                    <span class="badge bg-light text-dark border px-2 py-1.5 d-none d-md-inline-block">
-                        <i class="fa-solid fa-circle-user text-primary me-1"></i>
-                        <span sec:authentication="name">User</span>
+                    <!-- Signed-in user name and role -->
+                    <span class="cr-navbar-user">
+                        <i class="fa-solid fa-circle-user cr-navbar-user-icon" aria-hidden="true"></i>
+                        <span class="cr-navbar-user-details">
+                            <span class="cr-navbar-user-name"
+                                  th:text="${#authentication.principal.fullName}">User Name</span>
+                            <span class="cr-navbar-user-role" sec:authorize="hasRole('CITIZEN')">Citizen</span>
+                            <span class="cr-navbar-user-role" sec:authorize="hasRole('OFFICER')">Officer</span>
+                            <span class="cr-navbar-user-role" sec:authorize="hasRole('ADMIN')">Administrator</span>
+                        </span>
                     </span>
 
                     <!-- Logout Button -->

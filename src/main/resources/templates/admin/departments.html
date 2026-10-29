@@ -9,24 +9,43 @@
     <div class="cr-dashboard-main">
         <div class="cr-topbar">
             <div class="d-flex align-items-center gap-2">
-                <button class="btn btn-sm btn-light d-lg-none" onclick="document.querySelector('.cr-sidebar').classList.toggle('show');document.querySelector('.cr-sidebar-backdrop')?.classList.toggle('show')">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
                 <h1 class="cr-topbar-title">Departments</h1>
             </div>
         </div>
         <main class="cr-page-content">
             <th:block th:replace="~{fragments/alerts :: alerts}"/>
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-xl-4"><div class="cr-stat-card">
+                    <div class="cr-stat-icon cr-stat-icon--blue"><i class="fa-solid fa-building"></i></div>
+                    <div><div class="cr-stat-value" th:text="${totalDepartments}">0</div><div class="cr-stat-label">Departments</div></div>
+                </div></div>
+                <div class="col-6 col-xl-4"><div class="cr-stat-card">
+                    <div class="cr-stat-icon cr-stat-icon--orange"><i class="fa-solid fa-clipboard-list"></i></div>
+                    <div><div class="cr-stat-value" th:text="${totalComplaints}">0</div><div class="cr-stat-label">Complaints</div></div>
+                </div></div>
+                <div class="col-6 col-xl-4"><div class="cr-stat-card">
+                    <div class="cr-stat-icon cr-stat-icon--purple"><i class="fa-solid fa-user-shield"></i></div>
+                    <div><div class="cr-stat-value" th:text="${totalOfficers}">0</div><div class="cr-stat-label">Officers</div></div>
+                </div></div>
+            </div>
             <div class="cr-card">
-                <div class="cr-card-body text-center py-5">
-                    <i class="fa-solid fa-building text-muted fa-2x mb-3"></i>
-                    <h2 class="h5 fw-700">No department records available</h2>
-                    <p class="text-muted mb-0">Department management data has not been configured.</p>
+                <div class="table-responsive">
+                    <table class="cr-table">
+                        <thead><tr><th>Department</th><th>Service sector</th><th>Complaints</th><th>Open</th><th>Officers</th></tr></thead>
+                        <tbody>
+                        <tr th:each="department : ${departments}">
+                            <td class="fw-600" th:text="${department.department}">Department</td>
+                            <td th:text="${department.sector}">Sector</td>
+                            <td th:text="${department.complaintCount}">0</td>
+                            <td th:text="${department.openComplaintCount}">0</td>
+                            <td th:text="${department.officerCount}">0</td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </main>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

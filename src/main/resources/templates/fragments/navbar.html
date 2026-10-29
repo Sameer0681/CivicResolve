@@ -13,7 +13,8 @@
             </div>
         </a>
 
-        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
+                aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
@@ -26,6 +27,7 @@
                     <a class="nav-link" th:href="@{/report}"><i class="fa-solid fa-plus-circle me-1"></i> Report an Issue</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" th:href="@{/track}"><i class="fa-solid fa-location-crosshairs me-1"></i> Track Complaint</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/sectors}"><i class="fa-solid fa-building-columns me-1"></i> 14 Sectors</a>

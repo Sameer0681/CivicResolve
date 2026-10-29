@@ -23,7 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -37,12 +40,21 @@ public class ComplaintServiceImpl implements ComplaintService {
     private final UserRepository userRepository;
     private final GeminiAiProvider geminiAiProvider;
     private final OtpService otpService;
+    private final EscalationService escalationService;
 
     public ComplaintServiceImpl(
             ComplaintRepository complaintRepository,
             UserRepository userRepository,
             GeminiAiProvider geminiAiProvider) {
-        this(complaintRepository, userRepository, geminiAiProvider, null);
+        this(complaintRepository, userRepository, geminiAiProvider, null, null);
+    }
+
+    public ComplaintServiceImpl(
+            ComplaintRepository complaintRepository,
+            UserRepository userRepository,
+            GeminiAiProvider geminiAiProvider,
+            @Autowired(required = false) OtpService otpService) {
+        this(complaintRepository, userRepository, geminiAiProvider, otpService, null);
     }
 
     @Autowired
@@ -50,11 +62,13 @@ public class ComplaintServiceImpl implements ComplaintService {
             ComplaintRepository complaintRepository,
             UserRepository userRepository,
             GeminiAiProvider geminiAiProvider,
-            @Autowired(required = false) OtpService otpService) {
+            @Autowired(required = false) OtpService otpService,
+            EscalationService escalationService) {
         this.complaintRepository = complaintRepository;
         this.userRepository = userRepository;
         this.geminiAiProvider = geminiAiProvider;
         this.otpService = otpService;
+        this.escalationService = escalationService;
     }
 
     @Override
@@ -77,19 +91,6 @@ public class ComplaintServiceImpl implements ComplaintService {
             otpService.validateAndConsumeToken(otpToken, citizenId);
         }
 
-        // Parse coordinates from location string if formatted as "lat, lng"
-        if (complaint.getLocation() != null && !complaint.getLocation().isBlank()) {
-            String loc = complaint.getLocation().trim();
-            if (loc.matches("^[-+]?[0-9]*\\.?[0-9]+,\\s*[-+]?[0-9]*\\.?[0-9]+$")) {
-                String[] parts = loc.split(",");
-                try {
-                    complaint.setLatitude(Double.parseDouble(parts[0].trim()));
-                    complaint.setLongitude(Double.parseDouble(parts[1].trim()));
-                } catch (NumberFormatException ignored) {
-                }
-            }
-        }
-
         // Combine title and description for classification
         String complaintText = complaint.getTitle() + "\n" + complaint.getDescription();
 
@@ -105,10 +106,11 @@ public class ComplaintServiceImpl implements ComplaintService {
             log.warn("Unexpected error during AI classification: {}. Applying fallback routing.", e.getClass().getSimpleName());
         }
 
-        if (aiResult != null && aiResult.getSector() != null && !aiResult.getSector().isBlank()) {
+        String aiSector = aiResult == null ? null : CivicSectorRegistry.findCanonicalSector(aiResult.getSector());
+        if (aiSector != null) {
             // Store all AI-generated classification results
-            complaint.setSector(aiResult.getSector());
-            complaint.setDepartment(aiResult.getDepartment());
+            complaint.setSector(aiSector);
+            complaint.setDepartment(CivicSectorRegistry.getDepartmentForSector(aiSector));
             if (aiResult.getUrgency() != null && !aiResult.getUrgency().isBlank()) {
                 complaint.setUrgency(aiResult.getUrgency());
             }
@@ -118,26 +120,19 @@ public class ComplaintServiceImpl implements ComplaintService {
             }
             complaint.setConfidence(aiResult.getConfidence());
             complaint.setSummary(aiResult.getSummary());
-        } else if (complaint.getSector() != null && !complaint.getSector().isBlank()) {
-            // Graceful fallback when AI classification is unavailable or invalid:
-            // Retain the citizen-selected valid sector, map official department, and set safe defaults
-            String citizenSector = complaint.getSector();
-            String canonicalSector = CivicSectorRegistry.findCanonicalSector(citizenSector);
-            if (canonicalSector != null) {
-                complaint.setSector(canonicalSector);
-                complaint.setDepartment(CivicSectorRegistry.getDepartmentForSector(canonicalSector));
-            } else if (complaint.getDepartment() == null || complaint.getDepartment().isBlank()) {
-                complaint.setDepartment(citizenSector);
+        } else {
+            // Honor a valid legacy/API sector; web submissions use keyword routing if AI is unavailable.
+            String fallbackSector = CivicSectorRegistry.findCanonicalSector(complaint.getSector());
+            if (fallbackSector == null) {
+                fallbackSector = CivicSectorRegistry.classifyByKeywords(complaintText);
             }
+            complaint.setSector(fallbackSector);
+            complaint.setDepartment(CivicSectorRegistry.getDepartmentForSector(fallbackSector));
             complaint.setUrgency("MEDIUM");
             complaint.setPriority("MEDIUM");
             complaint.setConfidence(0.0);
             complaint.setSummary(null);
-            if (complaint.getSentiment() == null || complaint.getSentiment().isBlank()) {
-                complaint.setSentiment("NEUTRAL");
-            }
-        } else {
-            throw new BadRequestException("AI classification failed: sector is missing and no sector was provided");
+            complaint.setSentiment("NEUTRAL");
         }
 
         complaint.setCitizen(citizen);
@@ -197,6 +192,10 @@ public class ComplaintServiceImpl implements ComplaintService {
 
     @Override
     public Complaint updateComplaintStatus(String complaintIdOrId, ComplaintStatus newStatus, String remarks, String proofUrl, Long officerOrAdminId, boolean isAdmin) {
+        if (newStatus == ComplaintStatus.ESCALATED) {
+            throw new BadRequestException("Create an escalation record instead of changing status directly.");
+        }
+
         Complaint complaint = null;
         if (complaintIdOrId != null) {
             complaint = complaintRepository.findByComplaintId(complaintIdOrId).orElse(null);
@@ -223,6 +222,7 @@ public class ComplaintServiceImpl implements ComplaintService {
             }
         }
 
+        ComplaintStatus previousStatus = complaint.getStatus();
         complaint.setStatus(newStatus);
         if (remarks != null && !remarks.isBlank()) {
             complaint.setOfficerNotes(remarks);
@@ -233,6 +233,14 @@ public class ComplaintServiceImpl implements ComplaintService {
 
         if (newStatus == ComplaintStatus.RESOLVED) {
             complaint.setResolvedAt(LocalDateTime.now());
+            if (escalationService != null) {
+                escalationService.resolveForComplaint(complaint.getId());
+            }
+        } else if (previousStatus == ComplaintStatus.ESCALATED && escalationService != null) {
+            complaint.setResolvedAt(null);
+            escalationService.cancelForComplaint(complaint.getId());
+        } else {
+            complaint.setResolvedAt(null);
         }
 
         return complaintRepository.save(complaint);
@@ -247,7 +255,15 @@ public class ComplaintServiceImpl implements ComplaintService {
                 .orElseThrow(() -> new ResourceNotFoundException("Officer not found with ID: " + officerId));
 
         if (officer.getRole() != Role.ROLE_OFFICER && officer.getRole() != Role.ROLE_ADMIN) {
-            throw new IllegalArgumentException("Assigned user must have OFFICER or ADMIN role");
+            throw new BadRequestException("Assigned user must have OFFICER or ADMIN role.");
+        }
+        if (complaint.getDepartment() != null && !complaint.getDepartment().isBlank()
+                && (officer.getDepartment() == null
+                || !complaint.getDepartment().equalsIgnoreCase(officer.getDepartment()))) {
+            throw new BadRequestException("Choose an officer from the complaint's department.");
+        }
+        if (complaint.getStatus() == ComplaintStatus.RESOLVED) {
+            throw new BadRequestException("Resolved complaints cannot be assigned.");
         }
 
         complaint.setAssignedOfficer(officer);
@@ -255,7 +271,11 @@ public class ComplaintServiceImpl implements ComplaintService {
             complaint.setStatus(ComplaintStatus.IN_PROGRESS);
         }
 
-        return complaintRepository.save(complaint);
+        Complaint assigned = complaintRepository.save(complaint);
+        if (escalationService != null) {
+            escalationService.reassignForComplaint(id, officer);
+        }
+        return assigned;
     }
 
     @Override
@@ -305,11 +325,19 @@ public class ComplaintServiceImpl implements ComplaintService {
         User officer = userRepository.findById(officerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Officer not found with ID: " + officerId));
 
-        List<Complaint> assigned = complaintRepository.findByAssignedOfficerOrderByCreatedAtDesc(officer);
-        if (assigned.isEmpty() && officer.getDepartment() != null && !officer.getDepartment().isBlank()) {
-            return complaintRepository.findByDepartmentOrderByCreatedAtDesc(officer.getDepartment());
+        Map<Long, Complaint> visibleComplaints = new LinkedHashMap<>();
+        for (Complaint complaint : complaintRepository.findByAssignedOfficerOrderByCreatedAtDesc(officer)) {
+            visibleComplaints.put(complaint.getId(), complaint);
         }
-        return assigned;
+        if (officer.getDepartment() != null && !officer.getDepartment().isBlank()) {
+            for (Complaint complaint : complaintRepository.findByDepartmentOrderByCreatedAtDesc(officer.getDepartment())) {
+                visibleComplaints.putIfAbsent(complaint.getId(), complaint);
+            }
+        }
+        return visibleComplaints.values().stream()
+                .sorted(Comparator.comparing(
+                        Complaint::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder())))
+                .toList();
     }
 
     @Override
@@ -331,7 +359,7 @@ public class ComplaintServiceImpl implements ComplaintService {
         User officer = userRepository.findById(officerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Officer not found with ID: " + officerId));
 
-        Complaint complaint = complaintRepository.findById(id)
+        Complaint complaint = complaintRepository.findWithDetailsById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Complaint not found with ID: " + id));
 
         boolean isAssigned = complaint.getAssignedOfficer() != null
@@ -350,6 +378,9 @@ public class ComplaintServiceImpl implements ComplaintService {
     public void deleteComplaint(Long id) {
         if (!complaintRepository.existsById(id)) {
             throw new ResourceNotFoundException("Complaint not found with ID: " + id);
+        }
+        if (escalationService != null) {
+            escalationService.deleteForComplaint(id);
         }
         complaintRepository.deleteById(id);
     }

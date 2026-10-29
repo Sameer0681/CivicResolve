@@ -65,7 +65,6 @@ public class SecurityConfig {
                         // Static web assets
                         .requestMatchers(
                                 "/css/**",
-                                "/js/**",
                                 "/images/**",
                                 "/favicon.ico",
                                 "/webjars/**")
@@ -78,6 +77,7 @@ public class SecurityConfig {
                                 "/about",
                                 "/features",
                                 "/sectors",
+                                "/track",
                                 "/report/**",
                                 "/report",
                                 "/error")

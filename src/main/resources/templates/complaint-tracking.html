@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Track a Complaint')}"></head>
+<body class="bg-light cr-tracking-page">
+
+<th:block th:replace="~{fragments/navbar :: navbar}"/>
+
+<main class="cr-tracking-main">
+    <section class="cr-tracking-hero">
+        <div class="container">
+            <div class="cr-tracking-hero-content">
+                <span class="cr-tracking-eyebrow"><i class="fa-solid fa-shield-halved"></i> Transparent updates</span>
+                <h1>Track your complaint</h1>
+                <p>Enter the reference ID from your submission receipt to see the latest progress.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="container cr-tracking-content">
+        <div class="cr-tracking-layout">
+            <div class="cr-tracking-search-card">
+                <div class="cr-tracking-card-heading">
+                    <div class="cr-tracking-heading-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+                    <div>
+                        <h2>Find your complaint</h2>
+                        <p>Use the reference ID you received after submitting your report.</p>
+                    </div>
+                </div>
+
+                <form id="complaintTrackingForm" method="get" th:action="@{/track}">
+                    <label class="cr-tracking-label" for="trackingIdInput">Complaint reference ID</label>
+                    <div class="cr-tracking-input-row">
+                        <input id="trackingIdInput" name="id" type="text" class="form-control"
+                               placeholder="e.g. CR-2025-001" maxlength="30" required
+                               th:value="${trackingId}" aria-describedby="trackingIdHelp"/>
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                            <span>Track</span>
+                        </button>
+                    </div>
+                    <div id="trackingIdHelp" class="cr-tracking-help">
+                        <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                        Your reference ID is printed on your submission receipt.
+                    </div>
+                </form>
+                <p class="cr-tracking-message text-danger" role="alert" th:if="${trackingError}"
+                   th:text="${trackingError}"></p>
+            </div>
+
+            <section class="cr-tracking-result-card" th:if="${trackedComplaint}">
+                <div class="cr-tracking-result-header">
+                    <div>
+                        <span class="cr-tracking-overline">Complaint reference</span>
+                        <h2 th:text="${trackedComplaint.complaintId}"></h2>
+                    </div>
+                    <span class="cr-tracking-status" th:text="${trackedComplaint.status}"></span>
+                </div>
+
+                <div class="cr-tracking-meta">
+                    <div class="cr-tracking-meta-item">
+                        <span class="cr-tracking-overline">Service sector</span>
+                        <strong th:text="${trackedComplaint.sector ?: 'Not available'}"></strong>
+                    </div>
+                    <div class="cr-tracking-meta-item">
+                        <span class="cr-tracking-overline">Responsible department</span>
+                        <strong th:text="${trackedComplaint.department ?: 'Not available'}"></strong>
+                    </div>
+                </div>
+
+                <div class="cr-tracking-timeline">
+                    <h3>Progress</h3>
+                    <p class="mb-0">Current status: <strong th:text="${trackedComplaint.status}"></strong></p>
+                </div>
+                <p class="cr-tracking-privacy">
+                    <i class="fa-solid fa-lock" aria-hidden="true"></i>
+                    This public view shows status information only. Personal complaint details remain private.
+                </p>
+            </section>
+
+            <aside class="cr-tracking-tip">
+                <div class="cr-tracking-tip-icon"><i class="fa-regular fa-lightbulb"></i></div>
+                <div>
+                    <h2>Don’t have a reference ID?</h2>
+                    <p>Sign in to your account to browse your submitted complaints, or file a new report.</p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a class="btn btn-outline-primary btn-sm" th:href="@{/login}">Sign in</a>
+                        <a class="btn btn-primary btn-sm" th:href="@{/report}">File a report</a>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </section>
+</main>
+
+<th:block th:replace="~{fragments/footer :: footer}"/>
+</body>
+</html>

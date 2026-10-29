@@ -1,312 +1,194 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Report a Civic Issue &bull; CivicResolve</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com"/>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
-    <!-- Leaflet.js Map Stylesheet -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-    <link th:href="@{/css/common.css}" rel="stylesheet"/>
-    <link th:href="@{/css/report.css}" rel="stylesheet"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet" />
+    <link th:href="@{/css/common.css}" rel="stylesheet" />
+    <link th:href="@{/css/report.css}" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
+
 <body class="cr-report-page bg-light">
 
-<!-- ── NAVBAR ── -->
-<th:block th:replace="~{fragments/navbar :: navbar}"/>
+    <!-- ── NAVBAR ── -->
+    <th:block th:replace="~{fragments/navbar :: navbar}" />
 
-<!-- ── PAGE HEADER ── -->
-<div class="py-4 bg-white border-bottom shadow-sm">
-    <div class="container" style="max-width: 1140px;">
-        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
-            <div>
-                <div class="d-inline-flex align-items-center gap-2 px-2.5 py-1 rounded-pill mb-2" style="background: rgba(37, 99, 235, 0.08); color: #2563eb; font-size: 0.78rem; font-weight: 700;">
-                    <i class="fa-solid fa-shield-halved"></i> Citizen Grievance Portal
+    <!-- ── PAGE HEADER ── -->
+    <div class="py-4 bg-white border-bottom shadow-sm">
+        <div class="container" style="max-width: 1140px;">
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                <div>
+                    <div class="d-inline-flex align-items-center gap-2 px-2.5 py-1 rounded-pill mb-2"
+                        style="background: rgba(37, 99, 235, 0.08); color: #2563eb; font-size: 0.78rem; font-weight: 700;">
+                        <i class="fa-solid fa-shield-halved"></i> Citizen Grievance Portal
+                    </div>
+                    <h1 class="h3 fw-800 text-dark mb-1">Report a Civic Issue</h1>
+                    <p class="text-muted small mb-0">
+                        Describe the issue and location. AI will identify the right service sector.
+                    </p>
                 </div>
-                <h1 class="h3 fw-800 text-dark mb-1">Report a Civic Issue</h1>
-                <p class="text-muted small mb-0">
-                    Describe the issue by writing, speaking, or adding a photo note.
-                </p>
             </div>
         </div>
     </div>
-</div>
 
-<!-- ── MAIN CONTENT: 2-COLUMN NEAT LAYOUT ── -->
-<div class="py-4">
-    <div class="container" style="max-width: 1140px;">
-        <div class="row g-4">
-            
-            <!-- ── LEFT COLUMN: PROBLEM DEFINITION & FORM ── -->
-            <div class="col-lg-8">
-                <div class="card border shadow-sm rounded-4 bg-white p-4">
-                    
-                    <form id="grievanceForm" onsubmit="event.preventDefault(); submitGrievanceAsync();">
-                        
-                        <!-- ═══════════════════════════════════════════════════════ -->
-                        <!-- ── 3 WAYS TO DEFINE PROBLEM (WRITE / SPEAK / IMAGE) ── -->
-                        <!-- ═══════════════════════════════════════════════════════ -->
-                        <div class="mb-4">
-                            <label class="form-label fw-800 text-dark small mb-2 text-uppercase" style="letter-spacing: 0.5px;">
-                                Choose How You Want to Define Your Problem: <span class="text-danger">*</span>
-                            </label>
-                            
-                            <div class="cr-problem-mode-tabs mb-3">
-                                <button type="button" class="cr-mode-tab-btn active" id="tabBtn_write" onclick="switchProblemMode('write')">
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                    <span>Write Text</span>
-                                </button>
-                                <button type="button" class="cr-mode-tab-btn mode-speak" id="tabBtn_speak" onclick="switchProblemMode('speak')">
-                                    <i class="fa-solid fa-microphone"></i>
-                                    <span>Speak Problem</span>
-                                </button>
-                                <button type="button" class="cr-mode-tab-btn mode-image" id="tabBtn_image" onclick="switchProblemMode('image')">
-                                    <i class="fa-solid fa-camera"></i>
-                                    <span>Upload Image</span>
-                                </button>
-                            </div>
+    <!-- ── MAIN CONTENT: 2-COLUMN NEAT LAYOUT ── -->
+    <div class="py-4">
+        <div class="container" style="max-width: 1140px;">
+            <div class="row g-4">
 
-                            <!-- ── WAY 1: WRITE TEXT (STANDARD FORM) ── -->
-                            <div class="cr-mode-panel active" id="modePanel_write">
-                                <div class="p-3 bg-light rounded-3 border mb-3">
-                                    <div class="mb-3">
-                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                            <label class="form-label fw-700 text-dark small mb-0">Complaint Title <span class="text-danger">*</span></label>
-                                            <span class="text-muted small" id="titleCharCount">0/150</span>
-                                        </div>
-                                        <input type="text" id="formTitleInput" class="form-control cr-form-control bg-white" placeholder="Enter a short title for the issue" maxlength="150"/>
-                                    </div>
-                                    <div>
-                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                            <label class="form-label fw-700 text-dark small mb-0">Detailed Description <span class="text-danger">*</span></label>
-                                            <span class="text-muted small" id="descCharCount">0/1000</span>
-                                        </div>
-                                        <textarea id="formDescInput" rows="3" class="form-control cr-form-control bg-white" placeholder="Describe the physical hazard, risk to public, and location specifics..." maxlength="1000"></textarea>
-                                    </div>
-                                </div>
-                            </div>
+                <!-- ── LEFT COLUMN: PROBLEM DEFINITION & FORM ── -->
+                <div class="col-lg-8">
+                    <div class="card border shadow-sm rounded-4 bg-white p-4">
 
-                            <!-- ── WAY 2: SPEAK (VOICE DICTATION) ── -->
-                            <div class="cr-mode-panel" id="modePanel_speak">
-                                <div class="cr-voice-box p-4 bg-light rounded-3 border mb-3 text-center">
-                                    <button type="button" class="cr-voice-btn" id="voiceMicBtn" title="Click to Speak">
-                                        <i class="fa-solid fa-microphone"></i>
-                                    </button>
-                                    <h6 class="fw-800 text-dark mb-1" id="voiceTitleText">Tap Microphone to Speak</h6>
-                                    <p class="text-muted small mb-2" id="voiceHelpText">
-                                        Speak clearly in Hindi or English to describe the issue.
-                                    </p>
-                                    
-                                    <div class="cr-wave-container" id="voiceWaveBar" style="display:none;">
-                                        <div class="cr-wave-bar"></div>
-                                        <div class="cr-wave-bar"></div>
-                                        <div class="cr-wave-bar"></div>
-                                        <div class="cr-wave-bar"></div>
-                                        <div class="cr-wave-bar"></div>
-                                    </div>
+                        <th:block th:replace="~{fragments/alerts :: alerts}"/>
 
-                                    <div class="p-3 bg-white rounded-3 border text-start mt-3">
-                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                            <span class="text-muted small fw-700"><i class="fa-solid fa-waveform-lines text-danger me-1"></i> Live Spoken Words:</span>
-                                            <span class="badge bg-danger-subtle text-danger" id="voiceStatusBadge" style="display:none;">Recording Voice...</span>
-                                        </div>
-                                        <div id="voiceTranscriptText" class="text-dark fw-600 fst-italic small">
-                                            Your spoken words will automatically fill here...
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- ── WAY 3: UPLOAD IMAGE (PHOTO EVIDENCE) ── -->
-                            <div class="cr-mode-panel" id="modePanel_image">
-                                <div class="p-3 bg-light rounded-3 border mb-3">
-                                    <div class="cr-clean-upload-area p-4 text-center border rounded-3 bg-white mb-2" id="evidenceDropArea" onclick="document.getElementById('evidenceFileInput').click()" style="cursor: pointer; border-style: dashed !important; border-color: #cbd5e1 !important;">
-                                        <i class="fa-solid fa-camera-retro text-success fa-2x mb-2"></i>
-                                        <h6 class="fw-800 text-dark mb-1">Select a Photo to Preview</h6>
-                                        <div class="text-muted small">JPG, PNG, WebP (Max 10MB) &bull; Preview only; the image is not attached to the complaint</div>
-                                        <input type="file" id="evidenceFileInput" accept="image/*" class="d-none"/>
-                                    </div>
-
-                                    <!-- Image Preview Card -->
-                                    <div id="photoPreviewBox" class="p-2 border rounded-3 bg-white d-flex align-items-center justify-content-between" style="display:none;">
-                                        <div class="d-flex align-items-center gap-3">
-                                            <img id="photoPreviewImg" src="" alt="Evidence" style="width: 55px; height: 55px; object-fit: cover; border-radius: 8px; border: 1px solid #cbd5e1;"/>
-                                            <div>
-                                                <div class="fw-700 text-dark small" id="photoMetaText">photo.jpg</div>
-                                                <span class="badge bg-success-subtle text-success" style="font-size: 0.7rem;">
-                                                    <i class="fa-solid fa-check me-1"></i> Local Preview Ready
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <button type="button" class="btn btn-sm btn-outline-danger" id="photoRemoveBtn" title="Remove Photo">
-                                            <i class="fa-solid fa-trash-can"></i>
-                                        </button>
-                                    </div>
-
-                                    <!-- Optional Short Note for Image -->
-                                    <div class="mt-2">
-                                        <label class="form-label fw-700 text-dark small mb-1">Issue note (Optional)</label>
-                                        <input type="text" id="photoCaptionInput" class="form-control cr-form-control bg-white" placeholder="Add a short note about the photo"/>
-                                    </div>
-                                </div>
-                            </div>
-
+                        <div class="alert alert-info" th:if="${!isCitizen}">
+                            Sign in with a citizen account to file a complaint.
+                            <a th:href="@{/login}" class="alert-link ms-1">Sign in</a>
+                            <span class="mx-1">or</span>
+                            <a th:href="@{/register}" class="alert-link">create an account</a>.
                         </div>
 
-                        <!-- ═══════════════════════════════════════════════════════ -->
-                        <!-- ── CIVIC SECTOR SELECTION ── -->
-                        <!-- ═══════════════════════════════════════════════════════ -->
-                        <div class="mb-4">
-                            <label class="form-label fw-700 text-dark small mb-1">
-                                CIVIC SERVICE SECTOR <span class="text-danger">*</span>
-                            </label>
-                            <select id="formSectorSelect" class="form-select cr-form-control" required>
-                                <!-- Populated dynamically by JS -->
-                            </select>
-                            <div class="form-text text-muted" style="font-size: 0.78rem;">
-                                Select the category that best describes your issue.
-                            </div>
+                        <div class="cr-card p-3 mb-4" th:if="${otpRequired and isCitizen}">
+                            <h2 class="h6 fw-700 mb-2">Phone verification</h2>
+                            <p class="text-muted small mb-3" th:if="${!otpVerified}">
+                                Verify your registered phone before filing a complaint.
+                            </p>
+                            <p class="text-success small mb-3" th:if="${otpVerified}">
+                                <i class="fa-solid fa-circle-check me-1"></i>Phone verified for this session.
+                            </p>
+                            <form th:action="@{/report/otp/send}" method="post" class="mb-3" th:if="${!otpVerified}">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                <label class="form-label small fw-600" for="otpChannel">Delivery method</label>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <select id="otpChannel" name="channel" class="form-select" style="max-width: 220px;">
+                                        <option value="BOTH">SMS and automated call</option>
+                                        <option value="SMS">SMS</option>
+                                        <option value="CALL">Automated call</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-outline-primary">Send verification code</button>
+                                </div>
+                            </form>
+                            <form th:action="@{/report/otp/verify}" method="post" class="row g-2 align-items-end"
+                                  th:if="${!otpVerified}">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                <div class="col-sm-6">
+                                    <label class="form-label small fw-600" for="complaintOtp">6-digit verification code</label>
+                                    <input id="complaintOtp" name="otp" class="form-control" inputmode="numeric"
+                                           autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required/>
+                                </div>
+                                <div class="col-sm-auto">
+                                    <button type="submit" class="btn btn-primary">Verify phone</button>
+                                </div>
+                            </form>
                         </div>
 
-                        <!-- ═══════════════════════════════════════════════════════ -->
-                        <!-- ── INCIDENT LOCATION & GPS MAP PINNING ── -->
-                        <!-- ═══════════════════════════════════════════════════════ -->
-                        <div class="mb-4">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <label class="form-label fw-700 text-dark small mb-0">
-                                    INCIDENT LOCATION <span class="text-danger">*</span>
+                        <form id="grievanceForm" th:action="@{/report}" th:object="${complaintForm}" method="post"
+                              th:if="${isCitizen}">
+                            <div class="mb-3">
+                                <label class="form-label fw-700" for="formTitleInput">Complaint title <span class="text-danger">*</span></label>
+                                <input type="text" id="formTitleInput" th:field="*{title}"
+                                       class="form-control cr-form-control" maxlength="150" required
+                                       placeholder="Enter a short title for the issue"/>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('title')}"
+                                     th:errors="*{title}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-700" for="formDescInput">Detailed description <span class="text-danger">*</span></label>
+                                <textarea id="formDescInput" rows="5" th:field="*{description}"
+                                          class="form-control cr-form-control" maxlength="1000" required
+                                          placeholder="Describe the issue, its impact, and any useful details."></textarea>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('description')}"
+                                     th:errors="*{description}"></div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label fw-700" for="formLocationInput">
+                                    Incident location <span class="text-danger">*</span>
                                 </label>
-                                <button type="button" class="btn btn-link text-primary p-0 text-decoration-none small fw-600" onclick="detectDeviceGPS()">
-                                    <i class="fa-solid fa-crosshairs me-1" id="gpsRefreshIcon"></i> Use My Current GPS
-                                </button>
-                            </div>
-                            <div class="input-group mb-2">
-                                <span class="input-group-text bg-white" style="border-color: #cbd5e1;"><i class="fa-solid fa-location-dot text-danger"></i></span>
-                                <input type="text" id="formLocationInput" class="form-control cr-form-control" placeholder="Street landmark, Crossroad, or Ward area" maxlength="255" required/>
-                            </div>
-
-                            <!-- Compact Leaflet Map -->
-                            <div class="cr-clean-map-box mt-2">
-                                <div id="locationPinMap" style="height: 200px; border-radius: 10px;"></div>
-                                <div class="cr-clean-map-pill" id="mapCoordsPill">
-                                    <i class="fa-solid fa-location-crosshairs text-primary me-1"></i> Use GPS or select a location on the map
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text bg-white" style="border-color: #cbd5e1;"><i
+                                            class="fa-solid fa-location-dot text-danger"></i></span>
+                                    <input type="text" id="formLocationInput" th:field="*{location}"
+                                           class="form-control cr-form-control"
+                                           placeholder="Street landmark, Crossroad, or Ward area" maxlength="255"
+                                           required/>
+                                </div>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('location')}"
+                                     th:errors="*{location}"></div>
+                                <div class="text-muted small mt-1">
+                                    <i class="fa-solid fa-circle-info text-primary me-1"></i>
+                                    Use your current location or choose the incident location on the map.
+                                </div>
+                                <div class="mt-2">
+                                    <button id="mapLocateButton" type="button" class="btn btn-sm btn-outline-secondary">
+                                        <i class="fa-solid fa-location-crosshairs me-1"></i>Use my current location
+                                    </button>
+                                </div>
+                                <div id="incidentMap" class="cr-incident-map mt-3"
+                                     role="application" aria-label="Map for choosing the incident location"></div>
+                                <input type="hidden" th:field="*{latitude}" id="incidentLatitude"/>
+                                <input type="hidden" th:field="*{longitude}" id="incidentLongitude"/>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('latitude')}"
+                                     th:errors="*{latitude}"></div>
+                                <div id="mapPickerStatus" class="small text-muted mt-2" role="status" aria-live="polite">
+                                    Select a point on the map to attach precise coordinates. You can also enter the address manually.
+                                </div>
+                                <div class="small text-muted mt-1">
+                                    Map tiles and selected coordinates are provided to OpenStreetMap for map display and address lookup.
                                 </div>
                             </div>
-                            <div class="text-muted small mt-1" style="font-size: 0.75rem;">
-                                <i class="fa-solid fa-circle-info text-primary me-1"></i> Click map or drag blue pin marker to set problem spot.
+
+                            <div class="pt-3 border-top">
+                                <button type="submit" class="btn btn-primary btn-lg fw-700 w-100 py-2.5 shadow-sm"
+                                    id="btnSubmitDossier">
+                                    <i class="fa-solid fa-paper-plane me-2"></i>Submit complaint
+                                </button>
                             </div>
+
+                        </form>
+
+                    </div>
+                </div>
+
+                <!-- ── RIGHT COLUMN: STICKY REDRESSAL SUMMARY ── -->
+                <div class="col-lg-4">
+                    <div class="card border shadow-sm rounded-4 bg-white p-4 sticky-top" style="top: 2rem;">
+
+                        <!-- Header -->
+                        <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-3">
+                            <span class="text-muted fw-700 small"
+                                style="font-size: 0.75rem; letter-spacing: 0.5px;">GRIEVANCE SUMMARY</span>
+                            <span class="badge bg-primary text-white fw-700 px-2 py-1" id="docketTicketIdBadge">Assigned
+                                after submission</span>
                         </div>
 
-                        <!-- ═══════════════════════════════════════════════════════ -->
-                        <!-- ── SUBMISSION BUTTON ── -->
-                        <!-- ═══════════════════════════════════════════════════════ -->
-                        <div class="pt-3 border-top">
-                            <button type="submit" class="btn btn-primary btn-lg fw-700 w-100 py-2.5 shadow-sm" id="btnSubmitDossier">
-                                <i class="fa-solid fa-paper-plane me-2"></i>Submit Grievance Now &rarr;
-                            </button>
-                            <div class="text-muted text-center small mt-2" style="font-size: 0.75rem;">
-                                A reference ID is assigned after your complaint is accepted.
-                            </div>
+                        <div class="alert alert-info small mb-0">
+                            Department assignment, response deadlines, and live status are not shown until confirmed by
+                            the system.
                         </div>
 
-                    </form>
-
-                </div>
-            </div>
-
-            <!-- ── RIGHT COLUMN: STICKY REDRESSAL SUMMARY ── -->
-            <div class="col-lg-4">
-                <div class="card border shadow-sm rounded-4 bg-white p-4 sticky-top" style="top: 2rem;">
-                    
-                    <!-- Header -->
-                    <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-3">
-                        <span class="text-muted fw-700 small" style="font-size: 0.75rem; letter-spacing: 0.5px;">GRIEVANCE SUMMARY</span>
-                        <span class="badge bg-primary text-white fw-700 px-2 py-1" id="docketTicketIdBadge">Assigned after submission</span>
-                    </div>
-
-                    <div class="alert alert-info small mb-0">
-                        Department assignment, response deadlines, and live status are not shown until confirmed by the system.
-                    </div>
-
-                </div>
-            </div>
-
-        </div>
-    </div>
-</div>
-
-<!-- ── PHONE OTP VERIFICATION MODAL ── -->
-<div class="modal fade" id="otpVerificationModal" tabindex="-1" aria-labelledby="otpModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
-        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-            <div class="modal-header border-0 pb-0 pt-4 px-4">
-                <div class="d-flex align-items-center gap-2">
-                    <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-inline-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
-                        <i class="fa-solid fa-shield-halved"></i>
-                    </div>
-                    <div>
-                        <h5 class="modal-title fw-800 text-dark mb-0" id="otpModalLabel" style="font-size: 1.1rem;">Phone Verification</h5>
-                        <span class="text-muted small">Citizen Grievance Security</span>
                     </div>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="otpModalCloseBtn"></button>
-            </div>
-            <div class="modal-body pt-3 pb-4 px-4 text-center">
-                <p class="text-muted small mb-3">
-                    A verification code has been dispatched via SMS &amp; automated call to:
-                    <strong class="d-block text-dark fw-700 fs-6 mt-1" id="otpMaskedPhoneText">+91 XXXXX XXXXX</strong>
-                </p>
 
-                <div class="mb-3">
-                    <input type="text" id="otpCodeInput" class="form-control form-control-lg text-center fw-800 fs-4 bg-light border" placeholder="------" maxlength="6" autocomplete="one-time-code" inputmode="numeric" style="letter-spacing: 8px;"/>
-                    <div class="text-danger small mt-2 fw-600 d-none" id="otpErrorMessage"></div>
-                </div>
-
-                <div class="d-grid gap-2 mb-3">
-                    <button type="button" class="btn btn-primary fw-700 py-2.5 rounded-3" id="otpVerifyBtn">
-                        <span class="spinner-border spinner-border-sm me-1 d-none" id="otpVerifySpinner" role="status" aria-hidden="true"></span>
-                        Verify &amp; Submit Grievance
-                    </button>
-                </div>
-
-                <div class="text-center">
-                    <span class="text-muted small">Didn't receive the code? </span>
-                    <button type="button" class="btn btn-link p-0 small fw-700 text-decoration-none" id="otpResendBtn" disabled>
-                        Resend Code <span id="otpTimerText">(60s)</span>
-                    </button>
-                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- ── ASYNCHRONOUS SUBMISSION MODAL OVERLAY ── -->
-<div class="cr-async-loading-overlay" id="restLoadingOverlay">
-    <div class="cr-async-modal">
-        <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-        <h5 class="fw-800 text-dark mb-1">Submitting Grievance</h5>
-        <p class="text-muted small mb-3" id="restLoadingStatus">
-            Registering ticket and notifying municipal desk...
-        </p>
-        <div class="progress" style="height: 5px;">
-            <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" style="width: 100%"></div>
-        </div>
-    </div>
-</div>
+    <!-- ── FOOTER ── -->
+    <th:block th:replace="~{fragments/footer :: footer}" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script th:src="@{/js/report/map-picker.js}" defer></script>
 
-<!-- ── FOOTER ── -->
-<th:block th:replace="~{fragments/footer :: footer}"/>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Leaflet.js Interactive Map Engine -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<!-- Clean Report Wizard Script -->
-<script th:src="@{/js/report/report-wizard.js}"></script>
 </body>
+
 </html>

@@ -2,10 +2,10 @@
    CIVICRESOLVE — OFFICER CSS
    ========================================================= */
 
-.cr-officer-topbar { background: #0c1a2e; }
+.cr-officer-topbar { background: #12372A; }
 
 .cr-complaint-detail-header {
-    background: linear-gradient(135deg, #0c1a2e, #1e3a5f);
+    background: linear-gradient(135deg, #12372A, #1C4B39);
     color: #fff;
     padding: 1.5rem;
     border-radius: var(--cr-radius) var(--cr-radius) 0 0;

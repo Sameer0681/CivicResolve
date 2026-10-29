@@ -114,6 +114,25 @@ class ComplaintServiceTest {
     }
 
     @Test
+    void includesDepartmentComplaintsAlongsideAssignedComplaints() {
+        Complaint departmentComplaint = Complaint.builder()
+                .id(11L)
+                .department(officer.getDepartment())
+                .status(ComplaintStatus.SUBMITTED)
+                .build();
+        when(userRepository.findById(2L)).thenReturn(Optional.of(officer));
+        when(complaintRepository.findByAssignedOfficerOrderByCreatedAtDesc(officer)).thenReturn(List.of(complaint));
+        when(complaintRepository.findByDepartmentOrderByCreatedAtDesc(officer.getDepartment()))
+                .thenReturn(List.of(complaint, departmentComplaint));
+
+        List<Complaint> result = complaintService.getComplaintsByOfficer(2L);
+
+        assertEquals(2, result.size());
+        assertTrue(result.contains(complaint));
+        assertTrue(result.contains(departmentComplaint));
+    }
+
+    @Test
     void testUpdateComplaintStatusByAssignedOfficer() {
         complaint.setAssignedOfficer(officer);
         when(complaintRepository.findByComplaintId("10")).thenReturn(Optional.empty());
@@ -127,6 +146,12 @@ class ComplaintServiceTest {
         assertEquals(ComplaintStatus.RESOLVED, updated.getStatus());
         assertEquals("Repaired asphalt surface", updated.getOfficerNotes());
         assertNotNull(updated.getResolvedAt());
+    }
+
+    @Test
+    void requiresAnEscalationRecordForEscalatedStatus() {
+        assertThrows(BadRequestException.class, () -> complaintService.updateComplaintStatus(
+                "CR-2025-001", ComplaintStatus.ESCALATED, "Needs escalation", null, 2L, false));
     }
 
     @Test
@@ -336,20 +361,43 @@ class ComplaintServiceTest {
     }
 
     @Test
-    void testCreateComplaintAiFailsAndNoCitizenSectorThrowsBadRequestException() {
+    void testCreateComplaintAiFailsAndNoCitizenSectorUsesKeywordFallback() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(citizen));
         when(geminiAiProvider.classify(any())).thenThrow(new AiClassificationException("Gemini unavailable"));
+        when(complaintRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         Complaint unclassified = Complaint.builder()
-                .title("Mystery issue")
-                .description("No sector chosen")
+                .title("Water pipe leak")
+                .description("There is no water supply in the neighborhood.")
                 .sector(null)
                 .build();
 
-        assertThrows(BadRequestException.class, () ->
-                complaintService.createComplaint(unclassified, 1L, null));
+        Complaint created = complaintService.createComplaint(unclassified, 1L, null);
 
-        verify(complaintRepository, never()).save(unclassified);
+        assertEquals("Water Supply", created.getSector());
+        assertEquals("Jal Nigam / Municipal Water Works", created.getDepartment());
+        assertEquals(0.0, created.getConfidence());
+        verify(complaintRepository).save(unclassified);
+    }
+
+    @Test
+    void testCreateComplaintRejectsUnsupportedAiSectorAndRoutesFromKeywords() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(citizen));
+        AiClassificationResult invalidResult = new AiClassificationResult();
+        invalidResult.setSector("Unrecognized sector");
+        when(geminiAiProvider.classify(any())).thenReturn(invalidResult);
+        when(complaintRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        Complaint unclassified = Complaint.builder()
+                .title("Pothole on Main Road")
+                .description("A dangerous road defect needs repair.")
+                .build();
+
+        Complaint created = complaintService.createComplaint(unclassified, 1L, null);
+
+        assertEquals("Roads & Transport", created.getSector());
+        assertEquals("Public Works Department (PWD)", created.getDepartment());
+        assertEquals(0.0, created.getConfidence());
+        verify(complaintRepository).save(unclassified);
     }
 
     @Test

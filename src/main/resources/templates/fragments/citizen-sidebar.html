@@ -14,7 +14,7 @@
             <i class="fa-solid fa-user"></i>
         </div>
         <div>
-            <div class="fw-600 text-white small" th:text="${#authentication?.name} ?: 'Citizen'">Citizen</div>
+            <div class="fw-600 text-white small" th:text="${#authentication.principal.fullName}">Citizen</div>
             <span class="cr-badge cr-badge--citizen">Citizen</span>
         </div>
     </div>
@@ -34,7 +34,6 @@
         <div class="cr-nav-label mt-3">Account</div>
         <a th:href="@{/citizen/notifications}" class="cr-nav-link" th:classappend="${activePage == 'notifications'} ? 'active'">
             <i class="fa-solid fa-bell"></i> Notifications
-            <span class="cr-nav-badge ms-auto">3</span>
         </a>
         <a th:href="@{/citizen/profile}" class="cr-nav-link" th:classappend="${activePage == 'profile'} ? 'active'">
             <i class="fa-solid fa-circle-user"></i> Profile
@@ -49,6 +48,5 @@
         </form>
     </div>
 </aside>
-<div class="cr-sidebar-backdrop" onclick="document.querySelector('.cr-sidebar').classList.remove('show');this.classList.remove('show')"></div>
 </th:block>
 </html>

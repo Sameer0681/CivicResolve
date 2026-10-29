@@ -14,7 +14,7 @@
             <i class="fa-solid fa-user-tie"></i>
         </div>
         <div>
-            <div class="fw-600 text-white small" th:text="${#authentication?.name} ?: 'Admin'">Admin</div>
+            <div class="fw-600 text-white small" th:text="${#authentication.principal.fullName}">Admin</div>
             <span class="cr-badge cr-badge--admin">Administrator</span>
         </div>
     </div>
@@ -51,6 +51,5 @@
         </form>
     </div>
 </aside>
-<div class="cr-sidebar-backdrop" onclick="document.querySelector('.cr-sidebar').classList.remove('show');this.classList.remove('show')"></div>
 </th:block>
 </html>

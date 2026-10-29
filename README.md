@@ -8,6 +8,7 @@ A comprehensive civic engagement platform designed to bridge the gap between cit
 - **Smart Complaint Registration**: Register complaints with precise location pinning and media uploads.
 - **Real-time Tracking**: Monitor the status and progress of your submitted issues.
 - **AI-Powered Categorization**: Get instant, intelligent suggestions for complaint categories and urgency.
+- **Map-Based Incident Location**: Use device location, pin or drag a map marker, or enter an address manually; coordinates are stored with the complaint.
 - **Community Voting**: Upvote issues raised by others to highlight critical problems.
 - **Profile Management**: Keep track of your contribution history and impact.
 
@@ -76,6 +77,8 @@ Set `DB_USERNAME` and `DB_PASSWORD` in the environment instead of storing databa
 Email OTPs require working SMTP credentials. Configure `SPRING_MAIL_USERNAME` and `SPRING_MAIL_PASSWORD` in the environment, and set `APP_MAIL_FROM` to an address accepted by your SMTP provider. For Gmail, use a Google App Password (with 2-Step Verification enabled), not your regular account password. If SMTP is not configured or delivery fails, the application reports an email delivery error; OTPs are never printed to logs or the console.
 
 SMS and voice OTPs use Twilio by default. Configure `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, and `TWILIO_PHONE_NUMBER`, or explicitly set `OTP_PROVIDER=mock` for local development. The application no longer seeds demo users or complaints; create real accounts through registration.
+
+The complaint form classifies reports with Gemini when `GEMINI_API_KEY` is configured. If AI classification is unavailable or returns an unsupported sector, the server uses deterministic keyword routing so reports can still be submitted. The incident map uses Leaflet with OpenStreetMap tiles and Nominatim reverse address lookup; selected coordinates are sent to OpenStreetMap for address lookup. Browser location access requires user permission and a secure context (HTTPS or localhost). Follow the [OpenStreetMap tile usage policy](https://operations.osmfoundation.org/policies/tiles/) and [Nominatim usage policy](https://operations.osmfoundation.org/policies/nominatim/) before production deployment.
 
 ### 3. Build the Project
 ```bash

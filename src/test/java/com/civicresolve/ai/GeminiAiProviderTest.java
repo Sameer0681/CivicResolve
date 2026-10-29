@@ -45,7 +45,7 @@ class GeminiAiProviderTest {
         AiClassificationResult aiResult =
                 new AiClassificationResult();
         aiResult.setSector("Roads & Transport");
-        aiResult.setDepartment("Public Works Department");
+        aiResult.setDepartment("Untrusted AI department");
 
         when(complaint.getTitle()).thenReturn("Dangerous potholes");
         when(complaint.getDescription())
@@ -63,7 +63,7 @@ class GeminiAiProviderTest {
                 "Dangerous potholes\nDeep potholes on the main road.");
 
         verify(complaint).setSector("Roads & Transport");
-        verify(complaint).setDepartment("Public Works Department");
+        verify(complaint).setDepartment("Public Works Department (PWD)");
         verify(complaint).setCitizen(citizen);
         verify(complaintRepository).save(complaint);
 

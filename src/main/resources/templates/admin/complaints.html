@@ -10,13 +10,101 @@
         <div class="cr-topbar"><h1 class="cr-topbar-title">Complaints</h1></div>
         <div class="cr-page-content">
             <th:block th:replace="~{fragments/alerts :: alerts}"/>
-            <div class="cr-card p-4 text-center text-muted">
+            <div class="cr-card mb-4">
+                <div class="cr-card-body">
+                    <form method="get" th:action="@{/admin/complaints}" class="row g-3 align-items-end">
+                        <div class="col-md-7">
+                            <label class="cr-form-label" for="complaintSearch">Search complaints</label>
+                            <input id="complaintSearch" type="search" name="search" class="form-control"
+                                   placeholder="Reference, title, or sector" th:value="${search}"/>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="cr-form-label" for="complaintStatus">Status</label>
+                            <select id="complaintStatus" name="status" class="form-select">
+                                <option value="">All statuses</option>
+                                <option th:each="statusOption : ${statuses}" th:value="${statusOption.name()}"
+                                        th:text="${#strings.replace(statusOption.name(), '_', ' ')}"
+                                        th:selected="${statusFilter == statusOption.name()}">Submitted</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2"><button class="btn btn-primary w-100" type="submit">Filter</button></div>
+                    </form>
+                </div>
+            </div>
+            <div class="cr-card" th:if="${!#lists.isEmpty(complaints)}">
+                <div class="table-responsive">
+                    <table class="cr-table">
+                        <thead><tr><th>Reference</th><th>Complaint</th><th>Citizen</th><th>Department</th><th>Status</th><th>Assigned officer</th><th>Manage</th></tr></thead>
+                        <tbody>
+                        <tr th:each="complaint : ${complaints}">
+                            <td class="font-monospace" th:text="${complaint.complaintId}">CR-000</td>
+                            <td>
+                                <strong th:text="${complaint.title}">Complaint title</strong>
+                                <div class="text-muted small" th:text="${complaint.sector}">Sector</div>
+                            </td>
+                            <td th:text="${complaint.citizen.fullName}">Citizen</td>
+                            <td th:text="${complaint.department}">Department</td>
+                            <td><span class="cr-status"
+                                      th:classappend="${' cr-status--' + #strings.toLowerCase(complaint.status.name())}"
+                                      th:text="${#strings.replace(complaint.status.name(), '_', ' ')}">SUBMITTED</span></td>
+                            <td th:text="${complaint.assignedOfficer != null ? complaint.assignedOfficer.fullName : 'Unassigned'}">Unassigned</td>
+                            <td>
+                                <details>
+                                    <summary class="btn btn-sm btn-outline-primary">Actions</summary>
+                                    <div class="cr-card p-3 mt-2" style="min-width: 260px">
+                                        <form th:action="@{/admin/complaints/status}" method="post" class="mb-3">
+                                            <input type="hidden" name="complaintId" th:value="${complaint.id}"/>
+                                            <label class="cr-form-label">Update status</label>
+                                            <select name="status" class="form-select form-select-sm mb-2" required>
+                                                <option th:each="statusOption : ${statuses}" th:value="${statusOption.name()}"
+                                                        th:text="${#strings.replace(statusOption.name(), '_', ' ')}"
+                                                        th:selected="${complaint.status == statusOption}">Submitted</option>
+                                            </select>
+                                            <input type="text" name="remarks" class="form-control form-control-sm mb-2"
+                                                   maxlength="2000" placeholder="Update notes (optional)"/>
+                                            <button type="submit" class="btn btn-sm btn-primary w-100">Save status</button>
+                                        </form>
+                                        <form th:action="@{/admin/complaints/assign}" method="post" class="mb-3">
+                                            <input type="hidden" name="complaintId" th:value="${complaint.id}"/>
+                                            <label class="cr-form-label">Assign officer</label>
+                                            <select name="officerId" class="form-select form-select-sm mb-2" required>
+                                                <option value="">Choose officer</option>
+                                                <option th:each="officer : ${officers}" th:if="${officer.department == complaint.department}"
+                                                        th:value="${officer.id}" th:text="${officer.fullName}">Officer</option>
+                                            </select>
+                                            <button type="submit" class="btn btn-sm btn-outline-primary w-100">Assign</button>
+                                        </form>
+                                        <form th:action="@{/admin/complaints/escalate}" method="post" class="mb-3">
+                                            <input type="hidden" name="complaintId" th:value="${complaint.id}"/>
+                                            <label class="cr-form-label">Escalate to officer</label>
+                                            <select name="officerId" class="form-select form-select-sm mb-2" required>
+                                                <option value="">Choose officer</option>
+                                                <option th:each="officer : ${officers}" th:if="${officer.department == complaint.department}"
+                                                        th:value="${officer.id}" th:text="${officer.fullName}">Officer</option>
+                                            </select>
+                                            <textarea name="reason" class="form-control form-control-sm mb-2" rows="2"
+                                                      maxlength="2000" placeholder="Why is this complaint being escalated?" required></textarea>
+                                            <button type="submit" class="btn btn-sm btn-outline-warning w-100">Create escalation</button>
+                                        </form>
+                                        <form th:action="@{/admin/complaints/delete}" method="post"
+                                              onsubmit="return confirm('Delete this complaint permanently?')">
+                                            <input type="hidden" name="complaintId" th:value="${complaint.id}"/>
+                                            <button type="submit" class="btn btn-sm btn-outline-danger w-100">Delete complaint</button>
+                                        </form>
+                                    </div>
+                                </details>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="cr-card p-4 text-center text-muted" th:if="${#lists.isEmpty(complaints)}">
                 <i class="fa-regular fa-folder-open fa-2x mb-2"></i>
-                <p class="mb-0">No complaints to display.</p>
+                <p class="mb-0">No complaints match these filters.</p>
             </div>
         </div>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

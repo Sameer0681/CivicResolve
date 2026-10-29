@@ -11,6 +11,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
     <link th:href="@{/css/common.css}" rel="stylesheet"/>
     <link th:href="@{/css/landing.css}" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body class="bg-light">
 
@@ -18,7 +19,7 @@
 <th:block th:replace="~{fragments/navbar :: navbar}"/>
 
 <!-- ── 1. RESPONSIVE HERO SECTION ── -->
-<section class="py-5 bg-white border-bottom shadow-sm position-relative overflow-hidden">
+<section class="lp-home-hero py-5 bg-white border-bottom shadow-sm position-relative overflow-hidden">
     <div class="container py-4">
         <div class="row align-items-center gy-5">
             <!-- Left: Hero Content & Search -->
@@ -31,7 +32,7 @@
                     <span style="color: #2563eb;">Hold Local Authorities Accountable.</span>
                 </h1>
                 <p class="text-muted mb-4 fs-6" style="max-width: 580px; line-height: 1.7;">
-                    Submit a civic complaint with a description and incident location. Voice dictation is available to help enter the details.
+                    Submit a civic complaint with a clear description, service sector, and incident location. Follow its progress with the reference ID.
                 </p>
 
                 <!-- Action Buttons -->
@@ -62,49 +63,17 @@
                         <span class="badge bg-success-subtle text-success border border-success-subtle">Online &bull; 24x7</span>
                     </div>
 
-                    <p class="text-muted small mb-3">
-                        Describe your issue, choose a category, and provide its location in the reporting wizard.
+                    <p class="text-muted small mb-4">
+                        File a report using the secure form or look up a complaint with its reference ID.
                     </p>
-
-                    <!-- Direct Action Options -->
-                    <div class="d-flex flex-column gap-2 mb-3">
-                        <a th:href="@{/report(mode='voice')}" class="p-3 rounded-3 border text-decoration-none d-flex align-items-center gap-3 bg-light hover-lift">
-                            <div style="background: #dbeafe; color: #1d4ed8; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
-                                <i class="fa-solid fa-microphone-lines"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <div class="fw-700 text-dark small">Speak (Voice Dictation)</div>
-                                <div class="text-muted" style="font-size: 0.75rem;">Dictate in Hindi or English; auto-transcribed</div>
-                            </div>
-                            <i class="fa-solid fa-chevron-right text-muted small"></i>
+                    <div class="d-grid gap-2">
+                        <a th:href="@{/report}" class="btn btn-primary fw-700 py-2">
+                            <i class="fa-solid fa-pen-to-square me-2"></i>File a complaint
                         </a>
-
-                        <a th:href="@{/report(mode='photo')}" class="p-3 rounded-3 border text-decoration-none d-flex align-items-center gap-3 bg-light hover-lift">
-                            <div style="background: #dcfce7; color: #15803d; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
-                                <i class="fa-solid fa-camera"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <div class="fw-700 text-dark small">Preview a Photo</div>
-                                <div class="text-muted" style="font-size: 0.75rem;">Photo previews are local and are not submitted</div>
-                            </div>
-                            <i class="fa-solid fa-chevron-right text-muted small"></i>
-                        </a>
-
-                        <a th:href="@{/report(mode='text')}" class="p-3 rounded-3 border text-decoration-none d-flex align-items-center gap-3 bg-light hover-lift">
-                            <div style="background: #fef3c7; color: #d97706; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
-                                <i class="fa-solid fa-keyboard"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <div class="fw-700 text-dark small">Plain Text Description</div>
-                                <div class="text-muted" style="font-size: 0.75rem;">Describe the problem and choose a category</div>
-                            </div>
-                            <i class="fa-solid fa-chevron-right text-muted small"></i>
+                        <a th:href="@{/track}" class="btn btn-outline-primary fw-700 py-2">
+                            <i class="fa-solid fa-magnifying-glass me-2"></i>Track a complaint
                         </a>
                     </div>
-
-                    <a th:href="@{/report}" class="btn btn-primary fw-700 py-2 w-100">
-                        Launch Grievance Report Wizard &rarr;
-                    </a>
                 </div>
             </div>
         </div>
@@ -141,89 +110,35 @@
                 <div class="card border shadow-sm rounded-4 p-4 bg-light">
                     <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
                         <h6 class="fw-800 text-dark mb-0">
-                            <i class="fa-solid fa-route text-primary me-2"></i>Complete End-to-End Pipeline
+                            <i class="fa-solid fa-route text-primary me-2"></i>Complaint Filing
                         </h6>
-                        <span class="badge bg-primary text-white">12 Connected Steps</span>
+                        <span class="badge bg-primary text-white">3 Simple Steps</span>
                     </div>
 
                     <div class="row g-2 text-dark small">
                         <div class="col-sm-6">
                             <div class="p-2 bg-white rounded border d-flex align-items-center gap-2">
                                 <span class="badge bg-primary rounded-circle">1</span>
-                                <div><strong>Citizen Input:</strong> Voice, photo, or text</div>
+                                <div><strong>Describe:</strong> Add a title and issue details</div>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="p-2 bg-white rounded border d-flex align-items-center gap-2">
                                 <span class="badge bg-primary rounded-circle">2</span>
-                                <div><strong>AI Comprehension:</strong> NLP extracts intent</div>
+                                <div><strong>Choose:</strong> Select sector and location</div>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="p-2 bg-white rounded border d-flex align-items-center gap-2">
                                 <span class="badge bg-primary rounded-circle">3</span>
-                                <div><strong>Location:</strong> Enter an address or select a point on the map</div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="p-2 bg-white rounded border d-flex align-items-center gap-2">
-                                <span class="badge bg-primary rounded-circle">4</span>
-                                <div><strong>Sector Routing:</strong> 1 of 14 civic sectors</div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="p-2 bg-white rounded border d-flex align-items-center gap-2">
-                                <span class="badge bg-primary rounded-circle">5</span>
-                                <div><strong>Dept Identified:</strong> Jurisdictional authority</div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="p-2 bg-white rounded border d-flex align-items-center gap-2">
-                                <span class="badge bg-primary rounded-circle">6</span>
-                                <div><strong>Department:</strong> Identified from the submitted complaint</div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="p-2 bg-white rounded border d-flex align-items-center gap-2">
-                                <span class="badge bg-primary rounded-circle">7</span>
-                                <div><strong>Complaint entry:</strong> Structured submission</div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="p-2 bg-white rounded border d-flex align-items-center gap-2">
-                                <span class="badge bg-primary rounded-circle">8</span>
-                                <div><strong>Citizen Review:</strong> Transparent check step</div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="p-2 bg-white rounded border d-flex align-items-center gap-2">
-                                <span class="badge bg-primary rounded-circle">9</span>
-                                <div><strong>REST Submission:</strong> POST /api/complaints</div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="p-2 bg-white rounded border d-flex align-items-center gap-2">
-                                <span class="badge bg-primary rounded-circle">10</span>
-                                <div><strong>Master ID:</strong> Unique tracking docket</div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="p-2 bg-white rounded border d-flex align-items-center gap-2">
-                                <span class="badge bg-primary rounded-circle">11</span>
-                                <div><strong>Reference:</strong> Included in the submission receipt</div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="p-2 bg-white rounded border d-flex align-items-center gap-2">
-                                <span class="badge bg-success rounded-circle">12</span>
-                                <div><strong>Follow-up:</strong> Status updates are not currently available</div>
+                                <div><strong>Submit:</strong> Receive a reference ID and track status</div>
                             </div>
                         </div>
                     </div>
 
                     <div class="mt-3 pt-2 text-center">
                         <a th:href="@{/report}" class="btn btn-primary btn-sm fw-700 px-4">
-                            Try The Multi-Step Wizard &rarr;
+                            File a complaint &rarr;
                         </a>
                     </div>
                 </div>
@@ -241,25 +156,8 @@
                     <i class="fa-solid fa-layer-group me-1"></i> Interactive Civic Taxonomy
                 </span>
                 <h2 class="fw-800 text-dark mb-1">14 Government Service Sectors</h2>
-                <p class="text-muted mb-0">Search or filter by category to inspect department authorities and launch direct reporting.</p>
+                <p class="text-muted mb-0">Browse service sectors, responsible departments, and direct reporting options.</p>
             </div>
-            
-            <!-- Live Search Bar -->
-            <div style="min-width: 280px;">
-                <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
-                    <input type="text" id="sectorSearchInput" class="form-control border-start-0" placeholder="Search sectors (e.g. road, water)..."/>
-                </div>
-            </div>
-        </div>
-
-        <!-- Filter Buttons -->
-        <div class="d-flex align-items-center gap-2 overflow-auto pb-3 mb-4">
-            <button class="cr-sector-filter-btn active" data-filter="ALL">All 14 Sectors</button>
-            <button class="cr-sector-filter-btn" data-filter="INFRA">Infrastructure</button>
-            <button class="cr-sector-filter-btn" data-filter="UTILITIES">Utilities &amp; Power</button>
-            <button class="cr-sector-filter-btn" data-filter="CIVIC">Civic &amp; Safety</button>
-            <button class="cr-sector-filter-btn" data-filter="WELFARE">Social &amp; Welfare</button>
         </div>
 
         <!-- Sector Cards Grid -->
@@ -499,11 +397,6 @@
             </div>
         </div>
 
-        <div id="sectorNoResults" class="text-center py-4 text-muted" style="display: none;">
-            <i class="fa-solid fa-circle-exclamation fa-2x mb-2 text-warning"></i>
-            <h6>No sectors matched your search.</h6>
-            <p class="small">Try searching for keywords like "light", "pothole", "water", or "sanitation".</p>
-        </div>
     </div>
 </section>
 
@@ -516,89 +409,70 @@
             </span>
             <h2 class="fw-800 text-dark">Frequently Asked Questions</h2>
             <p class="text-muted mx-auto" style="max-width: 600px;">
-                Everything you need to know about reporting civic issues, location pinning, and automated escalation.
+                Answers about submitting a complaint and following its progress.
             </p>
-
-            <!-- FAQ Filter input -->
-            <div class="mt-3 mx-auto" style="max-width: 460px;">
-                <div class="input-group shadow-sm">
-                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
-                    <input type="text" id="faqSearchInput" class="form-control border-start-0" placeholder="Type keywords to filter questions..."/>
-                </div>
-            </div>
         </div>
 
         <div class="cr-faq-container mt-4">
-            <!-- FAQ 1 -->
-            <div class="cr-faq-item active">
-                <div class="cr-faq-question">
-                    <span><i class="fa-solid fa-circle-info text-primary me-2"></i> How does the 10-meter standing GPS location pinning work?</span>
+            <details class="cr-faq-item" open>
+                <summary class="cr-faq-question">
+                    <span><i class="fa-solid fa-circle-info text-primary me-2"></i> What information do I need to file a complaint?</span>
                     <div class="cr-faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
-                </div>
+                </summary>
                 <div class="cr-faq-answer">
-                    When you report an issue, CivicResolve requests high-precision device GPS geofencing via HTML5 Geolocation API. If permitted, it locks your coordinates with an accuracy radius within ±10 meters. In Step 2 of the wizard, you can also click anywhere on the interactive Leaflet map or drag the pin marker to specify the exact ground location.
+                    Provide a title, a description of the issue, its service sector, and a nearby location. Sign in with a citizen account to submit the form.
                 </div>
-            </div>
+            </details>
 
-            <!-- FAQ 2 -->
-            <div class="cr-faq-item">
-                <div class="cr-faq-question">
-                    <span><i class="fa-solid fa-building text-primary me-2"></i> Do I need to know which government department handles my complaint?</span>
+            <details class="cr-faq-item">
+                <summary class="cr-faq-question">
+                    <span><i class="fa-solid fa-building text-primary me-2"></i> Do I need to know which department handles my complaint?</span>
                     <div class="cr-faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
-                </div>
+                </summary>
                 <div class="cr-faq-answer">
-                    No! CivicResolve features automated problem classification. When you speak, upload a photo, or type problem keywords, the AI analyzes your problem text and automatically routes it to the corresponding authority among the 14 civic service sectors (e.g. PWD, Jal Nigam, DISCOM, Waste Management). You can also manually change the sector if desired.
+                    No. Choose the closest service sector from the list. CivicResolve assigns the department associated with that sector.
                 </div>
-            </div>
+            </details>
 
-            <!-- FAQ 3 -->
-            <div class="cr-faq-item">
-                <div class="cr-faq-question">
+            <details class="cr-faq-item">
+                <summary class="cr-faq-question">
                     <span><i class="fa-solid fa-clock text-warning me-2"></i> How can I follow up on a submitted issue?</span>
                     <div class="cr-faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
-                </div>
+                </summary>
                 <div class="cr-faq-answer">
-                    A reference ID is included in the submission receipt. Live status and escalation updates are not currently available in this deployment.
+                    Your receipt includes a reference ID. Use the Track page to see the complaint’s current status and service sector.
                 </div>
-            </div>
+            </details>
 
-            <!-- FAQ 4 -->
-            <div class="cr-faq-item">
-                <div class="cr-faq-question">
-                    <span><i class="fa-solid fa-microphone text-info me-2"></i> Can I submit photos or speak my grievance in Hindi?</span>
+            <details class="cr-faq-item">
+                <summary class="cr-faq-question">
+                    <span><i class="fa-solid fa-keyboard text-info me-2"></i> Can I submit a photo with my complaint?</span>
                     <div class="cr-faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
-                </div>
+                </summary>
                 <div class="cr-faq-answer">
-                    Yes. The Multi-Step Wizard supports live voice dictation in English and Hindi using the browser's Web Speech API. You can also upload or snap direct photos of the problem (pothole, broken lamp, overflowing garbage), which the system scans and attaches as evidence.
+                    This version accepts written complaint details only. Photo uploads are not available.
                 </div>
-            </div>
+            </details>
 
-            <!-- FAQ 5 -->
-            <div class="cr-faq-item">
-                <div class="cr-faq-question">
+            <details class="cr-faq-item">
+                <summary class="cr-faq-question">
                     <span><i class="fa-solid fa-route text-success me-2"></i> How do I track the status of my complaint after filing?</span>
                     <div class="cr-faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
-                </div>
+                </summary>
                 <div class="cr-faq-answer">
-                    After a complaint is accepted, its receipt includes a reference ID. Live status updates are not currently available.
+                    Enter the reference ID from your receipt on the Track a Complaint page.
                 </div>
-            </div>
+            </details>
 
-            <!-- FAQ 6 -->
-            <div class="cr-faq-item">
-                <div class="cr-faq-question">
+            <details class="cr-faq-item">
+                <summary class="cr-faq-question">
                     <span><i class="fa-solid fa-shield-halved text-danger me-2"></i> Is CivicResolve free to use for all citizens?</span>
                     <div class="cr-faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
-                </div>
+                </summary>
                 <div class="cr-faq-answer">
-                    CivicResolve provides a place to submit civic complaints. Department assignment and follow-up depend on the services configured for your deployment.
+                    Citizen registration and complaint filing are available without a fee. Service availability depends on the deployment.
                 </div>
-            </div>
-
-            <div id="faqNoResults" class="text-center py-3 text-muted" style="display: none;">
-                <i class="fa-solid fa-comment-slash fa-2x mb-1 text-muted"></i>
-                <div class="small">No matching FAQs found for your search query.</div>
-            </div>
+            </details>
         </div>
     </div>
 </section>
@@ -621,8 +495,6 @@
 <!-- ── FOOTER ── -->
 <th:block th:replace="~{fragments/footer :: footer}"/>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <!-- Modular Landing Page JS -->
-<script th:src="@{/js/landing/landing.js}"></script>
 </body>
 </html>

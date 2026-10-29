@@ -11,6 +11,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
     <link th:href="@{/css/common.css}" rel="stylesheet"/>
     <link th:href="@{/css/landing.css}" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body class="bg-light">
 
@@ -57,24 +58,24 @@
                         </div>
                         <div>
                             <h5 class="text-dark fw-800 mb-0">CITIZEN INGESTION LAYER</h5>
-                            <div class="text-muted small">Multi-modal reporting via web wizard</div>
+                            <div class="text-muted small">Server-rendered complaint filing</div>
                         </div>
                     </div>
                     <div class="p-3 rounded-3 mb-2 bg-light border-start border-primary border-3">
-                        <strong class="text-dark small">Multi-Step Wizard Interface:</strong>
-                        <div class="text-muted small">Leaflet map supports manual location selection, and the form validates required fields.</div>
+                        <strong class="text-dark small">Complaint Form:</strong>
+                        <div class="text-muted small">The form validates required details and accepts a written location.</div>
                     </div>
                     <div class="p-3 rounded-3 mb-2 bg-light border-start border-primary border-3">
-                        <strong class="text-dark small">Multi-Modal Input:</strong>
-                        <div class="text-muted small">Speech dictation and text entry are available; photo files are previewed locally and are not submitted.</div>
+                        <strong class="text-dark small">Accessible Input:</strong>
+                        <div class="text-muted small">Complaint details are entered through standard HTML fields; voice and photo input are not available.</div>
                     </div>
                     <div class="p-3 rounded-3 mb-2 bg-light border-start border-primary border-3">
                         <strong class="text-dark small">Intelligent 14-Sector Routing:</strong>
                         <div class="text-muted small">Server-side classification uses the configured AI provider; the selected sector is retained when classification is unavailable.</div>
                     </div>
                     <div class="p-3 rounded-3 bg-light border-start border-primary border-3">
-                        <strong class="text-dark small">Asynchronous REST Bus:</strong>
-                        <div class="text-muted small">Complaint details are submitted to POST /api/complaints; a receipt is shown after the server confirms persistence.</div>
+                        <strong class="text-dark small">Server-Side Submission:</strong>
+                        <div class="text-muted small">The server validates and saves the complaint before displaying its reference receipt.</div>
                     </div>
                 </div>
             </div>
@@ -165,27 +166,27 @@
                                     <i class="fa-solid fa-compass text-primary me-2"></i>Landing &amp; Home Experience
                                 </div>
                                 <p class="text-muted small mb-0">
-                                    Responsive landing page, civic category showcase, and searchable FAQ view.
+                                    Responsive landing page, civic sector directory, and native expandable FAQs.
                                 </p>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="p-3 bg-white rounded-3 border h-100">
                                 <div class="fw-800 text-dark small mb-1">
-                                    <i class="fa-solid fa-list-check text-success me-2"></i>Multi-Step Report Wizard
+                                    <i class="fa-solid fa-list-check text-success me-2"></i>Server-Rendered Report Form
                                 </div>
                                 <p class="text-muted small mb-0">
-                                    Report form with text and speech entry, map location selection, local photo preview, and required-field validation.
+                                    Written complaint details, service-sector selection, incident location, and server-side validation.
                                 </p>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="p-3 bg-white rounded-3 border h-100">
                                 <div class="fw-800 text-dark small mb-1">
-                                    <i class="fa-solid fa-cloud-arrow-up text-info me-2"></i>Client-Side API Integration
+                                    <i class="fa-solid fa-cloud-arrow-up text-info me-2"></i>Server-Side Complaint Submission
                                 </div>
                                 <p class="text-muted small mb-0">
-                                    The report wizard submits to <code>POST /api/complaints</code> and displays a receipt after a successful response.
+                                    The report form submits to <code>POST /report</code> and displays a receipt after the complaint is saved.
                                 </p>
                             </div>
                         </div>
@@ -195,7 +196,7 @@
                                     <i class="fa-solid fa-palette text-warning me-2"></i>Universal Design System
                                 </div>
                                 <p class="text-muted small mb-0">
-                                    Maintained shared stylesheet tokens (<code>common.css</code>, <code>landing.css</code>, <code>report.css</code>) and modular client JavaScript.
+                                    Maintained shared stylesheet tokens (<code>common.css</code>, <code>landing.css</code>, <code>report.css</code>) and server-rendered page templates.
                                 </p>
                             </div>
                         </div>
@@ -227,8 +228,8 @@
                             <div class="text-muted" style="font-size:0.75rem;">Support regional languages for wider civic inclusion.</div>
                         </div>
                         <div class="p-2 rounded bg-light">
-                            <div class="fw-700 text-dark small">Voice Interaction</div>
-                            <div class="text-muted" style="font-size:0.75rem;">Voice dictation is available in the report form.</div>
+                            <div class="fw-700 text-dark small">No-JavaScript Filing</div>
+                            <div class="text-muted" style="font-size:0.75rem;">The complaint form uses standard browser form submission.</div>
                         </div>
                     </div>
                 </div>
@@ -303,35 +304,35 @@
         </div>
 
         <div class="cr-faq-container">
-            <div class="cr-faq-item active">
-                <div class="cr-faq-question">
+            <details class="cr-faq-item" open>
+                <summary class="cr-faq-question">
                     <span><i class="fa-solid fa-code-branch text-primary me-2"></i> How is CivicResolve architected under the hood?</span>
                     <div class="cr-faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
-                </div>
+                </summary>
                 <div class="cr-faq-answer">
-                    CivicResolve uses a decoupled frontend/backend architecture. The citizen-facing frontend utilizes HTML5, Leaflet.js interactive maps, Web Speech API, and Bootstrap 5.3 with universal design tokens in <code>common.css</code>. It connects asynchronously via REST (<code>fetch</code>) to a Spring Boot backend backed by Hibernate JPA, Spring Security, and relational data storage.
+                    CivicResolve uses a server-rendered frontend built with HTML5, Thymeleaf, and Bootstrap 5.3, with universal design tokens in <code>common.css</code>. It connects to a Spring Boot backend backed by Hibernate JPA, Spring Security, and relational data storage.
                 </div>
-            </div>
+            </details>
 
-            <div class="cr-faq-item">
-                <div class="cr-faq-question">
-                    <span><i class="fa-solid fa-location-crosshairs text-info me-2"></i> How does the location pinning ensure field officer accuracy?</span>
+            <details class="cr-faq-item">
+                <summary class="cr-faq-question">
+                    <span><i class="fa-solid fa-location-crosshairs text-info me-2"></i> How should I describe the incident location?</span>
                     <div class="cr-faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
-                </div>
+                </summary>
                 <div class="cr-faq-answer">
-                    Users may request their device location or select a point on the map. Location accuracy depends on the device and the available location services.
+                    Enter a nearby street, landmark, crossroad, or ward area in the complaint form.
                 </div>
-            </div>
+            </details>
 
-            <div class="cr-faq-item">
-                <div class="cr-faq-question">
+            <details class="cr-faq-item">
+                <summary class="cr-faq-question">
                     <span><i class="fa-solid fa-shield-halved text-success me-2"></i> Is citizen personal data protected?</span>
                     <div class="cr-faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
-                </div>
+                </summary>
                 <div class="cr-faq-answer">
-                    Yes. Contact details are strictly guarded by Spring Security role-based authorization. Citizens can track grievances safely, and personal telephone numbers or emails are never published publicly on municipal bulletin boards.
+                    Account access and private complaint details are protected by role-based authorization. The public tracking page displays status and sector information rather than complaint text or contact details.
                 </div>
-            </div>
+            </details>
         </div>
     </div>
 </section>
@@ -339,7 +340,5 @@
 <!-- ── FOOTER ── -->
 <th:block th:replace="~{fragments/footer :: footer}"/>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script th:src="@{/js/landing/landing.js}"></script>
 </body>
 </html>

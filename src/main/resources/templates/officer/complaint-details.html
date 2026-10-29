@@ -9,9 +9,6 @@
     <div class="cr-dashboard-main">
         <div class="cr-topbar">
             <div class="d-flex align-items-center gap-2">
-                <button class="btn btn-sm btn-light d-lg-none" onclick="document.querySelector('.cr-sidebar').classList.toggle('show');document.querySelector('.cr-sidebar-backdrop')?.classList.toggle('show')">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
                 <a th:href="@{/officer/complaints}" class="btn btn-sm btn-light">
                     <i class="fa-solid fa-arrow-left"></i>
                 </a>
@@ -19,17 +16,66 @@
             </div>
         </div>
         <main class="cr-page-content">
-            <div class="cr-card">
+            <th:block th:replace="~{fragments/alerts :: alerts}"/>
+            <section class="cr-card mb-4" th:if="${complaint != null}">
+                <div class="cr-card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
+                    <div>
+                        <span class="cr-complaint-id-tag" th:text="${complaint.complaintId}">CR-000</span>
+                        <span class="cr-status ms-2"
+                              th:classappend="${' cr-status--' + #strings.toLowerCase(complaint.status.name())}"
+                              th:text="${#strings.replace(complaint.status.name(), '_', ' ')}">SUBMITTED</span>
+                    </div>
+                    <span class="text-muted small" th:text="${complaint.createdAt}">Date</span>
+                </div>
+                <div class="cr-card-body">
+                    <h2 class="h4 fw-700" th:text="${complaint.title}">Complaint title</h2>
+                    <p class="text-muted" th:text="${complaint.description}">Complaint description</p>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4"><span class="text-muted small d-block">Sector</span><span th:text="${complaint.sector}">Sector</span></div>
+                        <div class="col-md-4"><span class="text-muted small d-block">Department</span><span th:text="${complaint.department}">Department</span></div>
+                        <div class="col-md-4"><span class="text-muted small d-block">Location</span><span th:text="${complaint.location} ?: 'Not provided'">Location</span></div>
+                        <div class="col-md-4"><span class="text-muted small d-block">Citizen</span><span th:text="${complaint.citizen.fullName}">Citizen</span></div>
+                        <div class="col-md-4"><span class="text-muted small d-block">Urgency</span><span th:text="${complaint.urgency} ?: 'Not set'">Urgency</span></div>
+                    </div>
+                    <div th:if="${complaint.officerNotes != null and !#strings.isEmpty(complaint.officerNotes)}" class="alert alert-info">
+                        <strong>Previous update:</strong> <span th:text="${complaint.officerNotes}"></span>
+                    </div>
+                    <form th:action="@{/officer/complaint-details/status}" method="post" class="row g-3">
+                        <input type="hidden" name="id" th:value="${complaint.id}"/>
+                        <div class="col-md-4">
+                            <label class="cr-form-label" for="newStatus">New status</label>
+                            <select id="newStatus" name="status" class="form-select" required>
+                                <option th:each="statusOption : ${statuses}" th:value="${statusOption.name()}"
+                                        th:text="${#strings.replace(statusOption.name(), '_', ' ')}"
+                                        th:selected="${complaint.status == statusOption}">In progress</option>
+                            </select>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="cr-form-label" for="remarks">Update / resolution notes</label>
+                            <textarea id="remarks" name="remarks" class="form-control" rows="2" maxlength="2000"
+                                      th:text="${complaint.officerNotes}"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="cr-form-label" for="proofUrl">Proof URL (optional)</label>
+                            <input id="proofUrl" name="proofUrl" type="url" class="form-control" maxlength="500"
+                                   th:value="${complaint.proofUrl}"/>
+                        </div>
+                        <div class="col-12 text-end">
+                            <button type="submit" class="btn btn-primary">Save update</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+            <div class="cr-card" th:if="${complaint == null}">
                 <div class="cr-card-body text-center py-5">
                     <i class="fa-solid fa-clipboard-list text-muted fa-2x mb-3"></i>
                     <h2 class="h5 fw-700">No complaint record selected</h2>
-                    <p class="text-muted mb-3">A complaint record must be loaded before its status or assignment can be displayed.</p>
+                    <p class="text-muted mb-3">Choose a complaint from your assigned list to review or update it.</p>
                     <a th:href="@{/officer/complaints}" class="btn btn-outline-primary">Back to complaints</a>
                 </div>
             </div>
         </main>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -11,6 +11,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
     <link th:href="@{/css/common.css}" rel="stylesheet"/>
     <link th:href="@{/css/landing.css}" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body class="bg-light">
 
@@ -25,13 +26,6 @@
             CivicResolve connects you directly with the responsible authorities across all everyday municipal needs. Select any sector to file a report.
         </p>
 
-        <!-- Search input -->
-        <div class="mt-4 mx-auto" style="max-width: 480px;">
-            <div class="input-group shadow-sm">
-                <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-search"></i></span>
-                <input type="text" id="sectorSearch" class="form-control border-start-0" placeholder="Search sectors (e.g. road, water, electricity)..." onkeyup="filterSectors()"/>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -54,7 +48,7 @@
                         <p class="text-muted small mb-3">Potholes, broken tarmac, damaged footpaths, traffic signal failures, and missing road markers.</p>
                         <div class="text-muted small mb-3"><i class="fa-solid fa-building me-1"></i> Public Works Department (PWD)</div>
                     </div>
-                    <a th:href="@{/report(sector='ROADS')}" class="btn btn-outline-primary btn-sm fw-600 w-100">Report in Roads &rarr;</a>
+                    <a th:href="@{/report(sector='Roads &amp; Transport')}" class="btn btn-outline-primary btn-sm fw-600 w-100">Report in Roads &rarr;</a>
                 </div>
             </div>
 
@@ -73,7 +67,7 @@
                         <p class="text-muted small mb-3">Non-functional streetlights, damaged poles, dark corridors, and dangling wires.</p>
                         <div class="text-muted small mb-3"><i class="fa-solid fa-building me-1"></i> Municipal Electrical Division</div>
                     </div>
-                    <a th:href="@{/report(sector='LIGHTING')}" class="btn btn-outline-warning btn-sm fw-600 w-100">Report in Lighting &rarr;</a>
+                    <a th:href="@{/report(sector='Street Lighting')}" class="btn btn-outline-warning btn-sm fw-600 w-100">Report in Lighting &rarr;</a>
                 </div>
             </div>
 
@@ -92,7 +86,7 @@
                         <p class="text-muted small mb-3">Pipeline bursts, water shortage, low pressure, and contaminated drinking water supply.</p>
                         <div class="text-muted small mb-3"><i class="fa-solid fa-building me-1"></i> Jal Nigam / Water Works Board</div>
                     </div>
-                    <a th:href="@{/report(sector='WATER')}" class="btn btn-outline-info btn-sm fw-600 w-100">Report in Water &rarr;</a>
+                    <a th:href="@{/report(sector='Water Supply')}" class="btn btn-outline-info btn-sm fw-600 w-100">Report in Water &rarr;</a>
                 </div>
             </div>
 
@@ -111,7 +105,7 @@
                         <p class="text-muted small mb-3">Uncollected garbage, overflowing community bins, open trash burning, and choked sewers.</p>
                         <div class="text-muted small mb-3"><i class="fa-solid fa-building me-1"></i> Solid Waste Management Dept</div>
                     </div>
-                    <a th:href="@{/report(sector='SANITATION')}" class="btn btn-outline-success btn-sm fw-600 w-100">Report in Sanitation &rarr;</a>
+                    <a th:href="@{/report(sector='Sanitation &amp; Waste')}" class="btn btn-outline-success btn-sm fw-600 w-100">Report in Sanitation &rarr;</a>
                 </div>
             </div>
 
@@ -130,7 +124,7 @@
                         <p class="text-muted small mb-3">Frequent power cuts, blown transformers, exposed wires, and dangerous electric sparks.</p>
                         <div class="text-muted small mb-3"><i class="fa-solid fa-building me-1"></i> Power Corporation (DISCOM)</div>
                     </div>
-                    <a th:href="@{/report(sector='ELECTRICITY')}" class="btn btn-outline-warning btn-sm fw-600 w-100">Report in Electricity &rarr;</a>
+                    <a th:href="@{/report(sector='Electricity')}" class="btn btn-outline-warning btn-sm fw-600 w-100">Report in Electricity &rarr;</a>
                 </div>
             </div>
 
@@ -149,7 +143,7 @@
                         <p class="text-muted small mb-3">Hygiene issues at clinics, medicine availability, mosquito fogging, and sanitation around health centers.</p>
                         <div class="text-muted small mb-3"><i class="fa-solid fa-building me-1"></i> Chief Medical Officer (CMO)</div>
                     </div>
-                    <a th:href="@{/report(sector='HEALTHCARE')}" class="btn btn-outline-danger btn-sm fw-600 w-100">Report in Healthcare &rarr;</a>
+                    <a th:href="@{/report(sector='Healthcare')}" class="btn btn-outline-danger btn-sm fw-600 w-100">Report in Healthcare &rarr;</a>
                 </div>
             </div>
 
@@ -168,7 +162,7 @@
                         <p class="text-muted small mb-3">School building infrastructure repairs, drinking water in schools, and mid-day meal issues.</p>
                         <div class="text-muted small mb-3"><i class="fa-solid fa-building me-1"></i> Basic Shiksha Adhikari (BSA)</div>
                     </div>
-                    <a th:href="@{/report(sector='EDUCATION')}" class="btn btn-outline-secondary btn-sm fw-600 w-100">Report in Education &rarr;</a>
+                    <a th:href="@{/report(sector='Education')}" class="btn btn-outline-secondary btn-sm fw-600 w-100">Report in Education &rarr;</a>
                 </div>
             </div>
 
@@ -187,7 +181,7 @@
                         <p class="text-muted small mb-3">Encroachments on sidewalks, unauthorized commercial vehicle parking, and hazardous public nuisance.</p>
                         <div class="text-muted small mb-3"><i class="fa-solid fa-building me-1"></i> Police Commissionerate</div>
                     </div>
-                    <a th:href="@{/report(sector='SAFETY')}" class="btn btn-outline-primary btn-sm fw-600 w-100">Report in Safety &rarr;</a>
+                    <a th:href="@{/report(sector='Public Safety')}" class="btn btn-outline-primary btn-sm fw-600 w-100">Report in Safety &rarr;</a>
                 </div>
             </div>
 
@@ -206,7 +200,7 @@
                         <p class="text-muted small mb-3">Park upkeep, unauthorized hoardings, municipal facility repair, and trade license issues.</p>
                         <div class="text-muted small mb-3"><i class="fa-solid fa-building me-1"></i> Nagar Nigam Zonal Office</div>
                     </div>
-                    <a th:href="@{/report(sector='MUNICIPAL')}" class="btn btn-outline-info btn-sm fw-600 w-100">Report in Municipal &rarr;</a>
+                    <a th:href="@{/report(sector='Municipal Services')}" class="btn btn-outline-info btn-sm fw-600 w-100">Report in Municipal &rarr;</a>
                 </div>
             </div>
 
@@ -225,7 +219,7 @@
                         <p class="text-muted small mb-3">Delays in birth/death certificates, caste &amp; income verification, and mutation backlogs.</p>
                         <div class="text-muted small mb-3"><i class="fa-solid fa-building me-1"></i> Tehsil Revenue Office</div>
                     </div>
-                    <a th:href="@{/report(sector='REVENUE')}" class="btn btn-outline-warning btn-sm fw-600 w-100">Report in Revenue &rarr;</a>
+                    <a th:href="@{/report(sector='Revenue &amp; Certificates')}" class="btn btn-outline-warning btn-sm fw-600 w-100">Report in Revenue &rarr;</a>
                 </div>
             </div>
 
@@ -244,7 +238,7 @@
                         <p class="text-muted small mb-3">Old age pension delays, ration distribution grievances, and disability assistance.</p>
                         <div class="text-muted small mb-3"><i class="fa-solid fa-building me-1"></i> Social Welfare Directorate</div>
                     </div>
-                    <a th:href="@{/report(sector='WELFARE')}" class="btn btn-outline-danger btn-sm fw-600 w-100">Report in Welfare &rarr;</a>
+                    <a th:href="@{/report(sector='Social Welfare')}" class="btn btn-outline-danger btn-sm fw-600 w-100">Report in Welfare &rarr;</a>
                 </div>
             </div>
 
@@ -263,7 +257,7 @@
                         <p class="text-muted small mb-3">Illegal tree felling, toxic smoke emissions, industrial dumping into waterways, and noise pollution.</p>
                         <div class="text-muted small mb-3"><i class="fa-solid fa-building me-1"></i> Pollution Control Board</div>
                     </div>
-                    <a th:href="@{/report(sector='ENVIRONMENT')}" class="btn btn-outline-success btn-sm fw-600 w-100">Report in Environment &rarr;</a>
+                    <a th:href="@{/report(sector='Environment')}" class="btn btn-outline-success btn-sm fw-600 w-100">Report in Environment &rarr;</a>
                 </div>
             </div>
 
@@ -282,7 +276,7 @@
                         <p class="text-muted small mb-3">PMAY housing scheme issues, dangerous dilapidated buildings, and illegal construction.</p>
                         <div class="text-muted small mb-3"><i class="fa-solid fa-building me-1"></i> Urban Development Authority</div>
                     </div>
-                    <a th:href="@{/report(sector='HOUSING')}" class="btn btn-outline-info btn-sm fw-600 w-100">Report in Housing &rarr;</a>
+                    <a th:href="@{/report(sector='Housing')}" class="btn btn-outline-info btn-sm fw-600 w-100">Report in Housing &rarr;</a>
                 </div>
             </div>
 
@@ -301,7 +295,7 @@
                         <p class="text-muted small mb-3">Canal water supply, spurious fertilizer distribution, and PM-KISAN subsidy assistance.</p>
                         <div class="text-muted small mb-3"><i class="fa-solid fa-building me-1"></i> Dept of Agriculture &amp; Irrigation</div>
                     </div>
-                    <a th:href="@{/report(sector='AGRICULTURE')}" class="btn btn-outline-success btn-sm fw-600 w-100">Report in Agriculture &rarr;</a>
+                    <a th:href="@{/report(sector='Agriculture')}" class="btn btn-outline-success btn-sm fw-600 w-100">Report in Agriculture &rarr;</a>
                 </div>
             </div>
         </div>
@@ -311,17 +305,5 @@
 <!-- ── FOOTER ── -->
 <th:block th:replace="~{fragments/footer :: footer}"/>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-function filterSectors() {
-    const q = document.getElementById('sectorSearch').value.toLowerCase();
-    const items = document.querySelectorAll('.sector-card-item');
-    items.forEach(item => {
-        const text = item.innerText.toLowerCase();
-        const kw = item.getAttribute('data-keywords') || '';
-        item.style.display = (text.includes(q) || kw.includes(q)) ? '' : 'none';
-    });
-}
-</script>
 </body>
 </html>

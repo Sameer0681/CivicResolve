@@ -14,7 +14,7 @@
             <i class="fa-solid fa-user-shield"></i>
         </div>
         <div>
-            <div class="fw-600 text-white small" th:text="${#authentication?.name} ?: 'Officer'">Officer</div>
+            <div class="fw-600 text-white small" th:text="${#authentication.principal.fullName}">Officer</div>
             <span class="cr-badge cr-badge--officer">Officer</span>
         </div>
     </div>
@@ -29,7 +29,6 @@
         </a>
         <a th:href="@{/officer/escalations}" class="cr-nav-link" th:classappend="${activePage == 'escalations'} ? 'active'">
             <i class="fa-solid fa-arrow-up-right-dots"></i> Escalations
-            <span class="cr-nav-badge ms-auto cr-nav-badge--warn">2</span>
         </a>
 
         <div class="cr-nav-label mt-3">Account</div>
@@ -49,6 +48,5 @@
         </form>
     </div>
 </aside>
-<div class="cr-sidebar-backdrop" onclick="document.querySelector('.cr-sidebar').classList.remove('show');this.classList.remove('show')"></div>
 </th:block>
 </html>

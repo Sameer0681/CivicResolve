@@ -15,15 +15,71 @@
             <th:block th:replace="~{fragments/alerts :: alerts}"/>
             <div class="mb-4">
                 <h4 class="fw-700 mb-1">Platform overview</h4>
-                <p class="text-muted small mb-0">Live platform metrics will appear here when available.</p>
+                <p class="text-muted small mb-0">Current reports, workloads, and escalation status.</p>
             </div>
-            <div class="cr-card p-4 text-center text-muted">
-                <i class="fa-solid fa-chart-line fa-2x mb-2"></i>
-                <p class="mb-0">No dashboard metrics are available.</p>
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-xl-3">
+                    <div class="cr-stat-card">
+                        <div class="cr-stat-icon cr-stat-icon--blue"><i class="fa-solid fa-clipboard-list"></i></div>
+                        <div><div class="cr-stat-value" th:text="${totalComplaints}">0</div><div class="cr-stat-label">Total complaints</div></div>
+                    </div>
+                </div>
+                <div class="col-6 col-xl-3">
+                    <div class="cr-stat-card">
+                        <div class="cr-stat-icon cr-stat-icon--orange"><i class="fa-solid fa-hourglass-half"></i></div>
+                        <div><div class="cr-stat-value" th:text="${openComplaints}">0</div><div class="cr-stat-label">Open complaints</div></div>
+                    </div>
+                </div>
+                <div class="col-6 col-xl-3">
+                    <div class="cr-stat-card">
+                        <div class="cr-stat-icon cr-stat-icon--green"><i class="fa-solid fa-circle-check"></i></div>
+                        <div><div class="cr-stat-value" th:text="${resolvedComplaints}">0</div><div class="cr-stat-label">Resolved</div></div>
+                    </div>
+                </div>
+                <div class="col-6 col-xl">
+                    <div class="cr-stat-card">
+                        <div class="cr-stat-icon cr-stat-icon--purple"><i class="fa-solid fa-user-shield"></i></div>
+                        <div><div class="cr-stat-value" th:text="${officerCount}">0</div><div class="cr-stat-label">Officers</div></div>
+                    </div>
+                </div>
+                <div class="col-6 col-xl">
+                    <div class="cr-stat-card">
+                        <div class="cr-stat-icon cr-stat-icon--blue"><i class="fa-solid fa-users"></i></div>
+                        <div><div class="cr-stat-value" th:text="${totalUsers}">0</div><div class="cr-stat-label">Users</div></div>
+                    </div>
+                </div>
             </div>
+            <div class="cr-card mb-4">
+                <div class="cr-card-header d-flex justify-content-between align-items-center">
+                    <h2 class="h6 fw-700 mb-0">Recent complaints</h2>
+                    <a th:href="@{/admin/complaints}" class="btn btn-sm btn-outline-primary">View all</a>
+                </div>
+                <div class="table-responsive" th:if="${!#lists.isEmpty(recentComplaints)}">
+                    <table class="cr-table">
+                        <thead><tr><th>Reference</th><th>Complaint</th><th>Department</th><th>Status</th><th></th></tr></thead>
+                        <tbody>
+                        <tr th:each="complaint : ${recentComplaints}">
+                            <td class="font-monospace" th:text="${complaint.complaintId}">CR-000</td>
+                            <td th:text="${complaint.title}">Complaint title</td>
+                            <td th:text="${complaint.department}">Department</td>
+                            <td><span class="cr-status"
+                                      th:classappend="${' cr-status--' + #strings.toLowerCase(complaint.status.name())}"
+                                      th:text="${#strings.replace(complaint.status.name(), '_', ' ')}">SUBMITTED</span></td>
+                            <td><a th:href="@{/admin/complaints}" class="btn btn-sm btn-outline-primary">Manage</a></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="cr-card-body text-center text-muted" th:if="${#lists.isEmpty(recentComplaints)}">
+                    No complaints have been submitted yet.
+                </div>
+            </div>
+            <a th:href="@{/admin/escalations}" class="cr-card d-flex align-items-center justify-content-between p-3 text-decoration-none">
+                <span><i class="fa-solid fa-triangle-exclamation me-2 text-warning"></i>Open escalations</span>
+                <span class="cr-nav-badge" th:text="${pendingEscalations}">0</span>
+            </a>
         </div>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

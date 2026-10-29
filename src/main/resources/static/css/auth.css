@@ -141,3 +141,45 @@
     .cr-auth-panel,
     .cr-auth-panel--wide { width: 100%; padding: 2.5rem 1.5rem; }
 }
+
+.cr-auth-page {
+    background:
+        radial-gradient(ellipse at 82% 18%, rgba(190, 242, 100, .18), transparent 34%),
+        linear-gradient(135deg, #12372A, #1C4B39);
+}
+
+.cr-auth-panel {
+    box-shadow: 16px 0 50px rgba(18, 55, 42, .16);
+}
+
+.cr-auth-visual {
+    background:
+        radial-gradient(ellipse at 76% 22%, rgba(190, 242, 100, .16), transparent 36%),
+        linear-gradient(145deg, #12372A, #1C4B39 68%, #173F30);
+}
+
+.cr-auth-visual::before {
+    background:
+        radial-gradient(ellipse at 62% 38%, rgba(190, 242, 100, .13), transparent 58%),
+        radial-gradient(ellipse at 24% 76%, rgba(255, 255, 255, .06), transparent 50%);
+}
+
+.cr-auth-visual-icon {
+    color: #BEF264;
+    border-color: rgba(190, 242, 100, .32);
+    background: rgba(190, 242, 100, .1);
+}
+
+.cr-auth-visual-feature i {
+    color: #BEF264;
+}
+
+.cr-auth-title {
+    letter-spacing: -.035em;
+}
+
+.cr-role-option:checked + .cr-role-label {
+    border-color: var(--cr-secondary);
+    background: var(--cr-primary-light);
+    color: var(--cr-primary);
+}
